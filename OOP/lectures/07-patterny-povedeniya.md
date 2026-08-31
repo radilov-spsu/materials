@@ -44,29 +44,27 @@
 взаимозаменяемыми. Позволяет изменять алгоритм независимо от клиентов, которые им
 пользуются.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class Composition {
+        -ICompositor compositor
+        +Repair() void
+    }
+    class ICompositor {
+        <<interface>>
+        +Compose(Coord[] natural, int lineWidth) int
+    }
+    class SimpleCompositor
+    class TeXCompositor
+    class ArrayCompositor
+    Composition o-- ICompositor : стратегия
+    ICompositor <|.. SimpleCompositor
+    ICompositor <|.. TeXCompositor
+    ICompositor <|.. ArrayCompositor
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class Composition {
-            -ICompositor compositor
-            +Repair() void
-        }
-        class ICompositor {
-            <<interface>>
-            +Compose(Coord[] natural, int lineWidth) int
-        }
-        class SimpleCompositor
-        class TeXCompositor
-        class ArrayCompositor
-        Composition o-- ICompositor : стратегия
-        ICompositor <|.. SimpleCompositor
-        ICompositor <|.. TeXCompositor
-        ICompositor <|.. ArrayCompositor
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -149,25 +147,23 @@
 **Назначение.** Определяет скелет алгоритма, перекладывая ответственность за некоторые его
 шаги на подклассы. Позволяет переопределять шаги, не меняя структуру алгоритма.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    class ReportGenerator {
+        <<abstract>>
+        +Generate() Report
+        #LoadData()* DataSet
+        #Format(DataSet d)* string
+        #OnFinished() void
+    }
+    class SalesReport
+    class StockReport
+    ReportGenerator <|-- SalesReport
+    ReportGenerator <|-- StockReport
+    note for ReportGenerator "Generate() — шаблонный метод:<br/>порядок шагов фиксирован"
+```
 
-    ```mermaid
-    classDiagram
-        class ReportGenerator {
-            <<abstract>>
-            +Generate() Report
-            #LoadData()* DataSet
-            #Format(DataSet d)* string
-            #OnFinished() void
-        }
-        class SalesReport
-        class StockReport
-        ReportGenerator <|-- SalesReport
-        ReportGenerator <|-- StockReport
-        note for ReportGenerator "Generate() — шаблонный метод:<br/>порядок шагов фиксирован"
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -244,36 +240,34 @@
 изменили данные — перерисовались все представления, при этом данные о представлениях
 ничего не знают.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class ISubject {
+        <<interface>>
+        +Attach(IObserver o) void
+        +Detach(IObserver o) void
+        +Notify() void
+    }
+    class IObserver {
+        <<interface>>
+        +Update(ISubject subject) void
+    }
+    class SalesData {
+        -List~IObserver~ observers
+        +Add(Sale s) void
+        +GetState() Report
+    }
+    class BarChart
+    class PieChart
+    ISubject <|.. SalesData
+    IObserver <|.. BarChart
+    IObserver <|.. PieChart
+    SalesData o-- IObserver : наблюдатели
+    BarChart --> SalesData : запрашивает состояние
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class ISubject {
-            <<interface>>
-            +Attach(IObserver o) void
-            +Detach(IObserver o) void
-            +Notify() void
-        }
-        class IObserver {
-            <<interface>>
-            +Update(ISubject subject) void
-        }
-        class SalesData {
-            -List~IObserver~ observers
-            +Add(Sale s) void
-            +GetState() Report
-        }
-        class BarChart
-        class PieChart
-        ISubject <|.. SalesData
-        IObserver <|.. BarChart
-        IObserver <|.. PieChart
-        SalesData o-- IObserver : наблюдатели
-        BarChart --> SalesData : запрашивает состояние
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -370,38 +364,36 @@
 **Задача.** Пример книги — меню и кнопки редактора: пункт меню не должен знать, что именно
 он делает. Он знает объект-команду, у которой есть `Execute`.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction TB
+    class ICommand {
+        <<interface>>
+        +Execute() void
+        +Unexecute() void
+    }
+    class PasteCommand {
+        -Document document
+        +Execute() void
+        +Unexecute() void
+    }
+    class OpenCommand
+    class MenuItem {
+        -ICommand command
+        +Clicked() void
+    }
+    class History {
+        -Stack~ICommand~ done
+        +Push(ICommand c) void
+        +Undo() void
+    }
+    ICommand <|.. PasteCommand
+    ICommand <|.. OpenCommand
+    MenuItem o-- ICommand
+    History o-- ICommand : журнал для отмены
+```
 
-    ```mermaid
-    classDiagram
-        direction TB
-        class ICommand {
-            <<interface>>
-            +Execute() void
-            +Unexecute() void
-        }
-        class PasteCommand {
-            -Document document
-            +Execute() void
-            +Unexecute() void
-        }
-        class OpenCommand
-        class MenuItem {
-            -ICommand command
-            +Clicked() void
-        }
-        class History {
-            -Stack~ICommand~ done
-            +Push(ICommand c) void
-            +Undo() void
-        }
-        ICommand <|.. PasteCommand
-        ICommand <|.. OpenCommand
-        MenuItem o-- ICommand
-        History o-- ICommand : журнал для отмены
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -517,32 +509,30 @@
 по-разному в состояниях Established, Listen, Closed. Без паттерна это гигантские `switch`
 в каждом методе.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class TcpConnection {
+        -TcpState state
+        +Open() void
+        +Close() void
+        +Acknowledge() void
+    }
+    class TcpState {
+        <<abstract>>
+        +Open(TcpConnection c) void
+        +Close(TcpConnection c) void
+    }
+    class TcpEstablished
+    class TcpListen
+    class TcpClosed
+    TcpConnection o-- TcpState : текущее состояние
+    TcpState <|-- TcpEstablished
+    TcpState <|-- TcpListen
+    TcpState <|-- TcpClosed
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class TcpConnection {
-            -TcpState state
-            +Open() void
-            +Close() void
-            +Acknowledge() void
-        }
-        class TcpState {
-            <<abstract>>
-            +Open(TcpConnection c) void
-            +Close(TcpConnection c) void
-        }
-        class TcpEstablished
-        class TcpListen
-        class TcpClosed
-        TcpConnection o-- TcpState : текущее состояние
-        TcpState <|-- TcpEstablished
-        TcpState <|-- TcpListen
-        TcpState <|-- TcpClosed
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -613,26 +603,24 @@ public sealed class TcpClosed : TcpState
 **Задача.** Пример книги — контекстная справка: кнопка не знает справки, передаёт запрос
 диалогу, тот — приложению. Обработает тот, у кого есть ответ.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class Handler {
+        <<abstract>>
+        #Handler successor
+        +HandleRequest(Request r) void
+    }
+    class Button
+    class Dialog
+    class Application
+    Handler <|-- Button
+    Handler <|-- Dialog
+    Handler <|-- Application
+    Handler o-- Handler : преемник
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class Handler {
-            <<abstract>>
-            #Handler successor
-            +HandleRequest(Request r) void
-        }
-        class Button
-        class Dialog
-        class Application
-        Handler <|-- Button
-        Handler <|-- Dialog
-        Handler <|-- Application
-        Handler o-- Handler : преемник
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -689,30 +677,28 @@ public sealed class ValidationHandler : Handler
 **Назначение.** Даёт способ последовательно обойти элементы составного объекта, не раскрывая
 его внутреннего представления.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class IAggregate~T~ {
+        <<interface>>
+        +CreateIterator() IIterator~T~
+    }
+    class IIterator~T~ {
+        <<interface>>
+        +First() void
+        +Next() void
+        +IsDone() bool
+        +CurrentItem() T
+    }
+    class ListAggregate~T~
+    class ListIterator~T~
+    IAggregate~T~ <|.. ListAggregate~T~
+    IIterator~T~ <|.. ListIterator~T~
+    ListAggregate~T~ ..> ListIterator~T~ : создаёт
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class IAggregate~T~ {
-            <<interface>>
-            +CreateIterator() IIterator~T~
-        }
-        class IIterator~T~ {
-            <<interface>>
-            +First() void
-            +Next() void
-            +IsDone() bool
-            +CurrentItem() T
-        }
-        class ListAggregate~T~
-        class ListIterator~T~
-        IAggregate~T~ <|.. ListAggregate~T~
-        IIterator~T~ <|.. ListIterator~T~
-        ListAggregate~T~ ..> ListIterator~T~ : создаёт
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -800,36 +786,34 @@ public sealed class ValidationHandler : Handler
 (выбрали в списке — заполнилось поле, поле пустое — кнопка неактивна). Если каждый виджет
 знает про остальных, диалог невозможно переиспользовать.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction TB
+    class DialogDirector {
+        <<abstract>>
+        +WidgetChanged(Widget w) void
+    }
+    class FontDialogDirector {
+        -ListBox list
+        -EntryField field
+        +WidgetChanged(Widget w) void
+    }
+    class Widget {
+        <<abstract>>
+        #DialogDirector director
+        +Changed() void
+    }
+    class ListBox
+    class EntryField
+    DialogDirector <|-- FontDialogDirector
+    Widget <|-- ListBox
+    Widget <|-- EntryField
+    Widget o-- DialogDirector
+    FontDialogDirector --> ListBox
+    FontDialogDirector --> EntryField
+```
 
-    ```mermaid
-    classDiagram
-        direction TB
-        class DialogDirector {
-            <<abstract>>
-            +WidgetChanged(Widget w) void
-        }
-        class FontDialogDirector {
-            -ListBox list
-            -EntryField field
-            +WidgetChanged(Widget w) void
-        }
-        class Widget {
-            <<abstract>>
-            #DialogDirector director
-            +Changed() void
-        }
-        class ListBox
-        class EntryField
-        DialogDirector <|-- FontDialogDirector
-        Widget <|-- ListBox
-        Widget <|-- EntryField
-        Widget o-- DialogDirector
-        FontDialogDirector --> ListBox
-        FontDialogDirector --> EntryField
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -892,27 +876,25 @@ public sealed class FontDialogDirector
 **Задача.** Отмена операции требует запомнить состояние. Но выставить наружу все поля —
 значит сломать инкапсуляцию, ради которой всё и затевалось.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class Originator {
+        +CreateMemento() Memento
+        +SetMemento(Memento m) void
+    }
+    class Memento {
+        -State state
+        +GetState() State
+    }
+    class Caretaker {
+        -Memento memento
+    }
+    Originator ..> Memento : создаёт
+    Caretaker o-- Memento : хранит, но не заглядывает
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class Originator {
-            +CreateMemento() Memento
-            +SetMemento(Memento m) void
-        }
-        class Memento {
-            -State state
-            +GetState() State
-        }
-        class Caretaker {
-            -Memento memento
-        }
-        Originator ..> Memento : создаёт
-        Caretaker o-- Memento : хранит, но не заглядывает
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -979,36 +961,34 @@ var history = new Stack<Editor.Snapshot>();
 оптимизацию, генерацию кода, красивую печать. Складывать все эти операции в классы узлов —
 значит превращать их в свалку.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction TB
+    class INodeVisitor {
+        <<interface>>
+        +VisitAssignment(AssignmentNode n) void
+        +VisitVariable(VariableNode n) void
+    }
+    class TypeCheckingVisitor
+    class CodeGenVisitor
+    class Node {
+        <<abstract>>
+        +Accept(INodeVisitor v)* void
+    }
+    class AssignmentNode {
+        +Accept(INodeVisitor v) void
+    }
+    class VariableNode {
+        +Accept(INodeVisitor v) void
+    }
+    INodeVisitor <|.. TypeCheckingVisitor
+    INodeVisitor <|.. CodeGenVisitor
+    Node <|-- AssignmentNode
+    Node <|-- VariableNode
+    Node ..> INodeVisitor : Accept
+```
 
-    ```mermaid
-    classDiagram
-        direction TB
-        class INodeVisitor {
-            <<interface>>
-            +VisitAssignment(AssignmentNode n) void
-            +VisitVariable(VariableNode n) void
-        }
-        class TypeCheckingVisitor
-        class CodeGenVisitor
-        class Node {
-            <<abstract>>
-            +Accept(INodeVisitor v)* void
-        }
-        class AssignmentNode {
-            +Accept(INodeVisitor v) void
-        }
-        class VariableNode {
-            +Accept(INodeVisitor v) void
-        }
-        INodeVisitor <|.. TypeCheckingVisitor
-        INodeVisitor <|.. CodeGenVisitor
-        Node <|-- AssignmentNode
-        Node <|-- VariableNode
-        Node ..> INodeVisitor : Accept
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram

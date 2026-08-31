@@ -1,6 +1,0 @@
-# Версии зафиксированы намеренно: MkDocs 2.0 ломает систему плагинов и тем,
-# без пина сборка сайта однажды упадёт сама по себе.
-mkdocs-material-extensions==1.3.1
-mkdocs-material==9.7.7
-mkdocs==1.6.1
-pymdown-extensions==11.0.2

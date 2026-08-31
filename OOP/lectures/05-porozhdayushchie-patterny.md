@@ -165,33 +165,31 @@ else if (type == "pepperoni") pizza = new PepperoniPizza();
             return pizza
     ```
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class PizzaStore {
+        +OrderPizza(string type) Pizza
+    }
+    class SimplePizzaFactory {
+        +CreatePizza(string type) Pizza
+    }
+    class Pizza {
+        <<abstract>>
+        +Prepare() void
+        +Bake() void
+        +Cut() void
+        +Box() void
+    }
+    class CheesePizza
+    class VeggiePizza
+    PizzaStore --> SimplePizzaFactory : клиент фабрики
+    SimplePizzaFactory ..> Pizza : создаёт
+    Pizza <|-- CheesePizza
+    Pizza <|-- VeggiePizza
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class PizzaStore {
-            +OrderPizza(string type) Pizza
-        }
-        class SimplePizzaFactory {
-            +CreatePizza(string type) Pizza
-        }
-        class Pizza {
-            <<abstract>>
-            +Prepare() void
-            +Bake() void
-            +Cut() void
-            +Box() void
-        }
-        class CheesePizza
-        class VeggiePizza
-        PizzaStore --> SimplePizzaFactory : клиент фабрики
-        SimplePizzaFactory ..> Pizza : создаёт
-        Pizza <|-- CheesePizza
-        Pizza <|-- VeggiePizza
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -322,37 +320,35 @@ CheesePizza, VeggiePizza…»), а надо начать с конкретных
             return self._kinds[kind]()
     ```
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction TB
+    class PizzaStore {
+        <<abstract>>
+        +OrderPizza(string type) Pizza
+        #CreatePizza(string type)* Pizza
+    }
+    class NyPizzaStore {
+        #CreatePizza(string type) Pizza
+    }
+    class ChicagoPizzaStore {
+        #CreatePizza(string type) Pizza
+    }
+    class Pizza {
+        <<abstract>>
+        +Prepare() void
+    }
+    class NyStyleCheesePizza
+    class ChicagoStyleCheesePizza
+    PizzaStore <|-- NyPizzaStore
+    PizzaStore <|-- ChicagoPizzaStore
+    Pizza <|-- NyStyleCheesePizza
+    Pizza <|-- ChicagoStyleCheesePizza
+    PizzaStore ..> Pizza : работает с абстракцией
+    NyPizzaStore ..> NyStyleCheesePizza : создаёт
+```
 
-    ```mermaid
-    classDiagram
-        direction TB
-        class PizzaStore {
-            <<abstract>>
-            +OrderPizza(string type) Pizza
-            #CreatePizza(string type)* Pizza
-        }
-        class NyPizzaStore {
-            #CreatePizza(string type) Pizza
-        }
-        class ChicagoPizzaStore {
-            #CreatePizza(string type) Pizza
-        }
-        class Pizza {
-            <<abstract>>
-            +Prepare() void
-        }
-        class NyStyleCheesePizza
-        class ChicagoStyleCheesePizza
-        PizzaStore <|-- NyPizzaStore
-        PizzaStore <|-- ChicagoPizzaStore
-        Pizza <|-- NyStyleCheesePizza
-        Pizza <|-- ChicagoStyleCheesePizza
-        PizzaStore ..> Pizza : работает с абстракцией
-        NyPizzaStore ..> NyStyleCheesePizza : создаёт
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -486,41 +482,39 @@ CheesePizza, VeggiePizza…»), а надо начать с конкретных
             self.cheese = self._ingredients.create_cheese()
     ```
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction TB
+    class IPizzaIngredientFactory {
+        <<interface>>
+        +CreateDough() IDough
+        +CreateSauce() ISauce
+        +CreateCheese() ICheese
+    }
+    class NyIngredientFactory
+    class ChicagoIngredientFactory
+    class IDough {
+        <<interface>>
+    }
+    class ThinCrustDough
+    class ThickCrustDough
+    class ISauce {
+        <<interface>>
+    }
+    class MarinaraSauce
+    class PlumTomatoSauce
+    IPizzaIngredientFactory <|.. NyIngredientFactory
+    IPizzaIngredientFactory <|.. ChicagoIngredientFactory
+    IDough <|.. ThinCrustDough
+    IDough <|.. ThickCrustDough
+    ISauce <|.. MarinaraSauce
+    ISauce <|.. PlumTomatoSauce
+    NyIngredientFactory ..> ThinCrustDough : создаёт
+    NyIngredientFactory ..> MarinaraSauce : создаёт
+    Pizza --> IPizzaIngredientFactory : клиент
+```
 
-    ```mermaid
-    classDiagram
-        direction TB
-        class IPizzaIngredientFactory {
-            <<interface>>
-            +CreateDough() IDough
-            +CreateSauce() ISauce
-            +CreateCheese() ICheese
-        }
-        class NyIngredientFactory
-        class ChicagoIngredientFactory
-        class IDough {
-            <<interface>>
-        }
-        class ThinCrustDough
-        class ThickCrustDough
-        class ISauce {
-            <<interface>>
-        }
-        class MarinaraSauce
-        class PlumTomatoSauce
-        IPizzaIngredientFactory <|.. NyIngredientFactory
-        IPizzaIngredientFactory <|.. ChicagoIngredientFactory
-        IDough <|.. ThinCrustDough
-        IDough <|.. ThickCrustDough
-        ISauce <|.. MarinaraSauce
-        ISauce <|.. PlumTomatoSauce
-        NyIngredientFactory ..> ThinCrustDough : создаёт
-        NyIngredientFactory ..> MarinaraSauce : создаёт
-        Pizza --> IPizzaIngredientFactory : клиент
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -613,33 +607,31 @@ public sealed class NyPizzaStore : PizzaStore
 элемент зовёт строителя; какой получится результат — обычный текст, TeX или виджет —
 зависит от подставленного строителя. Процесс разбора один, представлений много.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class RtfReader {
+        -ITextConverter builder
+        +ParseRtf() void
+    }
+    class ITextConverter {
+        <<interface>>
+        +ConvertCharacter(char c) void
+        +ConvertParagraph() void
+        +ConvertFont(Font f) void
+    }
+    class AsciiConverter {
+        +GetResult() string
+    }
+    class TexConverter {
+        +GetResult() TexText
+    }
+    RtfReader o-- ITextConverter : распорядитель
+    ITextConverter <|.. AsciiConverter
+    ITextConverter <|.. TexConverter
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class RtfReader {
-            -ITextConverter builder
-            +ParseRtf() void
-        }
-        class ITextConverter {
-            <<interface>>
-            +ConvertCharacter(char c) void
-            +ConvertParagraph() void
-            +ConvertFont(Font f) void
-        }
-        class AsciiConverter {
-            +GetResult() string
-        }
-        class TexConverter {
-            +GetResult() TexText
-        }
-        RtfReader o-- ITextConverter : распорядитель
-        ITextConverter <|.. AsciiConverter
-        ITextConverter <|.. TexConverter
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -731,30 +723,28 @@ fluent-builder — читаемая сборка одного продукта �
 новую фигуру — значит зарегистрировать новый прототип, а не написать новый подкласс
 инструмента.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class IGraphic {
+        <<interface>>
+        +Clone() IGraphic
+        +Draw() void
+    }
+    class Staff
+    class WholeNote
+    class HalfNote
+    class GraphicTool {
+        -IGraphic prototype
+        +Manipulate() void
+    }
+    IGraphic <|.. Staff
+    IGraphic <|.. WholeNote
+    IGraphic <|.. HalfNote
+    GraphicTool o-- IGraphic : прототип
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class IGraphic {
-            <<interface>>
-            +Clone() IGraphic
-            +Draw() void
-        }
-        class Staff
-        class WholeNote
-        class HalfNote
-        class GraphicTool {
-            -IGraphic prototype
-            +Manipulate() void
-        }
-        IGraphic <|.. Staff
-        IGraphic <|.. WholeNote
-        IGraphic <|.. HalfNote
-        GraphicTool o-- IGraphic : прототип
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -849,20 +839,18 @@ fluent-builder — читаемая сборка одного продукта �
 **Задача.** В системе должен быть ровно один объект: реестр окон, пул соединений,
 конфигурация. Глобальная переменная это не решает — она не мешает создать второй экземпляр.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    class Singleton {
+        -Singleton instance$
+        -Singleton()
+        +Instance() Singleton$
+        +SomeOperation() void
+    }
+    note for Singleton "Конструктор закрыт.<br/>Экземпляр создаёт и хранит сам класс"
+```
 
-    ```mermaid
-    classDiagram
-        class Singleton {
-            -Singleton instance$
-            -Singleton()
-            +Instance() Singleton$
-            +SomeOperation() void
-        }
-        note for Singleton "Конструктор закрыт.<br/>Экземпляр создаёт и хранит сам класс"
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -972,19 +960,17 @@ fluent-builder — читаемая сборка одного продукта �
 
 ### Как порождающие связаны
 
-=== "Диаграмма"
+```mermaid
+flowchart LR
+    FM["Фабричный метод<br/>наследование"] -->|часто вырастает в| AF["Абстрактная фабрика<br/>композиция"]
+    AF -->|реализуется через| FM
+    AF -->|или через| PR["Прототип"]
+    AF -->|обычно является| SG["Одиночка"]
+    BD["Строитель"] -->|собирает продукт<br/>по шагам| PRD["Сложный продукт"]
+    AF -->|создаёт продукт<br/>одним вызовом| PRD
+```
 
-    ```mermaid
-    flowchart LR
-        FM["Фабричный метод<br/>наследование"] -->|часто вырастает в| AF["Абстрактная фабрика<br/>композиция"]
-        AF -->|реализуется через| FM
-        AF -->|или через| PR["Прототип"]
-        AF -->|обычно является| SG["Одиночка"]
-        BD["Строитель"] -->|собирает продукт<br/>по шагам| PRD["Сложный продукт"]
-        AF -->|создаёт продукт<br/>одним вызовом| PRD
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     flowchart LR

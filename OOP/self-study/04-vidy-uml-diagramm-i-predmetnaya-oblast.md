@@ -45,31 +45,29 @@ UML 2 делит диаграммы на две группы: **структур
 или 2, хотя приёмы использовались раньше, и деление на типы вообще не строгое — важнее,
 на какой вопрос диаграмма отвечает, чем к какому типу она формально отнесена.
 
-=== "Диаграмма"
+```mermaid
+mindmap
+  root((UML 2.x))
+    Структурные
+      Классов
+      Объектов
+      Пакетов
+      Компонентов
+      Развёртывания
+      Композитной структуры
+      Профилей
+    Поведенческие
+      Вариантов использования
+      Деятельности
+      Состояний
+      Взаимодействия
+        Последовательности
+        Коммуникации
+        Обзора взаимодействия
+        Временная
+```
 
-    ```mermaid
-    mindmap
-      root((UML 2.x))
-        Структурные
-          Классов
-          Объектов
-          Пакетов
-          Компонентов
-          Развёртывания
-          Композитной структуры
-          Профилей
-        Поведенческие
-          Вариантов использования
-          Деятельности
-          Состояний
-          Взаимодействия
-            Последовательности
-            Коммуникации
-            Обзора взаимодействия
-            Временная
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     mindmap
@@ -101,25 +99,23 @@ UML 2 делит диаграммы на две группы: **структур
 **Диаграмма объектов** — снимок конкретных объектов и их связей в один момент времени.
 Незаменима, когда диаграмма классов допускает несколько толкований: «покажи мне пример».
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    class order1["order1 : Order"] {
+        Status = Paid
+        Total = 1250
+    }
+    class line1["line1 : OrderLine"] {
+        Quantity = 2
+    }
+    class line2["line2 : OrderLine"] {
+        Quantity = 1
+    }
+    order1 --> line1
+    order1 --> line2
+```
 
-    ```mermaid
-    classDiagram
-        class order1["order1 : Order"] {
-            Status = Paid
-            Total = 1250
-        }
-        class line1["line1 : OrderLine"] {
-            Quantity = 2
-        }
-        class line2["line2 : OrderLine"] {
-            Quantity = 1
-        }
-        order1 --> line1
-        order1 --> line2
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -141,29 +137,27 @@ UML 2 делит диаграммы на две группы: **структур
 **Диаграмма пакетов** — модули и зависимости между ними; ровно тот инструмент, которым
 проверяют правила из лекции 2 (циклы, направление зависимостей).
 
-=== "Диаграмма"
+```mermaid
+flowchart TB
+    subgraph Presentation
+        Api[Shop.Api]
+    end
+    subgraph Application
+        App[Shop.Application]
+    end
+    subgraph Domain
+        Dom[Shop.Domain]
+    end
+    subgraph Infrastructure
+        Inf[Shop.Infrastructure]
+    end
+    Api --> App
+    App --> Dom
+    Inf --> Dom
+    Api -.-> Inf
+```
 
-    ```mermaid
-    flowchart TB
-        subgraph Presentation
-            Api[Shop.Api]
-        end
-        subgraph Application
-            App[Shop.Application]
-        end
-        subgraph Domain
-            Dom[Shop.Domain]
-        end
-        subgraph Infrastructure
-            Inf[Shop.Infrastructure]
-        end
-        Api --> App
-        App --> Dom
-        Inf --> Dom
-        Api -.-> Inf
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     flowchart TB
@@ -200,26 +194,24 @@ UML 2 делит диаграммы на две группы: **структур
 **Вариантов использования (use case)** — что система делает для внешних действующих лиц.
 Не показывает алгоритм: показывает границу системы и набор целей пользователей.
 
-=== "Диаграмма"
+```mermaid
+flowchart LR
+    customer([Покупатель])
+    manager([Менеджер])
+    subgraph Магазин
+        uc1((Оформить заказ))
+        uc2((Оплатить заказ))
+        uc3((Отменить заказ))
+        uc4((Сформировать отчёт))
+    end
+    customer --> uc1
+    customer --> uc2
+    customer --> uc3
+    manager --> uc3
+    manager --> uc4
+```
 
-    ```mermaid
-    flowchart LR
-        customer([Покупатель])
-        manager([Менеджер])
-        subgraph Магазин
-            uc1((Оформить заказ))
-            uc2((Оплатить заказ))
-            uc3((Отменить заказ))
-            uc4((Сформировать отчёт))
-        end
-        customer --> uc1
-        customer --> uc2
-        customer --> uc3
-        manager --> uc3
-        manager --> uc4
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     flowchart LR
@@ -246,22 +238,20 @@ UML 2 делит диаграммы на две группы: **структур
 **Деятельности (activity)** — бизнес-процесс или алгоритм с ветвлениями, параллельностью
 и зонами ответственности (дорожками). Ближайший родственник BPMN.
 
-=== "Диаграмма"
+```mermaid
+flowchart TD
+    A[Получен заказ] --> B{Товар в наличии?}
+    B -- да --> C[Зарезервировать]
+    B -- нет --> D[Уведомить покупателя]
+    C --> E{Оплата прошла?}
+    E -- да --> F[Передать на сборку]
+    E -- нет --> G[Снять резерв]
+    G --> D
+    F --> H[Завершено]
+    D --> H
+```
 
-    ```mermaid
-    flowchart TD
-        A[Получен заказ] --> B{Товар в наличии?}
-        B -- да --> C[Зарезервировать]
-        B -- нет --> D[Уведомить покупателя]
-        C --> E{Оплата прошла?}
-        E -- да --> F[Передать на сборку]
-        E -- нет --> G[Снять резерв]
-        G --> D
-        F --> H[Завершено]
-        D --> H
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     flowchart TD
@@ -465,47 +455,45 @@ UML — не единственный язык, и на практике час�
   ровно одно значение. «Заказ» в продажах и «Заказ» на складе — разные понятия,
   и это нормально: их не надо объединять в один класс.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction TB
+    class Order {
+        <<aggregate root>>
+        +Guid Id
+        +OrderStatus Status
+        +AddLine(Product product, int qty) void
+        +Pay(IPaymentMethod method) void
+        +Total() Money
+    }
+    class OrderLine {
+        <<entity>>
+        +int Quantity
+        +Money UnitPrice
+    }
+    class Money {
+        <<value object>>
+        +decimal Amount
+        +Currency Currency
+    }
+    class Address {
+        <<value object>>
+        +string City
+        +string Street
+    }
+    class IOrderRepository {
+        <<repository>>
+        +GetById(Guid id) Order
+        +Save(Order order) void
+    }
+    Order "1" *-- "1..*" OrderLine
+    OrderLine --> Money : цена
+    Order --> Address : доставка
+    IOrderRepository ..> Order : только корень
+    note for Order "Инвариант: хотя бы одна позиция.<br/>Изменения позиций только через корень"
+```
 
-    ```mermaid
-    classDiagram
-        direction TB
-        class Order {
-            <<aggregate root>>
-            +Guid Id
-            +OrderStatus Status
-            +AddLine(Product product, int qty) void
-            +Pay(IPaymentMethod method) void
-            +Total() Money
-        }
-        class OrderLine {
-            <<entity>>
-            +int Quantity
-            +Money UnitPrice
-        }
-        class Money {
-            <<value object>>
-            +decimal Amount
-            +Currency Currency
-        }
-        class Address {
-            <<value object>>
-            +string City
-            +string Street
-        }
-        class IOrderRepository {
-            <<repository>>
-            +GetById(Guid id) Order
-            +Save(Order order) void
-        }
-        Order "1" *-- "1..*" OrderLine
-        OrderLine --> Money : цена
-        Order --> Address : доставка
-        IOrderRepository ..> Order : только корень
-        note for Order "Инвариант: хотя бы одна позиция.<br/>Изменения позиций только через корень"
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram

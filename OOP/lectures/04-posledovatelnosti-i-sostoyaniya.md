@@ -42,31 +42,29 @@
 - **Активации (полосы выполнения)** — прямоугольники на линии жизни: объект сейчас
   занят обработкой.
 
-=== "Диаграмма"
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Покупатель
+    participant C as OrdersController
+    participant S as OrderService
+    participant R as OrderRepository
 
-    ```mermaid
-    sequenceDiagram
-        autonumber
-        actor User as Покупатель
-        participant C as OrdersController
-        participant S as OrderService
-        participant R as OrderRepository
+    User->>C: POST /orders
+    activate C
+    C->>S: Place(cart)
+    activate S
+    S->>R: Save(order)
+    activate R
+    R-->>S: order
+    deactivate R
+    S-->>C: order
+    deactivate S
+    C-->>User: 201 Created
+    deactivate C
+```
 
-        User->>C: POST /orders
-        activate C
-        C->>S: Place(cart)
-        activate S
-        S->>R: Save(order)
-        activate R
-        R-->>S: order
-        deactivate R
-        S-->>C: order
-        deactivate S
-        C-->>User: 201 Created
-        deactivate C
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     sequenceDiagram
@@ -127,24 +125,22 @@
 Асинхронный (открытый наконечник, в Mermaid `-)`) — отправил и пошёл дальше: постановка
 в очередь, публикация события, `fire-and-forget`.
 
-=== "Диаграмма"
+```mermaid
+sequenceDiagram
+    participant S as OrderService
+    participant Q as MessageBus
+    participant N as NotificationWorker
+    participant M as SmtpServer
 
-    ```mermaid
-    sequenceDiagram
-        participant S as OrderService
-        participant Q as MessageBus
-        participant N as NotificationWorker
-        participant M as SmtpServer
+    S->>S: Validate(order)
+    Note right of S: самовызов — приватный метод
+    S-)Q: publish OrderPlaced
+    Q-)N: OrderPlaced
+    N->>M: Send(email)
+    M-->>N: ok
+```
 
-        S->>S: Validate(order)
-        Note right of S: самовызов — приватный метод
-        S-)Q: publish OrderPlaced
-        Q-)N: OrderPlaced
-        N->>M: Send(email)
-        M-->>N: ok
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     sequenceDiagram
@@ -170,20 +166,18 @@
 
 ### Создание и уничтожение объектов
 
-=== "Диаграмма"
+```mermaid
+sequenceDiagram
+    participant S as OrderService
+    create participant O as Order
+    S->>O: new Order(lines)
+    O-->>S: order
+    S->>O: Pay(method)
+    destroy O
+    S->>O: Dispose()
+```
 
-    ```mermaid
-    sequenceDiagram
-        participant S as OrderService
-        create participant O as Order
-        S->>O: new Order(lines)
-        O-->>S: order
-        S->>O: Pay(method)
-        destroy O
-        S->>O: Dispose()
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     sequenceDiagram
@@ -211,43 +205,41 @@
 
 Комбинированные фрагменты — рамки, задающие управляющую логику. Их пять, и их хватает.
 
-=== "Диаграмма"
+```mermaid
+sequenceDiagram
+    autonumber
+    participant C as Checkout
+    participant P as PaymentGateway
+    participant I as Inventory
+    participant L as Logger
 
-    ```mermaid
-    sequenceDiagram
-        autonumber
-        participant C as Checkout
-        participant P as PaymentGateway
-        participant I as Inventory
-        participant L as Logger
+    loop для каждой позиции
+        C->>I: Reserve(sku, qty)
+    end
 
-        loop для каждой позиции
-            C->>I: Reserve(sku, qty)
-        end
+    opt промокод указан
+        C->>C: ApplyDiscount(code)
+    end
 
-        opt промокод указан
-            C->>C: ApplyDiscount(code)
-        end
+    C->>P: Charge(total)
 
-        C->>P: Charge(total)
+    alt оплата прошла
+        P-->>C: Ok
+        C->>I: Commit()
+    else отказ банка
+        P-->>C: Declined
+        C->>I: Release()
+        C->>L: warn "payment declined"
+    end
 
-        alt оплата прошла
-            P-->>C: Ok
-            C->>I: Commit()
-        else отказ банка
-            P-->>C: Declined
-            C->>I: Release()
-            C->>L: warn "payment declined"
-        end
+    par уведомления
+        C-)L: audit
+    and
+        C-)P: receipt
+    end
+```
 
-        par уведомления
-            C-)L: audit
-        and
-            C-)P: receipt
-        end
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     sequenceDiagram
@@ -310,58 +302,56 @@
 Сценарий целиком, включая ошибку и компенсацию. Такой уровень детализации я жду
 в отчётах.
 
-=== "Диаграмма"
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as Покупатель
+    participant C as OrdersController
+    participant S as OrderService
+    participant I as IInventory
+    participant P as IPaymentMethod
+    participant R as IOrderRepository
+    participant B as MessageBus
 
-    ```mermaid
-    sequenceDiagram
-        autonumber
-        actor U as Покупатель
-        participant C as OrdersController
-        participant S as OrderService
-        participant I as IInventory
-        participant P as IPaymentMethod
-        participant R as IOrderRepository
-        participant B as MessageBus
+    U->>C: POST /orders {cartId, payment}
+    activate C
+    C->>C: Validate(request)
 
-        U->>C: POST /orders {cartId, payment}
-        activate C
-        C->>C: Validate(request)
+    alt данные некорректны
+        C-->>U: 400 Bad Request
+    else данные в порядке
+        C->>S: Place(cartId, payment)
+        activate S
 
-        alt данные некорректны
-            C-->>U: 400 Bad Request
-        else данные в порядке
-            C->>S: Place(cartId, payment)
-            activate S
+        S->>I: Reserve(items)
+        activate I
+        I-->>S: reservationId
+        deactivate I
 
-            S->>I: Reserve(items)
-            activate I
-            I-->>S: reservationId
-            deactivate I
+        S->>P: Charge(total)
+        activate P
 
-            S->>P: Charge(total)
-            activate P
-
-            alt оплата прошла
-                P-->>S: Ok
-                S->>R: Save(order)
-                R-->>S: saved
-                S-)B: publish OrderPlaced
-                S-->>C: order
-                C-->>U: 201 Created
-            else отказ
-                P-->>S: Declined
-                S->>I: Release(reservationId)
-                Note right of S: компенсация: резерв снимаем всегда
-                S-->>C: PaymentFailed
-                C-->>U: 402 Payment Required
-            end
-            deactivate P
-            deactivate S
+        alt оплата прошла
+            P-->>S: Ok
+            S->>R: Save(order)
+            R-->>S: saved
+            S-)B: publish OrderPlaced
+            S-->>C: order
+            C-->>U: 201 Created
+        else отказ
+            P-->>S: Declined
+            S->>I: Release(reservationId)
+            Note right of S: компенсация: резерв снимаем всегда
+            S-->>C: PaymentFailed
+            C-->>U: 402 Payment Required
         end
-        deactivate C
-    ```
+        deactivate P
+        deactivate S
+    end
+    deactivate C
+```
 
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     sequenceDiagram
@@ -435,22 +425,20 @@
 состояниях он бывает, какие события переводят его из одного в другое и какие действия
 при этом выполняются.
 
-=== "Диаграмма"
+```mermaid
+stateDiagram-v2
+    [*] --> Draft : создан
+    Draft --> Paid : pay / списать деньги
+    Draft --> Cancelled : cancel
+    Paid --> Shipped : ship / уведомить клиента
+    Paid --> Refunded : refund [срок < 14 дней]
+    Shipped --> Delivered : confirm
+    Cancelled --> [*]
+    Refunded --> [*]
+    Delivered --> [*]
+```
 
-    ```mermaid
-    stateDiagram-v2
-        [*] --> Draft : создан
-        Draft --> Paid : pay / списать деньги
-        Draft --> Cancelled : cancel
-        Paid --> Shipped : ship / уведомить клиента
-        Paid --> Refunded : refund [срок < 14 дней]
-        Shipped --> Delivered : confirm
-        Cancelled --> [*]
-        Refunded --> [*]
-        Delivered --> [*]
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     stateDiagram-v2
@@ -477,23 +465,21 @@
 
 ### Действия внутри состояния
 
-=== "Диаграмма"
+```mermaid
+stateDiagram-v2
+    state Paid {
+        [*] --> AwaitingPacking
+        AwaitingPacking --> Packed : packed
+        Packed --> [*]
+    }
+    note right of Paid
+        entry / зарезервировать склад
+        exit  / освободить резерв
+        do    / проверять оплату раз в минуту
+    end note
+```
 
-    ```mermaid
-    stateDiagram-v2
-        state Paid {
-            [*] --> AwaitingPacking
-            AwaitingPacking --> Packed : packed
-            Packed --> [*]
-        }
-        note right of Paid
-            entry / зарезервировать склад
-            exit  / освободить резерв
-            do    / проверять оплату раз в минуту
-        end note
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     stateDiagram-v2
@@ -533,24 +519,22 @@
 
 ### Составные (вложенные) состояния
 
-=== "Диаграмма"
+```mermaid
+stateDiagram-v2
+    [*] --> Active
+    state Active {
+        [*] --> Idle
+        Idle --> Processing : task
+        Processing --> Idle : done
+        Processing --> Failed : error
+        Failed --> Idle : retry
+    }
+    Active --> Suspended : suspend
+    Suspended --> Active : resume
+    Active --> [*] : shutdown
+```
 
-    ```mermaid
-    stateDiagram-v2
-        [*] --> Active
-        state Active {
-            [*] --> Idle
-            Idle --> Processing : task
-            Processing --> Idle : done
-            Processing --> Failed : error
-            Failed --> Idle : retry
-        }
-        Active --> Suspended : suspend
-        Suspended --> Active : resume
-        Active --> [*] : shutdown
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     stateDiagram-v2
@@ -575,20 +559,18 @@
 
 ### Выбор и параллельность
 
-=== "Диаграмма"
+```mermaid
+stateDiagram-v2
+    state check <<choice>>
+    [*] --> Submitted
+    Submitted --> check : review
+    check --> Approved : [сумма < 10000]
+    check --> ManualReview : [сумма >= 10000]
+    ManualReview --> Approved : approve
+    ManualReview --> Rejected : reject
+```
 
-    ```mermaid
-    stateDiagram-v2
-        state check <<choice>>
-        [*] --> Submitted
-        Submitted --> check : review
-        check --> Approved : [сумма < 10000]
-        check --> ManualReview : [сумма >= 10000]
-        ManualReview --> Approved : approve
-        ManualReview --> Rejected : reject
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     stateDiagram-v2
@@ -602,21 +584,19 @@
     ```
 
 
-=== "Диаграмма"
+```mermaid
+stateDiagram-v2
+    state fork_state <<fork>>
+    state join_state <<join>>
+    [*] --> fork_state
+    fork_state --> Packing
+    fork_state --> Invoicing
+    Packing --> join_state
+    Invoicing --> join_state
+    join_state --> ReadyToShip
+```
 
-    ```mermaid
-    stateDiagram-v2
-        state fork_state <<fork>>
-        state join_state <<join>>
-        [*] --> fork_state
-        fork_state --> Packing
-        fork_state --> Invoicing
-        Packing --> join_state
-        Invoicing --> join_state
-        join_state --> ReadyToShip
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     stateDiagram-v2

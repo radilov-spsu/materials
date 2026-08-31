@@ -44,17 +44,15 @@ GoF описывает приёмы уровня классов и объект�
 
 ### Три слоя по Фаулеру
 
-=== "Диаграмма"
+```mermaid
+flowchart TB
+    P["Слой представления<br/>UI, REST, консоль"]
+    D["Слой домена<br/>бизнес-логика"]
+    S["Слой источника данных<br/>БД, очереди, внешние API"]
+    P --> D --> S
+```
 
-    ```mermaid
-    flowchart TB
-        P["Слой представления<br/>UI, REST, консоль"]
-        D["Слой домена<br/>бизнес-логика"]
-        S["Слой источника данных<br/>БД, очереди, внешние API"]
-        P --> D --> S
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     flowchart TB
@@ -115,23 +113,21 @@ Table Module — золотая середина: структуры больш�
 Проще говоря: класс = таблица, экземпляр = строка, у объекта есть `Save`, `Delete`,
 `Find` — и здесь же бизнес-правила.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    class Customer {
+        +int Id
+        +string Email
+        +decimal Discount
+        +Find(int id)$ Customer
+        +Save() void
+        +Delete() void
+        +IsEligibleForBonus() bool
+    }
+    note for Customer "Одна и та же сущность:<br/>и строка таблицы, и бизнес-объект"
+```
 
-    ```mermaid
-    classDiagram
-        class Customer {
-            +int Id
-            +string Email
-            +decimal Discount
-            +Find(int id)$ Customer
-            +Save() void
-            +Delete() void
-            +IsEligibleForBonus() bool
-        }
-        note for Customer "Одна и та же сущность:<br/>и строка таблицы, и бизнес-объект"
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -190,28 +186,26 @@ customer.Save();
 **Назначение.** Слой преобразователей, который переносит данные между объектами и базой,
 сохраняя их **независимыми друг от друга** и от самого преобразователя.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class Customer {
+        +string Email
+        +Money TotalSpent
+        +bool IsEligibleForBonus()
+    }
+    class CustomerMapper {
+        +Find(int id) Customer
+        +Insert(Customer c) void
+        +Update(Customer c) void
+    }
+    class Database
+    CustomerMapper ..> Customer : создаёт и заполняет
+    CustomerMapper ..> Database : SQL
+    note for Customer "Ничего не знает ни о БД,<br/>ни о преобразователе"
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class Customer {
-            +string Email
-            +Money TotalSpent
-            +bool IsEligibleForBonus()
-        }
-        class CustomerMapper {
-            +Find(int id) Customer
-            +Insert(Customer c) void
-            +Update(Customer c) void
-        }
-        class Database
-        CustomerMapper ..> Customer : создаёт и заполняет
-        CustomerMapper ..> Database : SQL
-        note for Customer "Ничего не знает ни о БД,<br/>ни о преобразователе"
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -261,28 +255,26 @@ Data Mapper почти всегда берут готовым: EF Core, NHiberna
 **одностороннюю зависимость** домена и слоя отображения данных — ровно то направление,
 о котором говорил DIP.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class IOrderRepository {
+        <<interface>>
+        +GetById(Guid id) Order
+        +FindOverdue(DateTime at) IReadOnlyList~Order~
+        +Add(Order order) void
+        +Remove(Order order) void
+    }
+    class EfOrderRepository
+    class InMemoryOrderRepository
+    class OrderService
+    IOrderRepository <|.. EfOrderRepository
+    IOrderRepository <|.. InMemoryOrderRepository
+    OrderService --> IOrderRepository : зависит от абстракции
+    EfOrderRepository ..> DbContext
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class IOrderRepository {
-            <<interface>>
-            +GetById(Guid id) Order
-            +FindOverdue(DateTime at) IReadOnlyList~Order~
-            +Add(Order order) void
-            +Remove(Order order) void
-        }
-        class EfOrderRepository
-        class InMemoryOrderRepository
-        class OrderService
-        IOrderRepository <|.. EfOrderRepository
-        IOrderRepository <|.. InMemoryOrderRepository
-        OrderService --> IOrderRepository : зависит от абстракции
-        EfOrderRepository ..> DbContext
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -362,29 +354,27 @@ Repository + Unit of Work). Промежуточный вариант — «об
 Проще: кто-то должен помнить, **что изменилось за время операции**, и записать это одной
 транзакцией — либо всё, либо ничего.
 
-=== "Диаграмма"
+```mermaid
+sequenceDiagram
+    autonumber
+    participant S as OrderService
+    participant R as IOrderRepository
+    participant U as IUnitOfWork
+    participant DB as База данных
 
-    ```mermaid
-    sequenceDiagram
-        autonumber
-        participant S as OrderService
-        participant R as IOrderRepository
-        participant U as IUnitOfWork
-        participant DB as База данных
+    S->>R: GetById(id)
+    R-->>S: order (отслеживается)
+    S->>S: order.Pay(method)
+    S->>R: Add(newInvoice)
+    Note right of U: изменения накоплены,<br/>но в базу ещё не ушли
+    S->>U: SaveChangesAsync()
+    U->>DB: BEGIN TRANSACTION
+    U->>DB: UPDATE orders / INSERT invoices
+    U->>DB: COMMIT
+    U-->>S: количество записей
+```
 
-        S->>R: GetById(id)
-        R-->>S: order (отслеживается)
-        S->>S: order.Pay(method)
-        S->>R: Add(newInvoice)
-        Note right of U: изменения накоплены,<br/>но в базу ещё не ушли
-        S->>U: SaveChangesAsync()
-        U->>DB: BEGIN TRANSACTION
-        U->>DB: UPDATE orders / INSERT invoices
-        U->>DB: COMMIT
-        U-->>S: количество записей
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     sequenceDiagram
@@ -470,17 +460,15 @@ public sealed class PlaceOrderHandler
 Это ответ на вопрос: «где живёт сценарий целиком?» Не в контроллере (он тонкий — лекция 2),
 не в сущности (она не знает про транзакции и почту), а в отдельном слое.
 
-=== "Диаграмма"
+```mermaid
+flowchart TB
+    C["Контроллеры / gRPC / фоновые задачи"] --> SL["Слой сервисов приложения<br/>сценарии, транзакции, авторизация"]
+    SL --> DM["Доменная модель<br/>правила и инварианты"]
+    SL --> R["Репозитории и внешние сервисы"]
+    DM -.-> R
+```
 
-    ```mermaid
-    flowchart TB
-        C["Контроллеры / gRPC / фоновые задачи"] --> SL["Слой сервисов приложения<br/>сценарии, транзакции, авторизация"]
-        SL --> DM["Доменная модель<br/>правила и инварианты"]
-        SL --> R["Репозитории и внешние сервисы"]
-        DM -.-> R
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     flowchart TB
@@ -586,18 +574,16 @@ Console.WriteLine(ReferenceEquals(a, b));      // True — контекст ве
 
 ### Как выбирать
 
-=== "Диаграмма"
+```mermaid
+flowchart TD
+    A{"Логика сложная<br/>и будет расти?"} -- нет --> B["Transaction Script<br/>+ Active Record или Dapper"]
+    A -- да --> C["Domain Model<br/>+ Data Mapper (ORM)"]
+    C --> D{"Домен должен быть<br/>независим от ORM?"}
+    D -- да --> E["Репозитории по агрегатам<br/>+ Unit of Work + Service Layer"]
+    D -- нет --> F["DbContext напрямую<br/>в обработчиках сценариев"]
+```
 
-    ```mermaid
-    flowchart TD
-        A{"Логика сложная<br/>и будет расти?"} -- нет --> B["Transaction Script<br/>+ Active Record или Dapper"]
-        A -- да --> C["Domain Model<br/>+ Data Mapper (ORM)"]
-        C --> D{"Домен должен быть<br/>независим от ORM?"}
-        D -- да --> E["Репозитории по агрегатам<br/>+ Unit of Work + Service Layer"]
-        D -- нет --> F["DbContext напрямую<br/>в обработчиках сценариев"]
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     flowchart TD

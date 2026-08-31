@@ -55,30 +55,28 @@ GoF описывает **две схемы** адаптера — редкий �
 
 ### Адаптер объектов
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class Client
+    class ITarget {
+        <<interface>>
+        +Request() void
+    }
+    class Adaptee {
+        +SpecificRequest() void
+    }
+    class ObjectAdapter {
+        -Adaptee adaptee
+        +Request() void
+    }
+    Client --> ITarget
+    ITarget <|.. ObjectAdapter
+    ObjectAdapter o-- Adaptee : хранит ссылку
+    note for ObjectAdapter "Request() вызывает<br/>adaptee.SpecificRequest()"
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class Client
-        class ITarget {
-            <<interface>>
-            +Request() void
-        }
-        class Adaptee {
-            +SpecificRequest() void
-        }
-        class ObjectAdapter {
-            -Adaptee adaptee
-            +Request() void
-        }
-        Client --> ITarget
-        ITarget <|.. ObjectAdapter
-        ObjectAdapter o-- Adaptee : хранит ссылку
-        note for ObjectAdapter "Request() вызывает<br/>adaptee.SpecificRequest()"
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -137,28 +135,26 @@ public sealed class LegacyPrinterAdapter : IDocumentPrinter
 которого в C# нет. Смотрим вторую схему на Python — там она пишется ровно так, как
 нарисована у GoF:
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class Client
+    class Target {
+        +Request() void
+    }
+    class Adaptee {
+        +SpecificRequest() void
+    }
+    class ClassAdapter {
+        +Request() void
+    }
+    Client --> Target
+    Target <|-- ClassAdapter : наследует интерфейс
+    Adaptee <|-- ClassAdapter : наследует реализацию
+    note for ClassAdapter "Request() вызывает<br/>унаследованный SpecificRequest()"
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class Client
-        class Target {
-            +Request() void
-        }
-        class Adaptee {
-            +SpecificRequest() void
-        }
-        class ClassAdapter {
-            +Request() void
-        }
-        Client --> Target
-        Target <|-- ClassAdapter : наследует интерфейс
-        Adaptee <|-- ClassAdapter : наследует реализацию
-        note for ClassAdapter "Request() вызывает<br/>унаследованный SpecificRequest()"
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -215,35 +211,33 @@ class LegacyPrinterAdapter(DocumentPrinter, LegacyPrinter):   # наследуе
 
 Решение — **две иерархии вместо одной**, связанные композицией.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class Window {
+        #IWindowImpl impl
+        +DrawText(string s) void
+        +DrawRect() void
+    }
+    class IconWindow {
+        +DrawBorder() void
+    }
+    class TransientWindow
+    class IWindowImpl {
+        <<interface>>
+        +DevDrawText(string s) void
+        +DevDrawLine() void
+    }
+    class XWindowImpl
+    class PmWindowImpl
+    Window <|-- IconWindow
+    Window <|-- TransientWindow
+    Window o-- IWindowImpl : мост
+    IWindowImpl <|.. XWindowImpl
+    IWindowImpl <|.. PmWindowImpl
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class Window {
-            #IWindowImpl impl
-            +DrawText(string s) void
-            +DrawRect() void
-        }
-        class IconWindow {
-            +DrawBorder() void
-        }
-        class TransientWindow
-        class IWindowImpl {
-            <<interface>>
-            +DevDrawText(string s) void
-            +DevDrawLine() void
-        }
-        class XWindowImpl
-        class PmWindowImpl
-        Window <|-- IconWindow
-        Window <|-- TransientWindow
-        Window o-- IWindowImpl : мост
-        IWindowImpl <|.. XWindowImpl
-        IWindowImpl <|.. PmWindowImpl
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -323,35 +317,33 @@ public sealed class XWindowImpl : IWindowImpl           // конкретная 
 **Задача.** Графический редактор: линия, текст и группа фигур должны рисоваться одинаково;
 группа может содержать другие группы. Клиент не должен различать лист и узел.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction TB
+    class IGraphic {
+        <<interface>>
+        +Draw() void
+        +Add(IGraphic g) void
+        +Remove(IGraphic g) void
+    }
+    class Line {
+        +Draw() void
+    }
+    class Text {
+        +Draw() void
+    }
+    class Picture {
+        -List~IGraphic~ children
+        +Draw() void
+        +Add(IGraphic g) void
+    }
+    IGraphic <|.. Line
+    IGraphic <|.. Text
+    IGraphic <|.. Picture
+    Picture o-- IGraphic : дети
+```
 
-    ```mermaid
-    classDiagram
-        direction TB
-        class IGraphic {
-            <<interface>>
-            +Draw() void
-            +Add(IGraphic g) void
-            +Remove(IGraphic g) void
-        }
-        class Line {
-            +Draw() void
-        }
-        class Text {
-            +Draw() void
-        }
-        class Picture {
-            -List~IGraphic~ children
-            +Draw() void
-            +Add(IGraphic g) void
-        }
-        IGraphic <|.. Line
-        IGraphic <|.. Text
-        IGraphic <|.. Picture
-        Picture o-- IGraphic : дети
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -435,39 +427,37 @@ public sealed class Picture : IGraphic                   // составной �
 комбинаторный взрыв. Декоратор оборачивает объект и добавляет поведение до или после
 делегирования.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction TB
+    class IVisualComponent {
+        <<interface>>
+        +Draw() void
+    }
+    class TextView {
+        +Draw() void
+    }
+    class Decorator {
+        <<abstract>>
+        #IVisualComponent component
+        +Draw() void
+    }
+    class BorderDecorator {
+        -int width
+        +Draw() void
+        -DrawBorder() void
+    }
+    class ScrollDecorator {
+        +Draw() void
+    }
+    IVisualComponent <|.. TextView
+    IVisualComponent <|.. Decorator
+    Decorator <|-- BorderDecorator
+    Decorator <|-- ScrollDecorator
+    Decorator o-- IVisualComponent : обёрнутый компонент
+```
 
-    ```mermaid
-    classDiagram
-        direction TB
-        class IVisualComponent {
-            <<interface>>
-            +Draw() void
-        }
-        class TextView {
-            +Draw() void
-        }
-        class Decorator {
-            <<abstract>>
-            #IVisualComponent component
-            +Draw() void
-        }
-        class BorderDecorator {
-            -int width
-            +Draw() void
-            -DrawBorder() void
-        }
-        class ScrollDecorator {
-            +Draw() void
-        }
-        IVisualComponent <|.. TextView
-        IVisualComponent <|.. Decorator
-        Decorator <|-- BorderDecorator
-        Decorator <|-- ScrollDecorator
-        Decorator o-- IVisualComponent : обёрнутый компонент
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -651,26 +641,24 @@ class LoggingProxy:                # прозрачная обёртка над 
 **Задача.** Пример книги — компилятор: сканер, парсер, генератор кода, оптимизатор.
 Большинству клиентов нужен один вызов «скомпилируй файл», а не знание о всех классах.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class Compiler {
+        +Compile(string source) byte[]
+    }
+    class Scanner
+    class Parser
+    class ProgramNodeBuilder
+    class CodeGenerator
+    Client --> Compiler : знает только фасад
+    Compiler ..> Scanner
+    Compiler ..> Parser
+    Compiler ..> ProgramNodeBuilder
+    Compiler ..> CodeGenerator
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class Compiler {
-            +Compile(string source) byte[]
-        }
-        class Scanner
-        class Parser
-        class ProgramNodeBuilder
-        class CodeGenerator
-        Client --> Compiler : знает только фасад
-        Compiler ..> Scanner
-        Compiler ..> Parser
-        Compiler ..> ProgramNodeBuilder
-        Compiler ..> CodeGenerator
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -723,32 +711,30 @@ public sealed class Compiler                              // фасад
 **Задача.** Пример книги — документ с изображениями: открывать документ быстро, а картинки
 загружать только когда их действительно надо нарисовать. Клиент об этом знать не должен.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class IGraphic {
+        <<interface>>
+        +Draw(Point at) void
+        +GetExtent() Size
+    }
+    class Image {
+        -string fileName
+        +Draw(Point at) void
+    }
+    class ImageProxy {
+        -string fileName
+        -Image image
+        -Size extent
+        +Draw(Point at) void
+    }
+    IGraphic <|.. Image
+    IGraphic <|.. ImageProxy
+    ImageProxy o-- Image : создаёт при первом обращении
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class IGraphic {
-            <<interface>>
-            +Draw(Point at) void
-            +GetExtent() Size
-        }
-        class Image {
-            -string fileName
-            +Draw(Point at) void
-        }
-        class ImageProxy {
-            -string fileName
-            -Image image
-            -Size extent
-            +Draw(Point at) void
-        }
-        IGraphic <|.. Image
-        IGraphic <|.. ImageProxy
-        ImageProxy o-- Image : создаёт при первом обращении
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -848,30 +834,28 @@ public sealed class Compiler                              // фасад
 - **внешнее (extrinsic)** — зависит от контекста, хранится у клиента и передаётся
   в операции: позиция на странице, стиль абзаца.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class GlyphFactory {
+        -Dictionary~char,Glyph~ pool
+        +GetGlyph(char c) Glyph
+    }
+    class Glyph {
+        <<interface>>
+        +Draw(GlyphContext ctx) void
+    }
+    class CharacterGlyph {
+        -char symbol
+        +Draw(GlyphContext ctx) void
+    }
+    GlyphFactory o-- Glyph : пул разделяемых объектов
+    Glyph <|.. CharacterGlyph
+    Client ..> GlyphFactory
+    Client ..> Glyph : передаёт внешнее состояние
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class GlyphFactory {
-            -Dictionary~char,Glyph~ pool
-            +GetGlyph(char c) Glyph
-        }
-        class Glyph {
-            <<interface>>
-            +Draw(GlyphContext ctx) void
-        }
-        class CharacterGlyph {
-            -char symbol
-            +Draw(GlyphContext ctx) void
-        }
-        GlyphFactory o-- Glyph : пул разделяемых объектов
-        Glyph <|.. CharacterGlyph
-        Client ..> GlyphFactory
-        Client ..> Glyph : передаёт внешнее состояние
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram

@@ -44,36 +44,34 @@
 - **внешнее (extrinsic)** — зависит от контекста, хранится или вычисляется клиентом
   и передаётся в операции параметром.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class GlyphFactory {
+        -Dictionary~char,Glyph~ pool
+        +GetGlyph(char c) Glyph
+    }
+    class Glyph {
+        <<interface>>
+        +Draw(Context ctx) void
+    }
+    class CharacterGlyph {
+        -char symbol
+        -Font font
+        +Draw(Context ctx) void
+    }
+    class Context {
+        +Point Position
+        +int LineNumber
+    }
+    GlyphFactory o-- Glyph : разделяемые объекты
+    Glyph <|.. CharacterGlyph
+    Client ..> GlyphFactory : запрашивает
+    Client ..> Context : хранит внешнее состояние
+    note for CharacterGlyph "symbol и font — внутреннее состояние.<br/>Позиция приходит снаружи"
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class GlyphFactory {
-            -Dictionary~char,Glyph~ pool
-            +GetGlyph(char c) Glyph
-        }
-        class Glyph {
-            <<interface>>
-            +Draw(Context ctx) void
-        }
-        class CharacterGlyph {
-            -char symbol
-            -Font font
-            +Draw(Context ctx) void
-        }
-        class Context {
-            +Point Position
-            +int LineNumber
-        }
-        GlyphFactory o-- Glyph : разделяемые объекты
-        Glyph <|.. CharacterGlyph
-        Client ..> GlyphFactory : запрашивает
-        Client ..> Context : хранит внешнее состояние
-        note for CharacterGlyph "symbol и font — внутреннее состояние.<br/>Позиция приходит снаружи"
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -156,24 +154,22 @@ public struct Particle                              // внешнее состо
 операцию, не меняя классы элементов. Работает за счёт **двойной диспетчеризации**:
 результат зависит от типа элемента и от типа посетителя.
 
-=== "Диаграмма"
+```mermaid
+sequenceDiagram
+    autonumber
+    participant C as Клиент
+    participant N as AssignmentNode
+    participant V as TypeCheckingVisitor
 
-    ```mermaid
-    sequenceDiagram
-        autonumber
-        participant C as Клиент
-        participant N as AssignmentNode
-        participant V as TypeCheckingVisitor
+    C->>N: Accept(visitor)
+    Note right of N: первый выбор —<br/>по типу узла
+    N->>V: Visit(this)
+    Note right of V: второй выбор —<br/>по типу посетителя
+    V->>N: GetChildren()
+    V-->>C: результат обхода
+```
 
-        C->>N: Accept(visitor)
-        Note right of N: первый выбор —<br/>по типу узла
-        N->>V: Visit(this)
-        Note right of V: второй выбор —<br/>по типу посетителя
-        V->>N: GetChildren()
-        V-->>C: результат обхода
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     sequenceDiagram
@@ -240,35 +236,33 @@ static decimal Eval(Node node) => node switch
 использующий это представление для разбора предложений языка. Каждое правило грамматики
 становится классом; предложение — деревом объектов.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction TB
+    class IExpression {
+        <<interface>>
+        +Interpret(Context ctx) bool
+    }
+    class TerminalExpression {
+        -string variable
+        +Interpret(Context ctx) bool
+    }
+    class AndExpression {
+        -IExpression left
+        -IExpression right
+        +Interpret(Context ctx) bool
+    }
+    class OrExpression
+    class NotExpression
+    IExpression <|.. TerminalExpression
+    IExpression <|.. AndExpression
+    IExpression <|.. OrExpression
+    IExpression <|.. NotExpression
+    AndExpression o-- IExpression : подвыражения
+    note for IExpression "Дерево выражения — это компоновщик.<br/>Обход часто делают посетителем"
+```
 
-    ```mermaid
-    classDiagram
-        direction TB
-        class IExpression {
-            <<interface>>
-            +Interpret(Context ctx) bool
-        }
-        class TerminalExpression {
-            -string variable
-            +Interpret(Context ctx) bool
-        }
-        class AndExpression {
-            -IExpression left
-            -IExpression right
-            +Interpret(Context ctx) bool
-        }
-        class OrExpression
-        class NotExpression
-        IExpression <|.. TerminalExpression
-        IExpression <|.. AndExpression
-        IExpression <|.. OrExpression
-        IExpression <|.. NotExpression
-        AndExpression o-- IExpression : подвыражения
-        note for IExpression "Дерево выражения — это компоновщик.<br/>Обход часто делают посетителем"
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram

@@ -72,23 +72,21 @@ UML 2 описывает **13 официальных типов диаграмм
 
 Диаграмма классов начинается с ключевого слова, дальше идут классы и связи:
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class Order {
+        +Guid Id
+        +decimal Total()
+    }
+    class OrderLine {
+        +int Quantity
+        +decimal UnitPrice
+    }
+    Order "1" *-- "1..*" OrderLine : содержит
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class Order {
-            +Guid Id
-            +decimal Total()
-        }
-        class OrderLine {
-            +int Quantity
-            +decimal UnitPrice
-        }
-        Order "1" *-- "1..*" OrderLine : содержит
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -136,22 +134,20 @@ UML 2 описывает **13 официальных типов диаграмм
 Дополнительно: `$` — статический член, `*` — абстрактная операция,
 `<<interface>>` / `<<abstract>>` / `<<enumeration>>` — стереотип над именем.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    class Customer {
+        +Guid Id
+        -string passwordHash
+        #DateTime registeredAt
+        +string Email
+        +bool IsVip()
+        +ChangeEmail(string newEmail) void
+        +Register(string email)$ Customer
+    }
+```
 
-    ```mermaid
-    classDiagram
-        class Customer {
-            +Guid Id
-            -string passwordHash
-            #DateTime registeredAt
-            +string Email
-            +bool IsVip()
-            +ChangeEmail(string newEmail) void
-            +Register(string email)$ Customer
-        }
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -197,30 +193,28 @@ public class Customer
 
 ### Абстрактные классы, интерфейсы, перечисления
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class IPaymentMethod {
+        <<interface>>
+        +Charge(Money amount) PaymentResult
+    }
+    class PaymentMethodBase {
+        <<abstract>>
+        #Money limit
+        +Validate(Money amount)* bool
+    }
+    class OrderStatus {
+        <<enumeration>>
+        Draft
+        Paid
+        Shipped
+        Cancelled
+    }
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class IPaymentMethod {
-            <<interface>>
-            +Charge(Money amount) PaymentResult
-        }
-        class PaymentMethodBase {
-            <<abstract>>
-            #Money limit
-            +Validate(Money amount)* bool
-        }
-        class OrderStatus {
-            <<enumeration>>
-            Draft
-            Paid
-            Shipped
-            Cancelled
-        }
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -255,21 +249,19 @@ public class Customer
 На диаграмме это линия; стрелка показывает **направление навигации** — кто на кого может
 сослаться в коде.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class Customer {
+        +string Email
+    }
+    class Order {
+        +DateTime PlacedAt
+    }
+    Customer "1" --> "0..*" Order : размещает
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class Customer {
-            +string Email
-        }
-        class Order {
-            +DateTime PlacedAt
-        }
-        Customer "1" --> "0..*" Order : размещает
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -303,18 +295,16 @@ public class Customer
 
 ### Направление и его цена
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class Order
+    class Customer
+    Order --> Customer : покупатель
+    Customer "1" --> "0..*" Order : заказы
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class Order
-        class Customer
-        Order --> Customer : покупатель
-        Customer "1" --> "0..*" Order : заказы
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -336,17 +326,15 @@ public class Customer
 Когда одного имени связи мало (особенно при связи класса с самим собой), подписывают
 концы — это **роли**:
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    class Employee {
+        +string Name
+    }
+    Employee "1" --> "0..*" Employee : руководит
+```
 
-    ```mermaid
-    classDiagram
-        class Employee {
-            +string Name
-        }
-        Employee "1" --> "0..*" Employee : руководит
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -365,21 +353,19 @@ public class Customer
 
 Обе — частные случаи ассоциации «часть-целое», из лекции 1.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class Car
+    class Engine
+    class Wheel
+    class Freshener
+    Car "1" *-- "1" Engine : композиция
+    Car "1" *-- "4" Wheel : композиция
+    Car "1" o-- "0..1" Freshener : агрегация
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class Car
-        class Engine
-        class Wheel
-        class Freshener
-        Car "1" *-- "1" Engine : композиция
-        Car "1" *-- "4" Wheel : композиция
-        Car "1" o-- "0..1" Freshener : агрегация
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -418,35 +404,33 @@ public class Customer
 **Обобщение** (наследование) — сплошная линия с пустым треугольником, направленным
 к родителю. **Реализация** интерфейса — пунктирная линия с пустым треугольником.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction TB
+    class IPaymentMethod {
+        <<interface>>
+        +Charge(Money amount) PaymentResult
+    }
+    class PaymentMethod {
+        <<abstract>>
+        #Money limit
+        +Charge(Money amount)* PaymentResult
+        +WithinLimit(Money amount) bool
+    }
+    class CardPayment {
+        -string maskedNumber
+        +Charge(Money amount) PaymentResult
+    }
+    class BankTransfer {
+        -string iban
+        +Charge(Money amount) PaymentResult
+    }
+    IPaymentMethod <|.. PaymentMethod : реализует
+    PaymentMethod <|-- CardPayment
+    PaymentMethod <|-- BankTransfer
+```
 
-    ```mermaid
-    classDiagram
-        direction TB
-        class IPaymentMethod {
-            <<interface>>
-            +Charge(Money amount) PaymentResult
-        }
-        class PaymentMethod {
-            <<abstract>>
-            #Money limit
-            +Charge(Money amount)* PaymentResult
-            +WithinLimit(Money amount) bool
-        }
-        class CardPayment {
-            -string maskedNumber
-            +Charge(Money amount) PaymentResult
-        }
-        class BankTransfer {
-            -string iban
-            +Charge(Money amount) PaymentResult
-        }
-        IPaymentMethod <|.. PaymentMethod : реализует
-        PaymentMethod <|-- CardPayment
-        PaymentMethod <|-- BankTransfer
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -510,25 +494,23 @@ public sealed class CardPayment : PaymentMethod
 ссылку. Типичные поводы: тип параметра метода, локальная переменная, возвращаемое значение,
 статический вызов.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class OrderService {
+        +Place(Cart cart) Order
+    }
+    class Cart
+    class Order
+    class IEmailSender {
+        <<interface>>
+    }
+    OrderService ..> Cart : параметр
+    OrderService ..> Order : создаёт
+    OrderService --> IEmailSender : поле
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class OrderService {
-            +Place(Cart cart) Order
-        }
-        class Cart
-        class Order
-        class IEmailSender {
-            <<interface>>
-        }
-        OrderService ..> Cart : параметр
-        OrderService ..> Order : создаёт
-        OrderService --> IEmailSender : поле
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -553,26 +535,24 @@ public sealed class CardPayment : PaymentMethod
 
 ### Обобщённые типы
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction LR
+    class IRepository~T~ {
+        <<interface>>
+        +GetById(Guid id) T
+        +Add(T item) void
+    }
+    class UserRepository {
+        +GetById(Guid id) User
+        +Add(User item) void
+    }
+    class User
+    IRepository~T~ <|.. UserRepository : T = User
+    UserRepository ..> User
+```
 
-    ```mermaid
-    classDiagram
-        direction LR
-        class IRepository~T~ {
-            <<interface>>
-            +GetById(Guid id) T
-            +Add(T item) void
-        }
-        class UserRepository {
-            +GetById(Guid id) User
-            +Add(User item) void
-        }
-        class User
-        IRepository~T~ <|.. UserRepository : T = User
-        UserRepository ..> User
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -603,19 +583,17 @@ public sealed class CardPayment : PaymentMethod
 
 ### Заметки
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    class Money {
+        <<value object>>
+        +decimal Amount
+        +Currency Currency
+    }
+    note for Money "Неизменяемый.<br/>Сложение только в одной валюте"
+```
 
-    ```mermaid
-    classDiagram
-        class Money {
-            <<value object>>
-            +decimal Amount
-            +Currency Currency
-        }
-        note for Money "Неизменяемый.<br/>Сложение только в одной валюте"
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
@@ -639,85 +617,83 @@ public sealed class CardPayment : PaymentMethod
 Задача: интернет-магазин. Покупатель кладёт товары в корзину, оформляет заказ, оплачивает
 одним из способов, заказ доставляется. Рисуем **логическую** модель.
 
-=== "Диаграмма"
+```mermaid
+classDiagram
+    direction TB
 
-    ```mermaid
-    classDiagram
-        direction TB
+    class Customer {
+        +Guid Id
+        +string Email
+        +Place(Cart cart) Order
+    }
 
-        class Customer {
-            +Guid Id
-            +string Email
-            +Place(Cart cart) Order
-        }
+    class Cart {
+        -List~CartItem~ items
+        +Add(Product product, int qty) void
+        +Remove(Guid productId) void
+        +Total() Money
+    }
 
-        class Cart {
-            -List~CartItem~ items
-            +Add(Product product, int qty) void
-            +Remove(Guid productId) void
-            +Total() Money
-        }
+    class CartItem {
+        +int Quantity
+        +Money Price()
+    }
 
-        class CartItem {
-            +int Quantity
-            +Money Price()
-        }
+    class Product {
+        +Guid Id
+        +string Title
+        +Money Price
+    }
 
-        class Product {
-            +Guid Id
-            +string Title
-            +Money Price
-        }
+    class Order {
+        +Guid Id
+        +DateTime PlacedAt
+        +OrderStatus Status
+        +Total() Money
+        +Pay(IPaymentMethod method) PaymentResult
+    }
 
-        class Order {
-            +Guid Id
-            +DateTime PlacedAt
-            +OrderStatus Status
-            +Total() Money
-            +Pay(IPaymentMethod method) PaymentResult
-        }
+    class OrderLine {
+        +int Quantity
+        +Money UnitPrice
+        +Money Subtotal()
+    }
 
-        class OrderLine {
-            +int Quantity
-            +Money UnitPrice
-            +Money Subtotal()
-        }
+    class OrderStatus {
+        <<enumeration>>
+        Draft
+        Paid
+        Shipped
+        Cancelled
+    }
 
-        class OrderStatus {
-            <<enumeration>>
-            Draft
-            Paid
-            Shipped
-            Cancelled
-        }
+    class IPaymentMethod {
+        <<interface>>
+        +Charge(Money amount) PaymentResult
+    }
 
-        class IPaymentMethod {
-            <<interface>>
-            +Charge(Money amount) PaymentResult
-        }
+    class CardPayment
+    class BankTransfer
 
-        class CardPayment
-        class BankTransfer
+    class IOrderRepository {
+        <<interface>>
+        +Save(Order order) void
+        +GetById(Guid id) Order
+    }
 
-        class IOrderRepository {
-            <<interface>>
-            +Save(Order order) void
-            +GetById(Guid id) Order
-        }
+    Customer "1" --> "0..*" Order : размещает
+    Customer "1" --> "0..1" Cart : владеет
+    Cart "1" *-- "0..*" CartItem
+    CartItem "0..*" --> "1" Product
+    Order "1" *-- "1..*" OrderLine
+    Order --> OrderStatus
+    Order ..> IPaymentMethod : оплата
+    IPaymentMethod <|.. CardPayment
+    IPaymentMethod <|.. BankTransfer
+    IOrderRepository ..> Order
+```
 
-        Customer "1" --> "0..*" Order : размещает
-        Customer "1" --> "0..1" Cart : владеет
-        Cart "1" *-- "0..*" CartItem
-        CartItem "0..*" --> "1" Product
-        Order "1" *-- "1..*" OrderLine
-        Order --> OrderStatus
-        Order ..> IPaymentMethod : оплата
-        IPaymentMethod <|.. CardPayment
-        IPaymentMethod <|.. BankTransfer
-        IOrderRepository ..> Order
-    ```
-
-=== "Исходник"
+??? note "Исходник диаграммы"
 
     ```
     classDiagram
