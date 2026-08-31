@@ -1,0 +1,105 @@
+site_name: Курсы П. Радилова
+site_description: Лекции, задания и материалы курсов ПГУ им. Т. Г. Шевченко
+site_url: https://radilov-spsu.github.io/materials/
+repo_url: https://github.com/radilov-spsu/materials
+repo_name: radilov-spsu/materials
+edit_uri: edit/main/docs/
+copyright: ПГУ им. Т. Г. Шевченко, Тирасполь
+
+theme:
+  name: material
+  language: ru
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.instant
+    - navigation.tracking
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Тёмная тема
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Светлая тема
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+plugins:
+  - search:
+      lang:
+        - ru
+        - en
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/radilov-spsu
+      name: Организация курсов
+
+nav:
+  - Главная: index.md
+  - Объектно-ориентированный анализ и проектирование:
+      - О курсе: ooad/index.md
+      - "Раздел 1. Объектная модель":
+          - "Лекция 1 · Объектная модель": ooad/lectures/01-obektnaya-model.md
+          - "Лекция 2 · Архитектура и рефакторинг": ooad/lectures/02-arkhitektura-i-refaktoring.md
+          - "Самостоятельно · Классы, объекты, инкапсуляция": ooad/self-study/01-klassy-obekty-inkapsulyatsiya.md
+          - "Самостоятельно · Наследование и полиморфизм": ooad/self-study/02-nasledovanie-i-polimorfizm.md
+          - "Самостоятельно · Архитектурные стили и связность": ooad/self-study/03-arkhitekturnye-stili-i-svyaznost.md
+      - "Раздел 2. Моделирование на UML":
+          - "Лекция 3 · UML: диаграммы классов": ooad/lectures/03-uml-diagrammy-klassov.md
+          - "Лекция 4 · Последовательности и состояния": ooad/lectures/04-posledovatelnosti-i-sostoyaniya.md
+          - "Самостоятельно · Виды UML-диаграмм и предметная область": ooad/self-study/04-vidy-uml-diagramm-i-predmetnaya-oblast.md
+      - "Раздел 3. Паттерны проектирования":
+          - "Лекция 5 · Порождающие паттерны": ooad/lectures/05-porozhdayushchie-patterny.md
+          - "Лекция 6 · Структурные паттерны": ooad/lectures/06-strukturnye-patterny.md
+          - "Лекция 7 · Паттерны поведения": ooad/lectures/07-patterny-povedeniya.md
+          - "Самостоятельно · Порождающие: Lazy, Pool, Multiton": ooad/self-study/05-lazy-object-pool-multiton.md
+          - "Самостоятельно · Flyweight, Visitor, Interpreter": ooad/self-study/06-flyweight-visitor-interpreter.md
+          - "Самостоятельно · Антипаттерны и комбинирование": ooad/self-study/07-antipatterny-i-kombinirovanie.md
+      - "Раздел 4. Шаблоны корпоративных приложений":
+          - "Лекция 8 · Шаблоны корпоративных приложений": ooad/lectures/08-shablony-korporativnykh-prilozheniy.md
+          - "Самостоятельно · Active Record и Data Mapper": ooad/self-study/08-active-record-i-data-mapper.md
+          - "Самостоятельно · Слои, DTO и маппинг": ooad/self-study/09-sloi-dto-i-mapping.md
+      - Лабораторные работы: ooad/labs.md
+  - Технологии параллельного программирования:
+      - О курсе: parallel-programming/index.md
+      - Лабораторные работы: parallel-programming/labs.md
