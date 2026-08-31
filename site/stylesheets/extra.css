@@ -1,33 +1,15 @@
 /* ── Заметки на диаграммах ───────────────────────────────────────────────
-   Mermaid рисует note жёлтым (#fff5ad) с тёмным текстом. В тёмной теме
-   Material перекрашивает текст в светло-серый, и заметка становится
-   нечитаемой: серые буквы на жёлтом. Задаём обе темы явно. */
-:root {
-  --note-bg: #fff8c4;
-  --note-fg: #2b2a20;
-  --note-border: #d4c26a;
-}
-
-[data-md-color-scheme="slate"] {
-  --note-bg: #3a3828;
-  --note-fg: #ecead6;
-  --note-border: #6d6742;
-}
-
-.mermaid .note,
-.mermaid rect.note,
-.mermaid g.note > rect {
-  fill: var(--note-bg) !important;
-  stroke: var(--note-border) !important;
-}
-
+   Фон заметки mermaid задаёт inline-стилем с !important — перебить его из
+   таблицы стилей невозможно, он остаётся жёлтым в обеих темах. Текст же
+   лежит в foreignObject обычным HTML, и в тёмной теме Material красит его
+   светло-серым: серое на жёлтом не читается. Задаём тёмный явно — на жёлтом
+   он читается и в светлой теме, и в тёмной. */
+.mermaid .noteLabel,
+.mermaid .noteLabel *,
 .mermaid .noteText,
-.mermaid .noteText tspan,
-.mermaid .noteText > *,
-.mermaid g.note text,
-.mermaid g.note text tspan {
-  fill: var(--note-fg) !important;
-  color: var(--note-fg) !important;
+.mermaid .noteText tspan {
+  color: #26251c !important;
+  fill: #26251c !important;
 }
 
 /* ── Вкладки с кодом ─────────────────────────────────────────────────────
