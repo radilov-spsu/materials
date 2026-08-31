@@ -11,11 +11,16 @@ copyright: ПГУ им. Т. Г. Шевченко, Тирасполь
 docs_dir: ..
 
 # Всё, что не является материалами курсов.
+# Parallel и TechProg спрятаны, пока там только заглушки: файлы остаются
+# в репозитории, но на сайт не попадают. Чтобы вернуть — убрать две строки
+# отсюда и раскомментировать разделы в nav.
 exclude_docs: |
   README.md
   .github/
   site/mkdocs.yml
   site/requirements.txt
+  Parallel/
+  TechProg/
 
 theme:
   name: material
@@ -114,9 +119,10 @@ nav:
           - "Самостоятельно · Active Record и Data Mapper": OOP/self-study/08-active-record-i-data-mapper.md
           - "Самостоятельно · Слои, DTO и маппинг": OOP/self-study/09-sloi-dto-i-mapping.md
       - Лабораторные работы: OOP/labs.md
-  - Технологии параллельного программирования:
-      - О курсе: Parallel/index.md
-      - Лабораторные работы: Parallel/labs.md
-  - Технология программирования:
-      - О курсе: TechProg/index.md
-      - Лабораторные работы: TechProg/labs.md
+  # Появятся, когда будет что показывать:
+  # - Технологии параллельного программирования:
+  #     - О курсе: Parallel/index.md
+  #     - Лабораторные работы: Parallel/labs.md
+  # - Технология программирования:
+  #     - О курсе: TechProg/index.md
+  #     - Лабораторные работы: TechProg/labs.md
