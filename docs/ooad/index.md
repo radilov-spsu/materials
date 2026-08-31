@@ -19,9 +19,9 @@
 
 | Раздел | Лекции |
 |---|---|
-| 1. Объектная модель | [Объектная модель](lectures/01-obektnaya-model.md), [Архитектура и рефакторинг](lectures/02-arkhitektura-i-refaktoring.md) |
-| 2. Моделирование на UML | [Диаграммы классов](lectures/03-uml-diagrammy-klassov.md), [Последовательности и состояния](lectures/04-posledovatelnosti-i-sostoyaniya.md) |
-| 3. Паттерны проектирования | [Порождающие](lectures/05-porozhdayushchie-patterny.md), [Структурные](lectures/06-strukturnye-patterny.md), [Поведения](lectures/07-patterny-povedeniya.md) |
+| 1. Основы и принципы ООП | [Объектная модель](lectures/01-obektnaya-model.md), [Архитектура и рефакторинг](lectures/02-arkhitektura-i-refaktoring.md) |
+| 2. Моделирование на языке UML | [Диаграммы классов](lectures/03-uml-diagrammy-klassov.md), [Последовательности и состояния](lectures/04-posledovatelnosti-i-sostoyaniya.md) |
+| 3. Шаблоны проектирования (GoF) | [Порождающие](lectures/05-porozhdayushchie-patterny.md), [Структурные](lectures/06-strukturnye-patterny.md), [Поведения](lectures/07-patterny-povedeniya.md) |
 | 4. Шаблоны корпоративных приложений | [Шаблоны корпоративных приложений](lectures/08-shablony-korporativnykh-prilozheniy.md) |
 
 К каждому разделу есть материалы для самостоятельной работы — они в меню слева

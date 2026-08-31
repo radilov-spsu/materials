@@ -78,17 +78,17 @@ nav:
   - Главная: index.md
   - Объектно-ориентированный анализ и проектирование:
       - О курсе: ooad/index.md
-      - "Раздел 1. Объектная модель":
+      - "Раздел 1. Основы и принципы объектно-ориентированного проектирования":
           - "Лекция 1 · Объектная модель": ooad/lectures/01-obektnaya-model.md
           - "Лекция 2 · Архитектура и рефакторинг": ooad/lectures/02-arkhitektura-i-refaktoring.md
           - "Самостоятельно · Классы, объекты, инкапсуляция": ooad/self-study/01-klassy-obekty-inkapsulyatsiya.md
           - "Самостоятельно · Наследование и полиморфизм": ooad/self-study/02-nasledovanie-i-polimorfizm.md
           - "Самостоятельно · Архитектурные стили и связность": ooad/self-study/03-arkhitekturnye-stili-i-svyaznost.md
-      - "Раздел 2. Моделирование на UML":
+      - "Раздел 2. Моделирование на языке UML":
           - "Лекция 3 · UML: диаграммы классов": ooad/lectures/03-uml-diagrammy-klassov.md
           - "Лекция 4 · Последовательности и состояния": ooad/lectures/04-posledovatelnosti-i-sostoyaniya.md
           - "Самостоятельно · Виды UML-диаграмм и предметная область": ooad/self-study/04-vidy-uml-diagramm-i-predmetnaya-oblast.md
-      - "Раздел 3. Паттерны проектирования":
+      - "Раздел 3. Шаблоны проектирования (GoF)":
           - "Лекция 5 · Порождающие паттерны": ooad/lectures/05-porozhdayushchie-patterny.md
           - "Лекция 6 · Структурные паттерны": ooad/lectures/06-strukturnye-patterny.md
           - "Лекция 7 · Паттерны поведения": ooad/lectures/07-patterny-povedeniya.md
