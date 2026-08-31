@@ -4,10 +4,10 @@
    лежит в foreignObject обычным HTML, и в тёмной теме Material красит его
    светло-серым: серое на жёлтом не читается. Задаём тёмный явно — на жёлтом
    он читается и в светлой теме, и в тёмной. */
-.mermaid .noteLabel,
-.mermaid .noteLabel *,
-.mermaid .noteText,
-.mermaid .noteText tspan {
+.noteLabel,
+.noteLabel *,
+.noteText,
+.noteText tspan {
   color: #26251c !important;
   fill: #26251c !important;
 }
