@@ -5,23 +5,9 @@
 > рендерится где угодно. Код — на **C#**. С этой лекции все диаграммы в отчётах и курсовых
 > сдаются в Mermaid.
 
-## Хронометраж (60 минут)
-
-| # | Блок | Мин | Накопительно |
-|---|------|-----|--------------|
-| 1 | Зачем UML и как им пользоваться | 5 | 0:05 |
-| 2 | Mermaid как рабочий формат | 5 | 0:10 |
-| 3 | Класс на диаграмме | 8 | 0:18 |
-| 4 | Ассоциации, кратности, роли | 7 | 0:25 |
-| 5 | Агрегация и композиция | 5 | 0:30 |
-| 6 | Обобщение и реализация интерфейса | 6 | 0:36 |
-| 7 | Зависимости, обобщённые типы, стереотипы, заметки | 7 | 0:43 |
-| 8 | Сквозной пример: от диаграммы к коду | 10 | 0:53 |
-| 9 | Ошибки, правила оформления, требования к сдаче | 7 | 1:00 |
-
 ---
 
-## Блок 1. Зачем UML и как им пользоваться (5 мин)
+## Блок 1. Зачем UML и как им пользоваться
 
 ### Три режима применения UML (по Фаулеру)
 
@@ -67,7 +53,7 @@ UML 2 описывает **13 официальных типов диаграмм
 
 ---
 
-## Блок 2. Mermaid как рабочий формат (5 мин)
+## Блок 2. Mermaid как рабочий формат
 
 ### Почему текст, а не картинка
 
@@ -86,19 +72,38 @@ UML 2 описывает **13 официальных типов диаграмм
 
 Диаграмма классов начинается с ключевого слова, дальше идут классы и связи:
 
-```mermaid
-classDiagram
-    direction LR
-    class Order {
-        +Guid Id
-        +decimal Total()
-    }
-    class OrderLine {
-        +int Quantity
-        +decimal UnitPrice
-    }
-    Order "1" *-- "1..*" OrderLine : содержит
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction LR
+        class Order {
+            +Guid Id
+            +decimal Total()
+        }
+        class OrderLine {
+            +int Quantity
+            +decimal UnitPrice
+        }
+        Order "1" *-- "1..*" OrderLine : содержит
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction LR
+        class Order {
+            +Guid Id
+            +decimal Total()
+        }
+        class OrderLine {
+            +int Quantity
+            +decimal UnitPrice
+        }
+        Order "1" *-- "1..*" OrderLine : содержит
+    ```
+
 
 У каждой диаграммы в этом конспекте есть переключатель **«Диаграмма / Код»**: смотрим
 картинку, при необходимости открываем исходный текст и копируем его к себе.
@@ -112,7 +117,7 @@ classDiagram
 
 ---
 
-## Блок 3. Класс на диаграмме (8 мин)
+## Блок 3. Класс на диаграмме
 
 ### Три секции
 
@@ -131,18 +136,36 @@ classDiagram
 Дополнительно: `$` — статический член, `*` — абстрактная операция,
 `<<interface>>` / `<<abstract>>` / `<<enumeration>>` — стереотип над именем.
 
-```mermaid
-classDiagram
-    class Customer {
-        +Guid Id
-        -string passwordHash
-        #DateTime registeredAt
-        +string Email
-        +bool IsVip()
-        +ChangeEmail(string newEmail) void
-        +Register(string email)$ Customer
-    }
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        class Customer {
+            +Guid Id
+            -string passwordHash
+            #DateTime registeredAt
+            +string Email
+            +bool IsVip()
+            +ChangeEmail(string newEmail) void
+            +Register(string email)$ Customer
+        }
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        class Customer {
+            +Guid Id
+            -string passwordHash
+            #DateTime registeredAt
+            +string Email
+            +bool IsVip()
+            +ChangeEmail(string newEmail) void
+            +Register(string email)$ Customer
+        }
+    ```
+
 
 Читаем вслух: `Id` — публичное, `passwordHash` — приватное, `registeredAt` — защищённое,
 `Register` — статическая операция (подчёркнута).
@@ -174,49 +197,92 @@ public class Customer
 
 ### Абстрактные классы, интерфейсы, перечисления
 
-```mermaid
-classDiagram
-    direction LR
-    class IPaymentMethod {
-        <<interface>>
-        +Charge(Money amount) PaymentResult
-    }
-    class PaymentMethodBase {
-        <<abstract>>
-        #Money limit
-        +Validate(Money amount)* bool
-    }
-    class OrderStatus {
-        <<enumeration>>
-        Draft
-        Paid
-        Shipped
-        Cancelled
-    }
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction LR
+        class IPaymentMethod {
+            <<interface>>
+            +Charge(Money amount) PaymentResult
+        }
+        class PaymentMethodBase {
+            <<abstract>>
+            #Money limit
+            +Validate(Money amount)* bool
+        }
+        class OrderStatus {
+            <<enumeration>>
+            Draft
+            Paid
+            Shipped
+            Cancelled
+        }
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction LR
+        class IPaymentMethod {
+            <<interface>>
+            +Charge(Money amount) PaymentResult
+        }
+        class PaymentMethodBase {
+            <<abstract>>
+            #Money limit
+            +Validate(Money amount)* bool
+        }
+        class OrderStatus {
+            <<enumeration>>
+            Draft
+            Paid
+            Shipped
+            Cancelled
+        }
+    ```
+
 
 Курсив в UML означает «абстрактное»: курсивное имя класса — абстрактный класс, курсивная
 операция — абстрактная. В Mermaid для этого используются стереотипы и `*`.
 
 ---
 
-## Блок 4. Ассоциации, кратности, роли (7 мин)
+## Блок 4. Ассоциации, кратности, роли
 
 **Ассоциация** — структурная связь: объекты одного класса знают об объектах другого.
 На диаграмме это линия; стрелка показывает **направление навигации** — кто на кого может
 сослаться в коде.
 
-```mermaid
-classDiagram
-    direction LR
-    class Customer {
-        +string Email
-    }
-    class Order {
-        +DateTime PlacedAt
-    }
-    Customer "1" --> "0..*" Order : размещает
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction LR
+        class Customer {
+            +string Email
+        }
+        class Order {
+            +DateTime PlacedAt
+        }
+        Customer "1" --> "0..*" Order : размещает
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction LR
+        class Customer {
+            +string Email
+        }
+        class Order {
+            +DateTime PlacedAt
+        }
+        Customer "1" --> "0..*" Order : размещает
+    ```
+
 
 Читается: у одного покупателя ноль или больше заказов; из покупателя можно добраться
 до заказов, обратно — нет.
@@ -237,14 +303,28 @@ classDiagram
 
 ### Направление и его цена
 
-```mermaid
-classDiagram
-    direction LR
-    class Order
-    class Customer
-    Order --> Customer : покупатель
-    Customer "1" --> "0..*" Order : заказы
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction LR
+        class Order
+        class Customer
+        Order --> Customer : покупатель
+        Customer "1" --> "0..*" Order : заказы
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction LR
+        class Order
+        class Customer
+        Order --> Customer : покупатель
+        Customer "1" --> "0..*" Order : заказы
+    ```
+
 
 Двунаправленная навигация (стрелки в обе стороны) — это удобство ценой связанности:
 две ссылки надо синхронно поддерживать, объекты нельзя загрузить по отдельности,
@@ -256,33 +336,63 @@ classDiagram
 Когда одного имени связи мало (особенно при связи класса с самим собой), подписывают
 концы — это **роли**:
 
-```mermaid
-classDiagram
-    class Employee {
-        +string Name
-    }
-    Employee "1" --> "0..*" Employee : руководит
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        class Employee {
+            +string Name
+        }
+        Employee "1" --> "0..*" Employee : руководит
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        class Employee {
+            +string Name
+        }
+        Employee "1" --> "0..*" Employee : руководит
+    ```
+
 
 В коде роли становятся именами свойств: `Manager` и `Subordinates`.
 
 ---
 
-## Блок 5. Агрегация и композиция (5 мин)
+## Блок 5. Агрегация и композиция
 
 Обе — частные случаи ассоциации «часть-целое», из лекции 1.
 
-```mermaid
-classDiagram
-    direction LR
-    class Car
-    class Engine
-    class Wheel
-    class Freshener
-    Car "1" *-- "1" Engine : композиция
-    Car "1" *-- "4" Wheel : композиция
-    Car "1" o-- "0..1" Freshener : агрегация
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction LR
+        class Car
+        class Engine
+        class Wheel
+        class Freshener
+        Car "1" *-- "1" Engine : композиция
+        Car "1" *-- "4" Wheel : композиция
+        Car "1" o-- "0..1" Freshener : агрегация
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction LR
+        class Car
+        class Engine
+        class Wheel
+        class Freshener
+        Car "1" *-- "1" Engine : композиция
+        Car "1" *-- "4" Wheel : композиция
+        Car "1" o-- "0..1" Freshener : агрегация
+    ```
+
 
 - **Композиция** — закрашенный ромб у целого (`*--`). Ключевое правило Фаулера —
   **нет совместного владения**: класс-часть может фигурировать частью нескольких классов,
@@ -303,36 +413,67 @@ classDiagram
 
 ---
 
-## Блок 6. Обобщение и реализация интерфейса (6 мин)
+## Блок 6. Обобщение и реализация интерфейса
 
 **Обобщение** (наследование) — сплошная линия с пустым треугольником, направленным
 к родителю. **Реализация** интерфейса — пунктирная линия с пустым треугольником.
 
-```mermaid
-classDiagram
-    direction TB
-    class IPaymentMethod {
-        <<interface>>
-        +Charge(Money amount) PaymentResult
-    }
-    class PaymentMethod {
-        <<abstract>>
-        #Money limit
-        +Charge(Money amount)* PaymentResult
-        +WithinLimit(Money amount) bool
-    }
-    class CardPayment {
-        -string maskedNumber
-        +Charge(Money amount) PaymentResult
-    }
-    class BankTransfer {
-        -string iban
-        +Charge(Money amount) PaymentResult
-    }
-    IPaymentMethod <|.. PaymentMethod : реализует
-    PaymentMethod <|-- CardPayment
-    PaymentMethod <|-- BankTransfer
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction TB
+        class IPaymentMethod {
+            <<interface>>
+            +Charge(Money amount) PaymentResult
+        }
+        class PaymentMethod {
+            <<abstract>>
+            #Money limit
+            +Charge(Money amount)* PaymentResult
+            +WithinLimit(Money amount) bool
+        }
+        class CardPayment {
+            -string maskedNumber
+            +Charge(Money amount) PaymentResult
+        }
+        class BankTransfer {
+            -string iban
+            +Charge(Money amount) PaymentResult
+        }
+        IPaymentMethod <|.. PaymentMethod : реализует
+        PaymentMethod <|-- CardPayment
+        PaymentMethod <|-- BankTransfer
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction TB
+        class IPaymentMethod {
+            <<interface>>
+            +Charge(Money amount) PaymentResult
+        }
+        class PaymentMethod {
+            <<abstract>>
+            #Money limit
+            +Charge(Money amount)* PaymentResult
+            +WithinLimit(Money amount) bool
+        }
+        class CardPayment {
+            -string maskedNumber
+            +Charge(Money amount) PaymentResult
+        }
+        class BankTransfer {
+            -string iban
+            +Charge(Money amount) PaymentResult
+        }
+        IPaymentMethod <|.. PaymentMethod : реализует
+        PaymentMethod <|-- CardPayment
+        PaymentMethod <|-- BankTransfer
+    ```
+
 
 Стрелка всегда указывает **от потомка к предку** — от частного к общему. Это направление
 зависимости: наследник знает о базовом типе, базовый о наследниках — нет.
@@ -361,7 +502,7 @@ public sealed class CardPayment : PaymentMethod
 
 ---
 
-## Блок 7. Зависимости, обобщённые типы, стереотипы, заметки (7 мин)
+## Блок 7. Зависимости, обобщённые типы, стереотипы, заметки
 
 ### Зависимость
 
@@ -369,21 +510,42 @@ public sealed class CardPayment : PaymentMethod
 ссылку. Типичные поводы: тип параметра метода, локальная переменная, возвращаемое значение,
 статический вызов.
 
-```mermaid
-classDiagram
-    direction LR
-    class OrderService {
-        +Place(Cart cart) Order
-    }
-    class Cart
-    class Order
-    class IEmailSender {
-        <<interface>>
-    }
-    OrderService ..> Cart : параметр
-    OrderService ..> Order : создаёт
-    OrderService --> IEmailSender : поле
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction LR
+        class OrderService {
+            +Place(Cart cart) Order
+        }
+        class Cart
+        class Order
+        class IEmailSender {
+            <<interface>>
+        }
+        OrderService ..> Cart : параметр
+        OrderService ..> Order : создаёт
+        OrderService --> IEmailSender : поле
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction LR
+        class OrderService {
+            +Place(Cart cart) Order
+        }
+        class Cart
+        class Order
+        class IEmailSender {
+            <<interface>>
+        }
+        OrderService ..> Cart : параметр
+        OrderService ..> Order : создаёт
+        OrderService --> IEmailSender : поле
+    ```
+
 
 Разница на практике: ассоциацию (сплошная стрелка) вы увидите в полях класса,
 зависимость (пунктир) — только в сигнатурах и теле методов. Когда считаете зацепление
@@ -391,22 +553,44 @@ classDiagram
 
 ### Обобщённые типы
 
-```mermaid
-classDiagram
-    direction LR
-    class IRepository~T~ {
-        <<interface>>
-        +GetById(Guid id) T
-        +Add(T item) void
-    }
-    class UserRepository {
-        +GetById(Guid id) User
-        +Add(User item) void
-    }
-    class User
-    IRepository~T~ <|.. UserRepository : T = User
-    UserRepository ..> User
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction LR
+        class IRepository~T~ {
+            <<interface>>
+            +GetById(Guid id) T
+            +Add(T item) void
+        }
+        class UserRepository {
+            +GetById(Guid id) User
+            +Add(User item) void
+        }
+        class User
+        IRepository~T~ <|.. UserRepository : T = User
+        UserRepository ..> User
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction LR
+        class IRepository~T~ {
+            <<interface>>
+            +GetById(Guid id) T
+            +Add(T item) void
+        }
+        class UserRepository {
+            +GetById(Guid id) User
+            +Add(User item) void
+        }
+        class User
+        IRepository~T~ <|.. UserRepository : T = User
+        UserRepository ..> User
+    ```
+
 
 Тильды в Mermaid заменяют угловые скобки: `IRepository~T~` — это `IRepository<T>`.
 
@@ -419,15 +603,30 @@ classDiagram
 
 ### Заметки
 
-```mermaid
-classDiagram
-    class Money {
-        <<value object>>
-        +decimal Amount
-        +Currency Currency
-    }
-    note for Money "Неизменяемый.<br/>Сложение только в одной валюте"
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        class Money {
+            <<value object>>
+            +decimal Amount
+            +Currency Currency
+        }
+        note for Money "Неизменяемый.<br/>Сложение только в одной валюте"
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        class Money {
+            <<value object>>
+            +decimal Amount
+            +Currency Currency
+        }
+        note for Money "Неизменяемый.<br/>Сложение только в одной валюте"
+    ```
+
 
 Заметка — место для инварианта, ограничения или вопроса. В настоящем UML для формальных
 ограничений есть язык OCL, но на практике пишут человеческим языком в фигурных скобках:
@@ -435,86 +634,167 @@ classDiagram
 
 ---
 
-## Блок 8. Сквозной пример: от диаграммы к коду (10 мин)
+## Блок 8. Сквозной пример: от диаграммы к коду
 
 Задача: интернет-магазин. Покупатель кладёт товары в корзину, оформляет заказ, оплачивает
 одним из способов, заказ доставляется. Рисуем **логическую** модель.
 
-```mermaid
-classDiagram
-    direction TB
+=== "Диаграмма"
 
-    class Customer {
-        +Guid Id
-        +string Email
-        +Place(Cart cart) Order
-    }
+    ```mermaid
+    classDiagram
+        direction TB
 
-    class Cart {
-        -List~CartItem~ items
-        +Add(Product product, int qty) void
-        +Remove(Guid productId) void
-        +Total() Money
-    }
+        class Customer {
+            +Guid Id
+            +string Email
+            +Place(Cart cart) Order
+        }
 
-    class CartItem {
-        +int Quantity
-        +Money Price()
-    }
+        class Cart {
+            -List~CartItem~ items
+            +Add(Product product, int qty) void
+            +Remove(Guid productId) void
+            +Total() Money
+        }
 
-    class Product {
-        +Guid Id
-        +string Title
-        +Money Price
-    }
+        class CartItem {
+            +int Quantity
+            +Money Price()
+        }
 
-    class Order {
-        +Guid Id
-        +DateTime PlacedAt
-        +OrderStatus Status
-        +Total() Money
-        +Pay(IPaymentMethod method) PaymentResult
-    }
+        class Product {
+            +Guid Id
+            +string Title
+            +Money Price
+        }
 
-    class OrderLine {
-        +int Quantity
-        +Money UnitPrice
-        +Money Subtotal()
-    }
+        class Order {
+            +Guid Id
+            +DateTime PlacedAt
+            +OrderStatus Status
+            +Total() Money
+            +Pay(IPaymentMethod method) PaymentResult
+        }
 
-    class OrderStatus {
-        <<enumeration>>
-        Draft
-        Paid
-        Shipped
-        Cancelled
-    }
+        class OrderLine {
+            +int Quantity
+            +Money UnitPrice
+            +Money Subtotal()
+        }
 
-    class IPaymentMethod {
-        <<interface>>
-        +Charge(Money amount) PaymentResult
-    }
+        class OrderStatus {
+            <<enumeration>>
+            Draft
+            Paid
+            Shipped
+            Cancelled
+        }
 
-    class CardPayment
-    class BankTransfer
+        class IPaymentMethod {
+            <<interface>>
+            +Charge(Money amount) PaymentResult
+        }
 
-    class IOrderRepository {
-        <<interface>>
-        +Save(Order order) void
-        +GetById(Guid id) Order
-    }
+        class CardPayment
+        class BankTransfer
 
-    Customer "1" --> "0..*" Order : размещает
-    Customer "1" --> "0..1" Cart : владеет
-    Cart "1" *-- "0..*" CartItem
-    CartItem "0..*" --> "1" Product
-    Order "1" *-- "1..*" OrderLine
-    Order --> OrderStatus
-    Order ..> IPaymentMethod : оплата
-    IPaymentMethod <|.. CardPayment
-    IPaymentMethod <|.. BankTransfer
-    IOrderRepository ..> Order
-```
+        class IOrderRepository {
+            <<interface>>
+            +Save(Order order) void
+            +GetById(Guid id) Order
+        }
+
+        Customer "1" --> "0..*" Order : размещает
+        Customer "1" --> "0..1" Cart : владеет
+        Cart "1" *-- "0..*" CartItem
+        CartItem "0..*" --> "1" Product
+        Order "1" *-- "1..*" OrderLine
+        Order --> OrderStatus
+        Order ..> IPaymentMethod : оплата
+        IPaymentMethod <|.. CardPayment
+        IPaymentMethod <|.. BankTransfer
+        IOrderRepository ..> Order
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction TB
+
+        class Customer {
+            +Guid Id
+            +string Email
+            +Place(Cart cart) Order
+        }
+
+        class Cart {
+            -List~CartItem~ items
+            +Add(Product product, int qty) void
+            +Remove(Guid productId) void
+            +Total() Money
+        }
+
+        class CartItem {
+            +int Quantity
+            +Money Price()
+        }
+
+        class Product {
+            +Guid Id
+            +string Title
+            +Money Price
+        }
+
+        class Order {
+            +Guid Id
+            +DateTime PlacedAt
+            +OrderStatus Status
+            +Total() Money
+            +Pay(IPaymentMethod method) PaymentResult
+        }
+
+        class OrderLine {
+            +int Quantity
+            +Money UnitPrice
+            +Money Subtotal()
+        }
+
+        class OrderStatus {
+            <<enumeration>>
+            Draft
+            Paid
+            Shipped
+            Cancelled
+        }
+
+        class IPaymentMethod {
+            <<interface>>
+            +Charge(Money amount) PaymentResult
+        }
+
+        class CardPayment
+        class BankTransfer
+
+        class IOrderRepository {
+            <<interface>>
+            +Save(Order order) void
+            +GetById(Guid id) Order
+        }
+
+        Customer "1" --> "0..*" Order : размещает
+        Customer "1" --> "0..1" Cart : владеет
+        Cart "1" *-- "0..*" CartItem
+        CartItem "0..*" --> "1" Product
+        Order "1" *-- "1..*" OrderLine
+        Order --> OrderStatus
+        Order ..> IPaymentMethod : оплата
+        IPaymentMethod <|.. CardPayment
+        IPaymentMethod <|.. BankTransfer
+        IOrderRepository ..> Order
+    ```
+
 
 Что читаем с картинки, не открывая код:
 
@@ -585,7 +865,7 @@ public sealed class OrderLine                                  // часть к�
 
 ---
 
-## Блок 9. Ошибки, правила оформления, требования к сдаче (7 мин)
+## Блок 9. Ошибки, правила оформления, требования к сдаче
 
 ### Типичные ошибки студентов
 

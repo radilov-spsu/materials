@@ -45,27 +45,54 @@ UML 2 делит диаграммы на две группы: **структур
 или 2, хотя приёмы использовались раньше, и деление на типы вообще не строгое — важнее,
 на какой вопрос диаграмма отвечает, чем к какому типу она формально отнесена.
 
-```mermaid
-mindmap
-  root((UML 2.x))
-    Структурные
-      Классов
-      Объектов
-      Пакетов
-      Компонентов
-      Развёртывания
-      Композитной структуры
-      Профилей
-    Поведенческие
-      Вариантов использования
-      Деятельности
-      Состояний
-      Взаимодействия
-        Последовательности
-        Коммуникации
-        Обзора взаимодействия
-        Временная
-```
+=== "Диаграмма"
+
+    ```mermaid
+    mindmap
+      root((UML 2.x))
+        Структурные
+          Классов
+          Объектов
+          Пакетов
+          Компонентов
+          Развёртывания
+          Композитной структуры
+          Профилей
+        Поведенческие
+          Вариантов использования
+          Деятельности
+          Состояний
+          Взаимодействия
+            Последовательности
+            Коммуникации
+            Обзора взаимодействия
+            Временная
+    ```
+
+=== "Исходник"
+
+    ```
+    mindmap
+      root((UML 2.x))
+        Структурные
+          Классов
+          Объектов
+          Пакетов
+          Компонентов
+          Развёртывания
+          Композитной структуры
+          Профилей
+        Поведенческие
+          Вариантов использования
+          Деятельности
+          Состояний
+          Взаимодействия
+            Последовательности
+            Коммуникации
+            Обзора взаимодействия
+            Временная
+    ```
+
 
 ### 1.2. Структурные диаграммы
 
@@ -74,44 +101,90 @@ mindmap
 **Диаграмма объектов** — снимок конкретных объектов и их связей в один момент времени.
 Незаменима, когда диаграмма классов допускает несколько толкований: «покажи мне пример».
 
-```mermaid
-classDiagram
-    class order1["order1 : Order"] {
-        Status = Paid
-        Total = 1250
-    }
-    class line1["line1 : OrderLine"] {
-        Quantity = 2
-    }
-    class line2["line2 : OrderLine"] {
-        Quantity = 1
-    }
-    order1 --> line1
-    order1 --> line2
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        class order1["order1 : Order"] {
+            Status = Paid
+            Total = 1250
+        }
+        class line1["line1 : OrderLine"] {
+            Quantity = 2
+        }
+        class line2["line2 : OrderLine"] {
+            Quantity = 1
+        }
+        order1 --> line1
+        order1 --> line2
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        class order1["order1 : Order"] {
+            Status = Paid
+            Total = 1250
+        }
+        class line1["line1 : OrderLine"] {
+            Quantity = 2
+        }
+        class line2["line2 : OrderLine"] {
+            Quantity = 1
+        }
+        order1 --> line1
+        order1 --> line2
+    ```
+
 
 **Диаграмма пакетов** — модули и зависимости между ними; ровно тот инструмент, которым
 проверяют правила из лекции 2 (циклы, направление зависимостей).
 
-```mermaid
-flowchart TB
-    subgraph Presentation
-        Api[Shop.Api]
-    end
-    subgraph Application
-        App[Shop.Application]
-    end
-    subgraph Domain
-        Dom[Shop.Domain]
-    end
-    subgraph Infrastructure
-        Inf[Shop.Infrastructure]
-    end
-    Api --> App
-    App --> Dom
-    Inf --> Dom
-    Api -.-> Inf
-```
+=== "Диаграмма"
+
+    ```mermaid
+    flowchart TB
+        subgraph Presentation
+            Api[Shop.Api]
+        end
+        subgraph Application
+            App[Shop.Application]
+        end
+        subgraph Domain
+            Dom[Shop.Domain]
+        end
+        subgraph Infrastructure
+            Inf[Shop.Infrastructure]
+        end
+        Api --> App
+        App --> Dom
+        Inf --> Dom
+        Api -.-> Inf
+    ```
+
+=== "Исходник"
+
+    ```
+    flowchart TB
+        subgraph Presentation
+            Api[Shop.Api]
+        end
+        subgraph Application
+            App[Shop.Application]
+        end
+        subgraph Domain
+            Dom[Shop.Domain]
+        end
+        subgraph Infrastructure
+            Inf[Shop.Infrastructure]
+        end
+        Api --> App
+        App --> Dom
+        Inf --> Dom
+        Api -.-> Inf
+    ```
+
 
 Обратите внимание: `Domain` не имеет исходящих стрелок — это и есть нарисованный DIP.
 
@@ -127,22 +200,44 @@ flowchart TB
 **Вариантов использования (use case)** — что система делает для внешних действующих лиц.
 Не показывает алгоритм: показывает границу системы и набор целей пользователей.
 
-```mermaid
-flowchart LR
-    customer([Покупатель])
-    manager([Менеджер])
-    subgraph Магазин
-        uc1((Оформить заказ))
-        uc2((Оплатить заказ))
-        uc3((Отменить заказ))
-        uc4((Сформировать отчёт))
-    end
-    customer --> uc1
-    customer --> uc2
-    customer --> uc3
-    manager --> uc3
-    manager --> uc4
-```
+=== "Диаграмма"
+
+    ```mermaid
+    flowchart LR
+        customer([Покупатель])
+        manager([Менеджер])
+        subgraph Магазин
+            uc1((Оформить заказ))
+            uc2((Оплатить заказ))
+            uc3((Отменить заказ))
+            uc4((Сформировать отчёт))
+        end
+        customer --> uc1
+        customer --> uc2
+        customer --> uc3
+        manager --> uc3
+        manager --> uc4
+    ```
+
+=== "Исходник"
+
+    ```
+    flowchart LR
+        customer([Покупатель])
+        manager([Менеджер])
+        subgraph Магазин
+            uc1((Оформить заказ))
+            uc2((Оплатить заказ))
+            uc3((Отменить заказ))
+            uc4((Сформировать отчёт))
+        end
+        customer --> uc1
+        customer --> uc2
+        customer --> uc3
+        manager --> uc3
+        manager --> uc4
+    ```
+
 
 Ценность не в кружках, а в сопровождающем тексте сценария: основной поток, альтернативы,
 исключения. Без текста use case — просто картинка. У Лармана («Применение UML и шаблонов»)
@@ -151,18 +246,36 @@ flowchart LR
 **Деятельности (activity)** — бизнес-процесс или алгоритм с ветвлениями, параллельностью
 и зонами ответственности (дорожками). Ближайший родственник BPMN.
 
-```mermaid
-flowchart TD
-    A[Получен заказ] --> B{Товар в наличии?}
-    B -- да --> C[Зарезервировать]
-    B -- нет --> D[Уведомить покупателя]
-    C --> E{Оплата прошла?}
-    E -- да --> F[Передать на сборку]
-    E -- нет --> G[Снять резерв]
-    G --> D
-    F --> H[Завершено]
-    D --> H
-```
+=== "Диаграмма"
+
+    ```mermaid
+    flowchart TD
+        A[Получен заказ] --> B{Товар в наличии?}
+        B -- да --> C[Зарезервировать]
+        B -- нет --> D[Уведомить покупателя]
+        C --> E{Оплата прошла?}
+        E -- да --> F[Передать на сборку]
+        E -- нет --> G[Снять резерв]
+        G --> D
+        F --> H[Завершено]
+        D --> H
+    ```
+
+=== "Исходник"
+
+    ```
+    flowchart TD
+        A[Получен заказ] --> B{Товар в наличии?}
+        B -- да --> C[Зарезервировать]
+        B -- нет --> D[Уведомить покупателя]
+        C --> E{Оплата прошла?}
+        E -- да --> F[Передать на сборку]
+        E -- нет --> G[Снять резерв]
+        G --> D
+        F --> H[Завершено]
+        D --> H
+    ```
+
 
 **Состояний** и **последовательности** — лекция 4. **Коммуникации** — те же взаимодействия,
 но акцент на связях, а не на времени. **Временная (timing)** — про длительности и
@@ -352,43 +465,86 @@ UML — не единственный язык, и на практике час�
   ровно одно значение. «Заказ» в продажах и «Заказ» на складе — разные понятия,
   и это нормально: их не надо объединять в один класс.
 
-```mermaid
-classDiagram
-    direction TB
-    class Order {
-        <<aggregate root>>
-        +Guid Id
-        +OrderStatus Status
-        +AddLine(Product product, int qty) void
-        +Pay(IPaymentMethod method) void
-        +Total() Money
-    }
-    class OrderLine {
-        <<entity>>
-        +int Quantity
-        +Money UnitPrice
-    }
-    class Money {
-        <<value object>>
-        +decimal Amount
-        +Currency Currency
-    }
-    class Address {
-        <<value object>>
-        +string City
-        +string Street
-    }
-    class IOrderRepository {
-        <<repository>>
-        +GetById(Guid id) Order
-        +Save(Order order) void
-    }
-    Order "1" *-- "1..*" OrderLine
-    OrderLine --> Money : цена
-    Order --> Address : доставка
-    IOrderRepository ..> Order : только корень
-    note for Order "Инвариант: хотя бы одна позиция.<br/>Изменения позиций только через корень"
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction TB
+        class Order {
+            <<aggregate root>>
+            +Guid Id
+            +OrderStatus Status
+            +AddLine(Product product, int qty) void
+            +Pay(IPaymentMethod method) void
+            +Total() Money
+        }
+        class OrderLine {
+            <<entity>>
+            +int Quantity
+            +Money UnitPrice
+        }
+        class Money {
+            <<value object>>
+            +decimal Amount
+            +Currency Currency
+        }
+        class Address {
+            <<value object>>
+            +string City
+            +string Street
+        }
+        class IOrderRepository {
+            <<repository>>
+            +GetById(Guid id) Order
+            +Save(Order order) void
+        }
+        Order "1" *-- "1..*" OrderLine
+        OrderLine --> Money : цена
+        Order --> Address : доставка
+        IOrderRepository ..> Order : только корень
+        note for Order "Инвариант: хотя бы одна позиция.<br/>Изменения позиций только через корень"
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction TB
+        class Order {
+            <<aggregate root>>
+            +Guid Id
+            +OrderStatus Status
+            +AddLine(Product product, int qty) void
+            +Pay(IPaymentMethod method) void
+            +Total() Money
+        }
+        class OrderLine {
+            <<entity>>
+            +int Quantity
+            +Money UnitPrice
+        }
+        class Money {
+            <<value object>>
+            +decimal Amount
+            +Currency Currency
+        }
+        class Address {
+            <<value object>>
+            +string City
+            +string Street
+        }
+        class IOrderRepository {
+            <<repository>>
+            +GetById(Guid id) Order
+            +Save(Order order) void
+        }
+        Order "1" *-- "1..*" OrderLine
+        OrderLine --> Money : цена
+        Order --> Address : доставка
+        IOrderRepository ..> Order : только корень
+        note for Order "Инвариант: хотя бы одна позиция.<br/>Изменения позиций только через корень"
+    ```
+
 
 Ключевое правило агрегата: **снаружи никто не держит ссылку на `OrderLine`**. Хотите
 изменить количество — зовёте метод у `Order`. Именно это делает инвариант «сумма заказа

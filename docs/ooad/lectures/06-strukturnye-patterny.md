@@ -3,23 +3,9 @@
 > Конспект лектора. Источник — «Приёмы объектно-ориентированного проектирования» (GoF):
 > назначение, применимость и участники даются по книге. Код — **C#**, диаграммы — **Mermaid**.
 
-## Хронометраж (60 минут)
-
-| # | Блок | Мин | Накопительно |
-|---|------|-----|--------------|
-| 1 | Что общего у структурных паттернов | 4 | 0:04 |
-| 2 | Adapter (адаптер) | 7 | 0:11 |
-| 3 | Bridge (мост) | 8 | 0:19 |
-| 4 | Composite (компоновщик) | 8 | 0:27 |
-| 5 | Decorator (декоратор) | 8 | 0:35 |
-| 6 | Facade (фасад) | 6 | 0:41 |
-| 7 | Proxy (заместитель) | 8 | 0:49 |
-| 8 | Flyweight (приспособленец) | 6 | 0:55 |
-| 9 | Как их различать и выбирать | 5 | 1:00 |
-
 ---
 
-## Блок 1. Что общего у структурных паттернов (4 мин)
+## Блок 1. Что общего у структурных паттернов
 
 Структурные паттерны отвечают на вопрос, **как из классов и объектов составлять более
 крупные структуры**.
@@ -50,7 +36,7 @@
 
 ---
 
-## Блок 2. Adapter — адаптер (7 мин)
+## Блок 2. Adapter — адаптер
 
 **Назначение.** Преобразует интерфейс класса в другой интерфейс, ожидаемый клиентами.
 Обеспечивает совместную работу классов, которая была бы невозможна без него из-за
@@ -69,26 +55,52 @@ GoF описывает **две схемы** адаптера — редкий �
 
 ### Адаптер объектов
 
-```mermaid
-classDiagram
-    direction LR
-    class Client
-    class ITarget {
-        <<interface>>
-        +Request() void
-    }
-    class Adaptee {
-        +SpecificRequest() void
-    }
-    class ObjectAdapter {
-        -Adaptee adaptee
-        +Request() void
-    }
-    Client --> ITarget
-    ITarget <|.. ObjectAdapter
-    ObjectAdapter o-- Adaptee : хранит ссылку
-    note for ObjectAdapter "Request() вызывает<br/>adaptee.SpecificRequest()"
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction LR
+        class Client
+        class ITarget {
+            <<interface>>
+            +Request() void
+        }
+        class Adaptee {
+            +SpecificRequest() void
+        }
+        class ObjectAdapter {
+            -Adaptee adaptee
+            +Request() void
+        }
+        Client --> ITarget
+        ITarget <|.. ObjectAdapter
+        ObjectAdapter o-- Adaptee : хранит ссылку
+        note for ObjectAdapter "Request() вызывает<br/>adaptee.SpecificRequest()"
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction LR
+        class Client
+        class ITarget {
+            <<interface>>
+            +Request() void
+        }
+        class Adaptee {
+            +SpecificRequest() void
+        }
+        class ObjectAdapter {
+            -Adaptee adaptee
+            +Request() void
+        }
+        Client --> ITarget
+        ITarget <|.. ObjectAdapter
+        ObjectAdapter o-- Adaptee : хранит ссылку
+        note for ObjectAdapter "Request() вызывает<br/>adaptee.SpecificRequest()"
+    ```
+
 
 ```csharp
 // Adaptee: чужой класс, менять нельзя
@@ -125,24 +137,48 @@ public sealed class LegacyPrinterAdapter : IDocumentPrinter
 которого в C# нет. Смотрим вторую схему на Python — там она пишется ровно так, как
 нарисована у GoF:
 
-```mermaid
-classDiagram
-    direction LR
-    class Client
-    class Target {
-        +Request() void
-    }
-    class Adaptee {
-        +SpecificRequest() void
-    }
-    class ClassAdapter {
-        +Request() void
-    }
-    Client --> Target
-    Target <|-- ClassAdapter : наследует интерфейс
-    Adaptee <|-- ClassAdapter : наследует реализацию
-    note for ClassAdapter "Request() вызывает<br/>унаследованный SpecificRequest()"
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction LR
+        class Client
+        class Target {
+            +Request() void
+        }
+        class Adaptee {
+            +SpecificRequest() void
+        }
+        class ClassAdapter {
+            +Request() void
+        }
+        Client --> Target
+        Target <|-- ClassAdapter : наследует интерфейс
+        Adaptee <|-- ClassAdapter : наследует реализацию
+        note for ClassAdapter "Request() вызывает<br/>унаследованный SpecificRequest()"
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction LR
+        class Client
+        class Target {
+            +Request() void
+        }
+        class Adaptee {
+            +SpecificRequest() void
+        }
+        class ClassAdapter {
+            +Request() void
+        }
+        Client --> Target
+        Target <|-- ClassAdapter : наследует интерфейс
+        Adaptee <|-- ClassAdapter : наследует реализацию
+        note for ClassAdapter "Request() вызывает<br/>унаследованный SpecificRequest()"
+    ```
+
 
 ```python
 class LegacyPrinter:                       # Adaptee
@@ -167,7 +203,7 @@ class LegacyPrinterAdapter(DocumentPrinter, LegacyPrinter):   # наследуе
 
 ---
 
-## Блок 3. Bridge — мост (8 мин)
+## Блок 3. Bridge — мост
 
 **Назначение.** Отделяет абстракцию от её реализации, чтобы то и другое можно было изменять
 независимо.
@@ -179,31 +215,62 @@ class LegacyPrinterAdapter(DocumentPrinter, LegacyPrinter):   # наследуе
 
 Решение — **две иерархии вместо одной**, связанные композицией.
 
-```mermaid
-classDiagram
-    direction LR
-    class Window {
-        #IWindowImpl impl
-        +DrawText(string s) void
-        +DrawRect() void
-    }
-    class IconWindow {
-        +DrawBorder() void
-    }
-    class TransientWindow
-    class IWindowImpl {
-        <<interface>>
-        +DevDrawText(string s) void
-        +DevDrawLine() void
-    }
-    class XWindowImpl
-    class PmWindowImpl
-    Window <|-- IconWindow
-    Window <|-- TransientWindow
-    Window o-- IWindowImpl : мост
-    IWindowImpl <|.. XWindowImpl
-    IWindowImpl <|.. PmWindowImpl
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction LR
+        class Window {
+            #IWindowImpl impl
+            +DrawText(string s) void
+            +DrawRect() void
+        }
+        class IconWindow {
+            +DrawBorder() void
+        }
+        class TransientWindow
+        class IWindowImpl {
+            <<interface>>
+            +DevDrawText(string s) void
+            +DevDrawLine() void
+        }
+        class XWindowImpl
+        class PmWindowImpl
+        Window <|-- IconWindow
+        Window <|-- TransientWindow
+        Window o-- IWindowImpl : мост
+        IWindowImpl <|.. XWindowImpl
+        IWindowImpl <|.. PmWindowImpl
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction LR
+        class Window {
+            #IWindowImpl impl
+            +DrawText(string s) void
+            +DrawRect() void
+        }
+        class IconWindow {
+            +DrawBorder() void
+        }
+        class TransientWindow
+        class IWindowImpl {
+            <<interface>>
+            +DevDrawText(string s) void
+            +DevDrawLine() void
+        }
+        class XWindowImpl
+        class PmWindowImpl
+        Window <|-- IconWindow
+        Window <|-- TransientWindow
+        Window o-- IWindowImpl : мост
+        IWindowImpl <|.. XWindowImpl
+        IWindowImpl <|.. PmWindowImpl
+    ```
+
 
 ```csharp
 public abstract class Window                            // абстракция
@@ -248,7 +315,7 @@ public sealed class XWindowImpl : IWindowImpl           // конкретная 
 
 ---
 
-## Блок 4. Composite — компоновщик (8 мин)
+## Блок 4. Composite — компоновщик
 
 **Назначение.** Группирует объекты в древовидные структуры для представления иерархий
 «часть — целое». Позволяет клиентам работать с единичными объектами так же, как с группами.
@@ -256,31 +323,62 @@ public sealed class XWindowImpl : IWindowImpl           // конкретная 
 **Задача.** Графический редактор: линия, текст и группа фигур должны рисоваться одинаково;
 группа может содержать другие группы. Клиент не должен различать лист и узел.
 
-```mermaid
-classDiagram
-    direction TB
-    class IGraphic {
-        <<interface>>
-        +Draw() void
-        +Add(IGraphic g) void
-        +Remove(IGraphic g) void
-    }
-    class Line {
-        +Draw() void
-    }
-    class Text {
-        +Draw() void
-    }
-    class Picture {
-        -List~IGraphic~ children
-        +Draw() void
-        +Add(IGraphic g) void
-    }
-    IGraphic <|.. Line
-    IGraphic <|.. Text
-    IGraphic <|.. Picture
-    Picture o-- IGraphic : дети
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction TB
+        class IGraphic {
+            <<interface>>
+            +Draw() void
+            +Add(IGraphic g) void
+            +Remove(IGraphic g) void
+        }
+        class Line {
+            +Draw() void
+        }
+        class Text {
+            +Draw() void
+        }
+        class Picture {
+            -List~IGraphic~ children
+            +Draw() void
+            +Add(IGraphic g) void
+        }
+        IGraphic <|.. Line
+        IGraphic <|.. Text
+        IGraphic <|.. Picture
+        Picture o-- IGraphic : дети
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction TB
+        class IGraphic {
+            <<interface>>
+            +Draw() void
+            +Add(IGraphic g) void
+            +Remove(IGraphic g) void
+        }
+        class Line {
+            +Draw() void
+        }
+        class Text {
+            +Draw() void
+        }
+        class Picture {
+            -List~IGraphic~ children
+            +Draw() void
+            +Add(IGraphic g) void
+        }
+        IGraphic <|.. Line
+        IGraphic <|.. Text
+        IGraphic <|.. Picture
+        Picture o-- IGraphic : дети
+    ```
+
 
 ```csharp
 public interface IGraphic { void Draw(); }
@@ -327,7 +425,7 @@ public sealed class Picture : IGraphic                   // составной �
 
 ---
 
-## Блок 5. Decorator — декоратор (8 мин)
+## Блок 5. Decorator — декоратор
 
 **Назначение.** Динамически наделяет объект новыми обязанностями. Является гибкой
 альтернативой порождению подклассов.
@@ -337,81 +435,120 @@ public sealed class Picture : IGraphic                   // составной �
 комбинаторный взрыв. Декоратор оборачивает объект и добавляет поведение до или после
 делегирования.
 
-```mermaid
-classDiagram
-    direction TB
-    class IVisualComponent {
-        <<interface>>
-        +Draw() void
-    }
-    class TextView {
-        +Draw() void
-    }
-    class Decorator {
-        <<abstract>>
-        #IVisualComponent component
-        +Draw() void
-    }
-    class BorderDecorator {
-        -int width
-        +Draw() void
-        -DrawBorder() void
-    }
-    class ScrollDecorator {
-        +Draw() void
-    }
-    IVisualComponent <|.. TextView
-    IVisualComponent <|.. Decorator
-    Decorator <|-- BorderDecorator
-    Decorator <|-- ScrollDecorator
-    Decorator o-- IVisualComponent : обёрнутый компонент
-```
+=== "Диаграмма"
 
-```csharp
-public abstract class VisualDecorator : IVisualComponent
-{
-    private readonly IVisualComponent _inner;
-    protected VisualDecorator(IVisualComponent inner) => _inner = inner;
-    public virtual void Draw() => _inner.Draw();          // делегирование
-}
+    ```mermaid
+    classDiagram
+        direction TB
+        class IVisualComponent {
+            <<interface>>
+            +Draw() void
+        }
+        class TextView {
+            +Draw() void
+        }
+        class Decorator {
+            <<abstract>>
+            #IVisualComponent component
+            +Draw() void
+        }
+        class BorderDecorator {
+            -int width
+            +Draw() void
+            -DrawBorder() void
+        }
+        class ScrollDecorator {
+            +Draw() void
+        }
+        IVisualComponent <|.. TextView
+        IVisualComponent <|.. Decorator
+        Decorator <|-- BorderDecorator
+        Decorator <|-- ScrollDecorator
+        Decorator o-- IVisualComponent : обёрнутый компонент
+    ```
 
-public sealed class BorderDecorator : VisualDecorator
-{
-    private readonly int _width;
-    public BorderDecorator(IVisualComponent inner, int width) : base(inner) => _width = width;
+=== "Исходник"
 
-    public override void Draw()
+    ```
+    classDiagram
+        direction TB
+        class IVisualComponent {
+            <<interface>>
+            +Draw() void
+        }
+        class TextView {
+            +Draw() void
+        }
+        class Decorator {
+            <<abstract>>
+            #IVisualComponent component
+            +Draw() void
+        }
+        class BorderDecorator {
+            -int width
+            +Draw() void
+            -DrawBorder() void
+        }
+        class ScrollDecorator {
+            +Draw() void
+        }
+        IVisualComponent <|.. TextView
+        IVisualComponent <|.. Decorator
+        Decorator <|-- BorderDecorator
+        Decorator <|-- ScrollDecorator
+        Decorator o-- IVisualComponent : обёрнутый компонент
+    ```
+
+
+=== "C#"
+
+    ```csharp
+    public abstract class VisualDecorator : IVisualComponent
     {
-        base.Draw();                                      // сначала сам компонент
-        DrawBorder(_width);                               // потом добавленная обязанность
+        private readonly IVisualComponent _inner;
+        protected VisualDecorator(IVisualComponent inner) => _inner = inner;
+        public virtual void Draw() => _inner.Draw();          // делегирование
     }
-    private void DrawBorder(int width) { }
-}
 
-// Сборка обязанностей во время выполнения
-IVisualComponent view = new BorderDecorator(new ScrollDecorator(new TextView()), width: 1);
-```
+    public sealed class BorderDecorator : VisualDecorator
+    {
+        private readonly int _width;
+        public BorderDecorator(IVisualComponent inner, int width) : base(inner) => _width = width;
 
-```python
-# Тот же паттерн «в лоб»: обёртка вокруг объекта с тем же интерфейсом
-class VisualDecorator:
-    def __init__(self, inner: VisualComponent) -> None:
-        self._inner = inner
+        public override void Draw()
+        {
+            base.Draw();                                      // сначала сам компонент
+            DrawBorder(_width);                               // потом добавленная обязанность
+        }
+        private void DrawBorder(int width) { }
+    }
 
-    def draw(self) -> None:
-        self._inner.draw()
+    // Сборка обязанностей во время выполнения
+    IVisualComponent view = new BorderDecorator(new ScrollDecorator(new TextView()), width: 1);
+    ```
 
-class BorderDecorator(VisualDecorator):
-    def __init__(self, inner: VisualComponent, width: int = 1) -> None:
-        super().__init__(inner)
-        self._width = width
+=== "Python"
 
-    def draw(self) -> None:
-        super().draw()
-        self._draw_border(self._width)
+    ```python
+    # Тот же паттерн «в лоб»: обёртка вокруг объекта с тем же интерфейсом
+    class VisualDecorator:
+        def __init__(self, inner: VisualComponent) -> None:
+            self._inner = inner
 
-view = BorderDecorator(ScrollDecorator(TextView()), width=1)
-```
+        def draw(self) -> None:
+            self._inner.draw()
+
+    class BorderDecorator(VisualDecorator):
+        def __init__(self, inner: VisualComponent, width: int = 1) -> None:
+            super().__init__(inner)
+            self._width = width
+
+        def draw(self) -> None:
+            super().draw()
+            self._draw_border(self._width)
+
+    view = BorderDecorator(ScrollDecorator(TextView()), width=1)
+    ```
 
 ### Декоратор в Python: тот же смысл, другая форма
 
@@ -506,7 +643,7 @@ class LoggingProxy:                # прозрачная обёртка над 
 
 ---
 
-## Блок 6. Facade — фасад (6 мин)
+## Блок 6. Facade — фасад
 
 **Назначение.** Предоставляет унифицированный интерфейс к набору интерфейсов подсистемы.
 Определяет интерфейс более высокого уровня, облегчающий работу с подсистемой.
@@ -514,22 +651,44 @@ class LoggingProxy:                # прозрачная обёртка над 
 **Задача.** Пример книги — компилятор: сканер, парсер, генератор кода, оптимизатор.
 Большинству клиентов нужен один вызов «скомпилируй файл», а не знание о всех классах.
 
-```mermaid
-classDiagram
-    direction LR
-    class Compiler {
-        +Compile(string source) byte[]
-    }
-    class Scanner
-    class Parser
-    class ProgramNodeBuilder
-    class CodeGenerator
-    Client --> Compiler : знает только фасад
-    Compiler ..> Scanner
-    Compiler ..> Parser
-    Compiler ..> ProgramNodeBuilder
-    Compiler ..> CodeGenerator
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction LR
+        class Compiler {
+            +Compile(string source) byte[]
+        }
+        class Scanner
+        class Parser
+        class ProgramNodeBuilder
+        class CodeGenerator
+        Client --> Compiler : знает только фасад
+        Compiler ..> Scanner
+        Compiler ..> Parser
+        Compiler ..> ProgramNodeBuilder
+        Compiler ..> CodeGenerator
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction LR
+        class Compiler {
+            +Compile(string source) byte[]
+        }
+        class Scanner
+        class Parser
+        class ProgramNodeBuilder
+        class CodeGenerator
+        Client --> Compiler : знает только фасад
+        Compiler ..> Scanner
+        Compiler ..> Parser
+        Compiler ..> ProgramNodeBuilder
+        Compiler ..> CodeGenerator
+    ```
+
 
 ```csharp
 public sealed class Compiler                              // фасад
@@ -557,71 +716,103 @@ public sealed class Compiler                              // фасад
 
 ---
 
-## Блок 7. Proxy — заместитель (8 мин)
+## Блок 7. Proxy — заместитель
 
 **Назначение.** Подменяет другой объект для контроля доступа к нему.
 
 **Задача.** Пример книги — документ с изображениями: открывать документ быстро, а картинки
 загружать только когда их действительно надо нарисовать. Клиент об этом знать не должен.
 
-```mermaid
-classDiagram
-    direction LR
-    class IGraphic {
-        <<interface>>
-        +Draw(Point at) void
-        +GetExtent() Size
-    }
-    class Image {
-        -string fileName
-        +Draw(Point at) void
-    }
-    class ImageProxy {
-        -string fileName
-        -Image image
-        -Size extent
-        +Draw(Point at) void
-    }
-    IGraphic <|.. Image
-    IGraphic <|.. ImageProxy
-    ImageProxy o-- Image : создаёт при первом обращении
-```
+=== "Диаграмма"
 
-```csharp
-public sealed class ImageProxy : IGraphic
-{
-    private readonly string _fileName;
-    private Image? _image;                                // ещё не загружен
-    private Size _extent;                                 // дешёвая часть данных
+    ```mermaid
+    classDiagram
+        direction LR
+        class IGraphic {
+            <<interface>>
+            +Draw(Point at) void
+            +GetExtent() Size
+        }
+        class Image {
+            -string fileName
+            +Draw(Point at) void
+        }
+        class ImageProxy {
+            -string fileName
+            -Image image
+            -Size extent
+            +Draw(Point at) void
+        }
+        IGraphic <|.. Image
+        IGraphic <|.. ImageProxy
+        ImageProxy o-- Image : создаёт при первом обращении
+    ```
 
-    public ImageProxy(string fileName, Size extent) => (_fileName, _extent) = (fileName, extent);
+=== "Исходник"
 
-    public Size GetExtent() => _image?.GetExtent() ?? _extent;   // без загрузки файла
+    ```
+    classDiagram
+        direction LR
+        class IGraphic {
+            <<interface>>
+            +Draw(Point at) void
+            +GetExtent() Size
+        }
+        class Image {
+            -string fileName
+            +Draw(Point at) void
+        }
+        class ImageProxy {
+            -string fileName
+            -Image image
+            -Size extent
+            +Draw(Point at) void
+        }
+        IGraphic <|.. Image
+        IGraphic <|.. ImageProxy
+        ImageProxy o-- Image : создаёт при первом обращении
+    ```
 
-    public void Draw(Point at)
+
+=== "C#"
+
+    ```csharp
+    public sealed class ImageProxy : IGraphic
     {
-        _image ??= new Image(_fileName);                  // загрузка по требованию
-        _image.Draw(at);
+        private readonly string _fileName;
+        private Image? _image;                                // ещё не загружен
+        private Size _extent;                                 // дешёвая часть данных
+
+        public ImageProxy(string fileName, Size extent) => (_fileName, _extent) = (fileName, extent);
+
+        public Size GetExtent() => _image?.GetExtent() ?? _extent;   // без загрузки файла
+
+        public void Draw(Point at)
+        {
+            _image ??= new Image(_fileName);                  // загрузка по требованию
+            _image.Draw(at);
+        }
     }
-}
-```
+    ```
 
-```python
-class ImageProxy:
-    def __init__(self, file_name: str, extent: Size) -> None:
-        self._file_name, self._extent, self._image = file_name, extent, None
+=== "Python"
 
-    def get_extent(self) -> Size:
-        return self._image.get_extent() if self._image else self._extent
+    ```python
+    class ImageProxy:
+        def __init__(self, file_name: str, extent: Size) -> None:
+            self._file_name, self._extent, self._image = file_name, extent, None
 
-    def draw(self, at: Point) -> None:
-        if self._image is None:
-            self._image = Image(self._file_name)     # загрузка при первом рисовании
-        self._image.draw(at)
+        def get_extent(self) -> Size:
+            return self._image.get_extent() if self._image else self._extent
 
-# для «умных ссылок» в Python часто хватает __getattr__ — заместитель получается
-# прозрачным для любого интерфейса, без ручного перечисления методов
-```
+        def draw(self, at: Point) -> None:
+            if self._image is None:
+                self._image = Image(self._file_name)     # загрузка при первом рисовании
+            self._image.draw(at)
+
+    # для «умных ссылок» в Python часто хватает __getattr__ — заместитель получается
+    # прозрачным для любого интерфейса, без ручного перечисления методов
+    ```
 
 **Виды заместителей (по книге).**
 
@@ -642,7 +833,7 @@ class ImageProxy:
 
 ---
 
-## Блок 8. Flyweight — приспособленец (6 мин)
+## Блок 8. Flyweight — приспособленец
 
 **Назначение.** Применяет разделение (совместное использование) для эффективной поддержки
 множества мелких объектов.
@@ -657,61 +848,91 @@ class ImageProxy:
 - **внешнее (extrinsic)** — зависит от контекста, хранится у клиента и передаётся
   в операции: позиция на странице, стиль абзаца.
 
-```mermaid
-classDiagram
-    direction LR
-    class GlyphFactory {
-        -Dictionary~char,Glyph~ pool
-        +GetGlyph(char c) Glyph
-    }
-    class Glyph {
-        <<interface>>
-        +Draw(GlyphContext ctx) void
-    }
-    class CharacterGlyph {
-        -char symbol
-        +Draw(GlyphContext ctx) void
-    }
-    GlyphFactory o-- Glyph : пул разделяемых объектов
-    Glyph <|.. CharacterGlyph
-    Client ..> GlyphFactory
-    Client ..> Glyph : передаёт внешнее состояние
-```
+=== "Диаграмма"
 
-```csharp
-public sealed class GlyphFactory
-{
-    private readonly Dictionary<char, CharacterGlyph> _pool = new();
+    ```mermaid
+    classDiagram
+        direction LR
+        class GlyphFactory {
+            -Dictionary~char,Glyph~ pool
+            +GetGlyph(char c) Glyph
+        }
+        class Glyph {
+            <<interface>>
+            +Draw(GlyphContext ctx) void
+        }
+        class CharacterGlyph {
+            -char symbol
+            +Draw(GlyphContext ctx) void
+        }
+        GlyphFactory o-- Glyph : пул разделяемых объектов
+        Glyph <|.. CharacterGlyph
+        Client ..> GlyphFactory
+        Client ..> Glyph : передаёт внешнее состояние
+    ```
 
-    public CharacterGlyph GetGlyph(char symbol)           // объект создаётся один раз на символ
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction LR
+        class GlyphFactory {
+            -Dictionary~char,Glyph~ pool
+            +GetGlyph(char c) Glyph
+        }
+        class Glyph {
+            <<interface>>
+            +Draw(GlyphContext ctx) void
+        }
+        class CharacterGlyph {
+            -char symbol
+            +Draw(GlyphContext ctx) void
+        }
+        GlyphFactory o-- Glyph : пул разделяемых объектов
+        Glyph <|.. CharacterGlyph
+        Client ..> GlyphFactory
+        Client ..> Glyph : передаёт внешнее состояние
+    ```
+
+
+=== "C#"
+
+    ```csharp
+    public sealed class GlyphFactory
     {
-        if (!_pool.TryGetValue(symbol, out var glyph))
-            _pool[symbol] = glyph = new CharacterGlyph(symbol);
-        return glyph;
+        private readonly Dictionary<char, CharacterGlyph> _pool = new();
+
+        public CharacterGlyph GetGlyph(char symbol)           // объект создаётся один раз на символ
+        {
+            if (!_pool.TryGetValue(symbol, out var glyph))
+                _pool[symbol] = glyph = new CharacterGlyph(symbol);
+            return glyph;
+        }
     }
-}
 
-public sealed class CharacterGlyph
-{
-    private readonly char _symbol;                        // внутреннее состояние
-    public CharacterGlyph(char symbol) => _symbol = symbol;
+    public sealed class CharacterGlyph
+    {
+        private readonly char _symbol;                        // внутреннее состояние
+        public CharacterGlyph(char symbol) => _symbol = symbol;
 
-    public void Draw(Point position, Font font) { }       // внешнее — приходит параметрами
-}
-```
+        public void Draw(Point position, Font font) { }       // внешнее — приходит параметрами
+    }
+    ```
 
-```python
-from functools import lru_cache
+=== "Python"
 
-@lru_cache(maxsize=None)          # пул разделяемых объектов — одной строкой
-def glyph_for(symbol: str) -> "CharacterGlyph":
-    return CharacterGlyph(symbol)
+    ```python
+    from functools import lru_cache
 
-class CharacterGlyph:
-    __slots__ = ("symbol",)       # запрещаем словарь атрибутов: объект компактнее
-    def __init__(self, symbol: str) -> None: self.symbol = symbol
-    def draw(self, position: Point, font: Font) -> None: ...
-```
+    @lru_cache(maxsize=None)          # пул разделяемых объектов — одной строкой
+    def glyph_for(symbol: str) -> "CharacterGlyph":
+        return CharacterGlyph(symbol)
+
+    class CharacterGlyph:
+        __slots__ = ("symbol",)       # запрещаем словарь атрибутов: объект компактнее
+        def __init__(self, symbol: str) -> None: self.symbol = symbol
+        def draw(self, position: Point, font: Font) -> None: ...
+    ```
 
 **Применимость.** Объектов очень много; затраты на хранение высоки; большую часть состояния
 можно сделать внешним; после вынесения внешнего состояния многие группы объектов заменяются
@@ -730,7 +951,7 @@ class CharacterGlyph:
 
 ---
 
-## Блок 9. Как их различать и выбирать (5 мин)
+## Блок 9. Как их различать и выбирать
 
 ### Три близнеца: компоновщик, декоратор, заместитель
 

@@ -4,23 +4,9 @@
 > код — на **C#**. Лекция 3 отвечала на вопрос «из чего состоит система»; эта — на вопросы
 > «кто кого вызывает» и «в каких состояниях бывает объект».
 
-## Хронометраж (60 минут)
-
-| # | Блок | Мин | Накопительно |
-|---|------|-----|--------------|
-| 1 | Зачем поведенческие диаграммы | 5 | 0:05 |
-| 2 | Диаграмма последовательности: основа | 8 | 0:13 |
-| 3 | Виды сообщений, создание и удаление участников | 7 | 0:20 |
-| 4 | Фрагменты: alt, opt, loop, par, break | 8 | 0:28 |
-| 5 | Сквозной пример: оформление заказа | 8 | 0:36 |
-| 6 | Диаграмма состояний: основа | 8 | 0:44 |
-| 7 | Составные состояния, выбор, параллельность, история | 6 | 0:50 |
-| 8 | Состояния в коде: enum, switch, паттерн State | 6 | 0:56 |
-| 9 | Какую диаграмму когда; ошибки; сдача | 4 | 1:00 |
-
 ---
 
-## Блок 1. Зачем поведенческие диаграммы (5 мин)
+## Блок 1. Зачем поведенческие диаграммы
 
 Диаграмма классов показывает структуру: кто с кем связан. Но по ней невозможно ответить
 на два вопроса, которые чаще всего и вызывают споры в команде:
@@ -46,7 +32,7 @@
 
 ---
 
-## Блок 2. Диаграмма последовательности: основа (8 мин)
+## Блок 2. Диаграмма последовательности: основа
 
 ### Что на ней есть
 
@@ -56,27 +42,54 @@
 - **Активации (полосы выполнения)** — прямоугольники на линии жизни: объект сейчас
   занят обработкой.
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor User as Покупатель
-    participant C as OrdersController
-    participant S as OrderService
-    participant R as OrderRepository
+=== "Диаграмма"
 
-    User->>C: POST /orders
-    activate C
-    C->>S: Place(cart)
-    activate S
-    S->>R: Save(order)
-    activate R
-    R-->>S: order
-    deactivate R
-    S-->>C: order
-    deactivate S
-    C-->>User: 201 Created
-    deactivate C
-```
+    ```mermaid
+    sequenceDiagram
+        autonumber
+        actor User as Покупатель
+        participant C as OrdersController
+        participant S as OrderService
+        participant R as OrderRepository
+
+        User->>C: POST /orders
+        activate C
+        C->>S: Place(cart)
+        activate S
+        S->>R: Save(order)
+        activate R
+        R-->>S: order
+        deactivate R
+        S-->>C: order
+        deactivate S
+        C-->>User: 201 Created
+        deactivate C
+    ```
+
+=== "Исходник"
+
+    ```
+    sequenceDiagram
+        autonumber
+        actor User as Покупатель
+        participant C as OrdersController
+        participant S as OrderService
+        participant R as OrderRepository
+
+        User->>C: POST /orders
+        activate C
+        C->>S: Place(cart)
+        activate S
+        S->>R: Save(order)
+        activate R
+        R-->>S: order
+        deactivate R
+        S-->>C: order
+        deactivate S
+        C-->>User: 201 Created
+        deactivate C
+    ```
+
 
 Синтаксис, который нужен для 95% диаграмм:
 
@@ -106,7 +119,7 @@ sequenceDiagram
 
 ---
 
-## Блок 3. Виды сообщений, создание и удаление участников (7 мин)
+## Блок 3. Виды сообщений, создание и удаление участников
 
 ### Синхронно и асинхронно
 
@@ -114,20 +127,40 @@ sequenceDiagram
 Асинхронный (открытый наконечник, в Mermaid `-)`) — отправил и пошёл дальше: постановка
 в очередь, публикация события, `fire-and-forget`.
 
-```mermaid
-sequenceDiagram
-    participant S as OrderService
-    participant Q as MessageBus
-    participant N as NotificationWorker
-    participant M as SmtpServer
+=== "Диаграмма"
 
-    S->>S: Validate(order)
-    Note right of S: самовызов — приватный метод
-    S-)Q: publish OrderPlaced
-    Q-)N: OrderPlaced
-    N->>M: Send(email)
-    M-->>N: ok
-```
+    ```mermaid
+    sequenceDiagram
+        participant S as OrderService
+        participant Q as MessageBus
+        participant N as NotificationWorker
+        participant M as SmtpServer
+
+        S->>S: Validate(order)
+        Note right of S: самовызов — приватный метод
+        S-)Q: publish OrderPlaced
+        Q-)N: OrderPlaced
+        N->>M: Send(email)
+        M-->>N: ok
+    ```
+
+=== "Исходник"
+
+    ```
+    sequenceDiagram
+        participant S as OrderService
+        participant Q as MessageBus
+        participant N as NotificationWorker
+        participant M as SmtpServer
+
+        S->>S: Validate(order)
+        Note right of S: самовызов — приватный метод
+        S-)Q: publish OrderPlaced
+        Q-)N: OrderPlaced
+        N->>M: Send(email)
+        M-->>N: ok
+    ```
+
 
 Различие критично при обсуждении архитектуры: сплошная стрелка — вызывающий заблокирован
 и зависит от доступности вызываемого; открытая — связанность слабее, но появляются вопросы
@@ -137,16 +170,32 @@ sequenceDiagram
 
 ### Создание и уничтожение объектов
 
-```mermaid
-sequenceDiagram
-    participant S as OrderService
-    create participant O as Order
-    S->>O: new Order(lines)
-    O-->>S: order
-    S->>O: Pay(method)
-    destroy O
-    S->>O: Dispose()
-```
+=== "Диаграмма"
+
+    ```mermaid
+    sequenceDiagram
+        participant S as OrderService
+        create participant O as Order
+        S->>O: new Order(lines)
+        O-->>S: order
+        S->>O: Pay(method)
+        destroy O
+        S->>O: Dispose()
+    ```
+
+=== "Исходник"
+
+    ```
+    sequenceDiagram
+        participant S as OrderService
+        create participant O as Order
+        S->>O: new Order(lines)
+        O-->>S: order
+        S->>O: Pay(method)
+        destroy O
+        S->>O: Dispose()
+    ```
+
 
 `create` показывает, что объект появился в ходе сценария, `destroy` — что он перестал
 существовать (в C# — освобождён `Dispose`, вышел из области видимости или стал недостижим).
@@ -158,43 +207,82 @@ sequenceDiagram
 
 ---
 
-## Блок 4. Фрагменты: alt, opt, loop, par, break (8 мин)
+## Блок 4. Фрагменты: alt, opt, loop, par, break
 
 Комбинированные фрагменты — рамки, задающие управляющую логику. Их пять, и их хватает.
 
-```mermaid
-sequenceDiagram
-    autonumber
-    participant C as Checkout
-    participant P as PaymentGateway
-    participant I as Inventory
-    participant L as Logger
+=== "Диаграмма"
 
-    loop для каждой позиции
-        C->>I: Reserve(sku, qty)
-    end
+    ```mermaid
+    sequenceDiagram
+        autonumber
+        participant C as Checkout
+        participant P as PaymentGateway
+        participant I as Inventory
+        participant L as Logger
 
-    opt промокод указан
-        C->>C: ApplyDiscount(code)
-    end
+        loop для каждой позиции
+            C->>I: Reserve(sku, qty)
+        end
 
-    C->>P: Charge(total)
+        opt промокод указан
+            C->>C: ApplyDiscount(code)
+        end
 
-    alt оплата прошла
-        P-->>C: Ok
-        C->>I: Commit()
-    else отказ банка
-        P-->>C: Declined
-        C->>I: Release()
-        C->>L: warn "payment declined"
-    end
+        C->>P: Charge(total)
 
-    par уведомления
-        C-)L: audit
-    and
-        C-)P: receipt
-    end
-```
+        alt оплата прошла
+            P-->>C: Ok
+            C->>I: Commit()
+        else отказ банка
+            P-->>C: Declined
+            C->>I: Release()
+            C->>L: warn "payment declined"
+        end
+
+        par уведомления
+            C-)L: audit
+        and
+            C-)P: receipt
+        end
+    ```
+
+=== "Исходник"
+
+    ```
+    sequenceDiagram
+        autonumber
+        participant C as Checkout
+        participant P as PaymentGateway
+        participant I as Inventory
+        participant L as Logger
+
+        loop для каждой позиции
+            C->>I: Reserve(sku, qty)
+        end
+
+        opt промокод указан
+            C->>C: ApplyDiscount(code)
+        end
+
+        C->>P: Charge(total)
+
+        alt оплата прошла
+            P-->>C: Ok
+            C->>I: Commit()
+        else отказ банка
+            P-->>C: Declined
+            C->>I: Release()
+            C->>L: warn "payment declined"
+        end
+
+        par уведомления
+            C-)L: audit
+        and
+            C-)P: receipt
+        end
+    ```
+
 
 | Фрагмент | Когда | Аналог в коде |
 |---|---|---|
@@ -217,59 +305,113 @@ sequenceDiagram
 
 ---
 
-## Блок 5. Сквозной пример: оформление заказа (8 мин)
+## Блок 5. Сквозной пример: оформление заказа
 
 Сценарий целиком, включая ошибку и компенсацию. Такой уровень детализации я жду
 в отчётах.
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor U as Покупатель
-    participant C as OrdersController
-    participant S as OrderService
-    participant I as IInventory
-    participant P as IPaymentMethod
-    participant R as IOrderRepository
-    participant B as MessageBus
+=== "Диаграмма"
 
-    U->>C: POST /orders {cartId, payment}
-    activate C
-    C->>C: Validate(request)
+    ```mermaid
+    sequenceDiagram
+        autonumber
+        actor U as Покупатель
+        participant C as OrdersController
+        participant S as OrderService
+        participant I as IInventory
+        participant P as IPaymentMethod
+        participant R as IOrderRepository
+        participant B as MessageBus
 
-    alt данные некорректны
-        C-->>U: 400 Bad Request
-    else данные в порядке
-        C->>S: Place(cartId, payment)
-        activate S
+        U->>C: POST /orders {cartId, payment}
+        activate C
+        C->>C: Validate(request)
 
-        S->>I: Reserve(items)
-        activate I
-        I-->>S: reservationId
-        deactivate I
+        alt данные некорректны
+            C-->>U: 400 Bad Request
+        else данные в порядке
+            C->>S: Place(cartId, payment)
+            activate S
 
-        S->>P: Charge(total)
-        activate P
+            S->>I: Reserve(items)
+            activate I
+            I-->>S: reservationId
+            deactivate I
 
-        alt оплата прошла
-            P-->>S: Ok
-            S->>R: Save(order)
-            R-->>S: saved
-            S-)B: publish OrderPlaced
-            S-->>C: order
-            C-->>U: 201 Created
-        else отказ
-            P-->>S: Declined
-            S->>I: Release(reservationId)
-            Note right of S: компенсация: резерв снимаем всегда
-            S-->>C: PaymentFailed
-            C-->>U: 402 Payment Required
+            S->>P: Charge(total)
+            activate P
+
+            alt оплата прошла
+                P-->>S: Ok
+                S->>R: Save(order)
+                R-->>S: saved
+                S-)B: publish OrderPlaced
+                S-->>C: order
+                C-->>U: 201 Created
+            else отказ
+                P-->>S: Declined
+                S->>I: Release(reservationId)
+                Note right of S: компенсация: резерв снимаем всегда
+                S-->>C: PaymentFailed
+                C-->>U: 402 Payment Required
+            end
+            deactivate P
+            deactivate S
         end
-        deactivate P
-        deactivate S
-    end
-    deactivate C
-```
+        deactivate C
+    ```
+
+=== "Исходник"
+
+    ```
+    sequenceDiagram
+        autonumber
+        actor U as Покупатель
+        participant C as OrdersController
+        participant S as OrderService
+        participant I as IInventory
+        participant P as IPaymentMethod
+        participant R as IOrderRepository
+        participant B as MessageBus
+
+        U->>C: POST /orders {cartId, payment}
+        activate C
+        C->>C: Validate(request)
+
+        alt данные некорректны
+            C-->>U: 400 Bad Request
+        else данные в порядке
+            C->>S: Place(cartId, payment)
+            activate S
+
+            S->>I: Reserve(items)
+            activate I
+            I-->>S: reservationId
+            deactivate I
+
+            S->>P: Charge(total)
+            activate P
+
+            alt оплата прошла
+                P-->>S: Ok
+                S->>R: Save(order)
+                R-->>S: saved
+                S-)B: publish OrderPlaced
+                S-->>C: order
+                C-->>U: 201 Created
+            else отказ
+                P-->>S: Declined
+                S->>I: Release(reservationId)
+                Note right of S: компенсация: резерв снимаем всегда
+                S-->>C: PaymentFailed
+                C-->>U: 402 Payment Required
+            end
+            deactivate P
+            deactivate S
+        end
+        deactivate C
+    ```
+
 
 Что эта картинка даёт помимо красоты:
 
@@ -285,7 +427,7 @@ sequenceDiagram
 
 ---
 
-## Блок 6. Диаграмма состояний: основа (8 мин)
+## Блок 6. Диаграмма состояний: основа
 
 ### Что на ней есть
 
@@ -293,18 +435,36 @@ sequenceDiagram
 состояниях он бывает, какие события переводят его из одного в другое и какие действия
 при этом выполняются.
 
-```mermaid
-stateDiagram-v2
-    [*] --> Draft : создан
-    Draft --> Paid : pay / списать деньги
-    Draft --> Cancelled : cancel
-    Paid --> Shipped : ship / уведомить клиента
-    Paid --> Refunded : refund [срок < 14 дней]
-    Shipped --> Delivered : confirm
-    Cancelled --> [*]
-    Refunded --> [*]
-    Delivered --> [*]
-```
+=== "Диаграмма"
+
+    ```mermaid
+    stateDiagram-v2
+        [*] --> Draft : создан
+        Draft --> Paid : pay / списать деньги
+        Draft --> Cancelled : cancel
+        Paid --> Shipped : ship / уведомить клиента
+        Paid --> Refunded : refund [срок < 14 дней]
+        Shipped --> Delivered : confirm
+        Cancelled --> [*]
+        Refunded --> [*]
+        Delivered --> [*]
+    ```
+
+=== "Исходник"
+
+    ```
+    stateDiagram-v2
+        [*] --> Draft : создан
+        Draft --> Paid : pay / списать деньги
+        Draft --> Cancelled : cancel
+        Paid --> Shipped : ship / уведомить клиента
+        Paid --> Refunded : refund [срок < 14 дней]
+        Shipped --> Delivered : confirm
+        Cancelled --> [*]
+        Refunded --> [*]
+        Delivered --> [*]
+    ```
+
 
 Элементы:
 
@@ -317,19 +477,38 @@ stateDiagram-v2
 
 ### Действия внутри состояния
 
-```mermaid
-stateDiagram-v2
-    state Paid {
-        [*] --> AwaitingPacking
-        AwaitingPacking --> Packed : packed
-        Packed --> [*]
-    }
-    note right of Paid
-        entry / зарезервировать склад
-        exit  / освободить резерв
-        do    / проверять оплату раз в минуту
-    end note
-```
+=== "Диаграмма"
+
+    ```mermaid
+    stateDiagram-v2
+        state Paid {
+            [*] --> AwaitingPacking
+            AwaitingPacking --> Packed : packed
+            Packed --> [*]
+        }
+        note right of Paid
+            entry / зарезервировать склад
+            exit  / освободить резерв
+            do    / проверять оплату раз в минуту
+        end note
+    ```
+
+=== "Исходник"
+
+    ```
+    stateDiagram-v2
+        state Paid {
+            [*] --> AwaitingPacking
+            AwaitingPacking --> Packed : packed
+            Packed --> [*]
+        }
+        note right of Paid
+            entry / зарезервировать склад
+            exit  / освободить резерв
+            do    / проверять оплату раз в минуту
+        end note
+    ```
+
 
 - `entry` — действие при входе в состояние, выполняется всегда, каким бы переходом
   ни вошли;
@@ -350,24 +529,44 @@ stateDiagram-v2
 
 ---
 
-## Блок 7. Составные состояния, выбор, параллельность, история (6 мин)
+## Блок 7. Составные состояния, выбор, параллельность, история
 
 ### Составные (вложенные) состояния
 
-```mermaid
-stateDiagram-v2
-    [*] --> Active
-    state Active {
-        [*] --> Idle
-        Idle --> Processing : task
-        Processing --> Idle : done
-        Processing --> Failed : error
-        Failed --> Idle : retry
-    }
-    Active --> Suspended : suspend
-    Suspended --> Active : resume
-    Active --> [*] : shutdown
-```
+=== "Диаграмма"
+
+    ```mermaid
+    stateDiagram-v2
+        [*] --> Active
+        state Active {
+            [*] --> Idle
+            Idle --> Processing : task
+            Processing --> Idle : done
+            Processing --> Failed : error
+            Failed --> Idle : retry
+        }
+        Active --> Suspended : suspend
+        Suspended --> Active : resume
+        Active --> [*] : shutdown
+    ```
+
+=== "Исходник"
+
+    ```
+    stateDiagram-v2
+        [*] --> Active
+        state Active {
+            [*] --> Idle
+            Idle --> Processing : task
+            Processing --> Idle : done
+            Processing --> Failed : error
+            Failed --> Idle : retry
+        }
+        Active --> Suspended : suspend
+        Suspended --> Active : resume
+        Active --> [*] : shutdown
+    ```
+
 
 Такое состояние называется **суперсостоянием**, вложенные в него — **подсостояниями**.
 Переход `shutdown` нарисован один раз от всего суперсостояния и срабатывает из любого
@@ -376,28 +575,61 @@ stateDiagram-v2
 
 ### Выбор и параллельность
 
-```mermaid
-stateDiagram-v2
-    state check <<choice>>
-    [*] --> Submitted
-    Submitted --> check : review
-    check --> Approved : [сумма < 10000]
-    check --> ManualReview : [сумма >= 10000]
-    ManualReview --> Approved : approve
-    ManualReview --> Rejected : reject
-```
+=== "Диаграмма"
 
-```mermaid
-stateDiagram-v2
-    state fork_state <<fork>>
-    state join_state <<join>>
-    [*] --> fork_state
-    fork_state --> Packing
-    fork_state --> Invoicing
-    Packing --> join_state
-    Invoicing --> join_state
-    join_state --> ReadyToShip
-```
+    ```mermaid
+    stateDiagram-v2
+        state check <<choice>>
+        [*] --> Submitted
+        Submitted --> check : review
+        check --> Approved : [сумма < 10000]
+        check --> ManualReview : [сумма >= 10000]
+        ManualReview --> Approved : approve
+        ManualReview --> Rejected : reject
+    ```
+
+=== "Исходник"
+
+    ```
+    stateDiagram-v2
+        state check <<choice>>
+        [*] --> Submitted
+        Submitted --> check : review
+        check --> Approved : [сумма < 10000]
+        check --> ManualReview : [сумма >= 10000]
+        ManualReview --> Approved : approve
+        ManualReview --> Rejected : reject
+    ```
+
+
+=== "Диаграмма"
+
+    ```mermaid
+    stateDiagram-v2
+        state fork_state <<fork>>
+        state join_state <<join>>
+        [*] --> fork_state
+        fork_state --> Packing
+        fork_state --> Invoicing
+        Packing --> join_state
+        Invoicing --> join_state
+        join_state --> ReadyToShip
+    ```
+
+=== "Исходник"
+
+    ```
+    stateDiagram-v2
+        state fork_state <<fork>>
+        state join_state <<join>>
+        [*] --> fork_state
+        fork_state --> Packing
+        fork_state --> Invoicing
+        Packing --> join_state
+        Invoicing --> join_state
+        join_state --> ReadyToShip
+    ```
+
 
 `<<choice>>` — ветвление по условиям, `<<fork>>` и `<<join>>` — параллельные ветви,
 которые должны завершиться обе.
@@ -411,7 +643,7 @@ stateDiagram-v2
 
 ---
 
-## Блок 8. Состояния в коде: enum, switch, паттерн State (6 мин)
+## Блок 8. Состояния в коде: enum, switch, паттерн State
 
 Фаулер называет три основных способа реализовать диаграмму состояний: вложенный оператор
 `switch`, паттерн State и таблица состояний. Разберём их по возрастанию цены и гибкости
@@ -498,7 +730,7 @@ public sealed class PaidState : IOrderState
 
 ---
 
-## Блок 9. Какую диаграмму когда; ошибки; сдача (4 мин)
+## Блок 9. Какую диаграмму когда; ошибки; сдача
 
 ### Выбор диаграммы
 

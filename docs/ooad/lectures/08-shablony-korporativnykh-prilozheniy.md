@@ -6,23 +6,9 @@
 > Каталог доступен и онлайн: [martinfowler.com/eaaCatalog](https://martinfowler.com/eaaCatalog/).
 > Код — **C#** и EF Core, диаграммы — **Mermaid**.
 
-## Хронометраж (60 минут)
-
-| # | Блок | Мин | Накопительно |
-|---|------|-----|--------------|
-| 1 | Что такое корпоративное приложение и откуда каталог | 5 | 0:05 |
-| 2 | Карта слоёв и паттернов источника данных | 6 | 0:11 |
-| 3 | Active Record | 8 | 0:19 |
-| 4 | Data Mapper как контраст | 6 | 0:25 |
-| 5 | Repository | 9 | 0:34 |
-| 6 | Unit of Work | 9 | 0:43 |
-| 7 | Service Layer | 8 | 0:51 |
-| 8 | Что из этого уже реализовано в EF Core | 5 | 0:56 |
-| 9 | Выбор, ошибки и домашнее задание | 4 | 1:00 |
-
 ---
 
-## Блок 1. Что такое корпоративное приложение и откуда каталог (5 мин)
+## Блок 1. Что такое корпоративное приложение и откуда каталог
 
 ### Признаки корпоративного приложения
 
@@ -54,17 +40,30 @@ GoF описывает приёмы уровня классов и объект�
 
 ---
 
-## Блок 2. Карта слоёв и паттернов источника данных (6 мин)
+## Блок 2. Карта слоёв и паттернов источника данных
 
 ### Три слоя по Фаулеру
 
-```mermaid
-flowchart TB
-    P["Слой представления<br/>UI, REST, консоль"]
-    D["Слой домена<br/>бизнес-логика"]
-    S["Слой источника данных<br/>БД, очереди, внешние API"]
-    P --> D --> S
-```
+=== "Диаграмма"
+
+    ```mermaid
+    flowchart TB
+        P["Слой представления<br/>UI, REST, консоль"]
+        D["Слой домена<br/>бизнес-логика"]
+        S["Слой источника данных<br/>БД, очереди, внешние API"]
+        P --> D --> S
+    ```
+
+=== "Исходник"
+
+    ```
+    flowchart TB
+        P["Слой представления<br/>UI, REST, консоль"]
+        D["Слой домена<br/>бизнес-логика"]
+        S["Слой источника данных<br/>БД, очереди, внешние API"]
+        P --> D --> S
+    ```
+
 
 Правило: представление знает о домене, домен — об источнике данных (а лучше — только
 об абстракции над ним), обратных стрелок нет. Это то же самое, что мы разбирали в лекции 2
@@ -108,7 +107,7 @@ Table Module — золотая середина: структуры больш�
 
 ---
 
-## Блок 3. Active Record (8 мин)
+## Блок 3. Active Record
 
 **Назначение.** Объект, который оборачивает строку таблицы, инкапсулирует доступ к базе
 и добавляет к этим данным доменную логику.
@@ -116,19 +115,38 @@ Table Module — золотая середина: структуры больш�
 Проще говоря: класс = таблица, экземпляр = строка, у объекта есть `Save`, `Delete`,
 `Find` — и здесь же бизнес-правила.
 
-```mermaid
-classDiagram
-    class Customer {
-        +int Id
-        +string Email
-        +decimal Discount
-        +Find(int id)$ Customer
-        +Save() void
-        +Delete() void
-        +IsEligibleForBonus() bool
-    }
-    note for Customer "Одна и та же сущность:<br/>и строка таблицы, и бизнес-объект"
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        class Customer {
+            +int Id
+            +string Email
+            +decimal Discount
+            +Find(int id)$ Customer
+            +Save() void
+            +Delete() void
+            +IsEligibleForBonus() bool
+        }
+        note for Customer "Одна и та же сущность:<br/>и строка таблицы, и бизнес-объект"
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        class Customer {
+            +int Id
+            +string Email
+            +decimal Discount
+            +Find(int id)$ Customer
+            +Save() void
+            +Delete() void
+            +IsEligibleForBonus() bool
+        }
+        note for Customer "Одна и та же сущность:<br/>и строка таблицы, и бизнес-объект"
+    ```
+
 
 ```csharp
 public class Customer                                   // Active Record
@@ -167,29 +185,53 @@ customer.Save();
 
 ---
 
-## Блок 4. Data Mapper как контраст (6 мин)
+## Блок 4. Data Mapper как контраст
 
 **Назначение.** Слой преобразователей, который переносит данные между объектами и базой,
 сохраняя их **независимыми друг от друга** и от самого преобразователя.
 
-```mermaid
-classDiagram
-    direction LR
-    class Customer {
-        +string Email
-        +Money TotalSpent
-        +bool IsEligibleForBonus()
-    }
-    class CustomerMapper {
-        +Find(int id) Customer
-        +Insert(Customer c) void
-        +Update(Customer c) void
-    }
-    class Database
-    CustomerMapper ..> Customer : создаёт и заполняет
-    CustomerMapper ..> Database : SQL
-    note for Customer "Ничего не знает ни о БД,<br/>ни о преобразователе"
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction LR
+        class Customer {
+            +string Email
+            +Money TotalSpent
+            +bool IsEligibleForBonus()
+        }
+        class CustomerMapper {
+            +Find(int id) Customer
+            +Insert(Customer c) void
+            +Update(Customer c) void
+        }
+        class Database
+        CustomerMapper ..> Customer : создаёт и заполняет
+        CustomerMapper ..> Database : SQL
+        note for Customer "Ничего не знает ни о БД,<br/>ни о преобразователе"
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction LR
+        class Customer {
+            +string Email
+            +Money TotalSpent
+            +bool IsEligibleForBonus()
+        }
+        class CustomerMapper {
+            +Find(int id) Customer
+            +Insert(Customer c) void
+            +Update(Customer c) void
+        }
+        class Database
+        CustomerMapper ..> Customer : создаёт и заполняет
+        CustomerMapper ..> Database : SQL
+        note for Customer "Ничего не знает ни о БД,<br/>ни о преобразователе"
+    ```
+
 
 Ключевое различие с Active Record — **направление знания**. В Active Record объект знает
 о базе. В Data Mapper объект не знает о ней ничего, а знание сосредоточено в отдельном слое.
@@ -204,7 +246,7 @@ Data Mapper почти всегда берут готовым: EF Core, NHiberna
 
 ---
 
-## Блок 5. Repository (9 мин)
+## Блок 5. Repository
 
 **Назначение.** Посредник между доменом и слоем отображения данных, предоставляющий доступ
 к доменным объектам через **интерфейс, похожий на коллекцию**.
@@ -219,24 +261,48 @@ Data Mapper почти всегда берут готовым: EF Core, NHiberna
 **одностороннюю зависимость** домена и слоя отображения данных — ровно то направление,
 о котором говорил DIP.
 
-```mermaid
-classDiagram
-    direction LR
-    class IOrderRepository {
-        <<interface>>
-        +GetById(Guid id) Order
-        +FindOverdue(DateTime at) IReadOnlyList~Order~
-        +Add(Order order) void
-        +Remove(Order order) void
-    }
-    class EfOrderRepository
-    class InMemoryOrderRepository
-    class OrderService
-    IOrderRepository <|.. EfOrderRepository
-    IOrderRepository <|.. InMemoryOrderRepository
-    OrderService --> IOrderRepository : зависит от абстракции
-    EfOrderRepository ..> DbContext
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction LR
+        class IOrderRepository {
+            <<interface>>
+            +GetById(Guid id) Order
+            +FindOverdue(DateTime at) IReadOnlyList~Order~
+            +Add(Order order) void
+            +Remove(Order order) void
+        }
+        class EfOrderRepository
+        class InMemoryOrderRepository
+        class OrderService
+        IOrderRepository <|.. EfOrderRepository
+        IOrderRepository <|.. InMemoryOrderRepository
+        OrderService --> IOrderRepository : зависит от абстракции
+        EfOrderRepository ..> DbContext
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction LR
+        class IOrderRepository {
+            <<interface>>
+            +GetById(Guid id) Order
+            +FindOverdue(DateTime at) IReadOnlyList~Order~
+            +Add(Order order) void
+            +Remove(Order order) void
+        }
+        class EfOrderRepository
+        class InMemoryOrderRepository
+        class OrderService
+        IOrderRepository <|.. EfOrderRepository
+        IOrderRepository <|.. InMemoryOrderRepository
+        OrderService --> IOrderRepository : зависит от абстракции
+        EfOrderRepository ..> DbContext
+    ```
+
 
 ```csharp
 public interface IOrderRepository
@@ -288,7 +354,7 @@ Repository + Unit of Work). Промежуточный вариант — «об
 
 ---
 
-## Блок 6. Unit of Work (9 мин)
+## Блок 6. Unit of Work
 
 **Назначение.** Поддерживает список объектов, затронутых бизнес-транзакцией, координирует
 запись изменений и разрешение конфликтов конкурентного доступа.
@@ -296,25 +362,50 @@ Repository + Unit of Work). Промежуточный вариант — «об
 Проще: кто-то должен помнить, **что изменилось за время операции**, и записать это одной
 транзакцией — либо всё, либо ничего.
 
-```mermaid
-sequenceDiagram
-    autonumber
-    participant S as OrderService
-    participant R as IOrderRepository
-    participant U as IUnitOfWork
-    participant DB as База данных
+=== "Диаграмма"
 
-    S->>R: GetById(id)
-    R-->>S: order (отслеживается)
-    S->>S: order.Pay(method)
-    S->>R: Add(newInvoice)
-    Note right of U: изменения накоплены,<br/>но в базу ещё не ушли
-    S->>U: SaveChangesAsync()
-    U->>DB: BEGIN TRANSACTION
-    U->>DB: UPDATE orders / INSERT invoices
-    U->>DB: COMMIT
-    U-->>S: количество записей
-```
+    ```mermaid
+    sequenceDiagram
+        autonumber
+        participant S as OrderService
+        participant R as IOrderRepository
+        participant U as IUnitOfWork
+        participant DB as База данных
+
+        S->>R: GetById(id)
+        R-->>S: order (отслеживается)
+        S->>S: order.Pay(method)
+        S->>R: Add(newInvoice)
+        Note right of U: изменения накоплены,<br/>но в базу ещё не ушли
+        S->>U: SaveChangesAsync()
+        U->>DB: BEGIN TRANSACTION
+        U->>DB: UPDATE orders / INSERT invoices
+        U->>DB: COMMIT
+        U-->>S: количество записей
+    ```
+
+=== "Исходник"
+
+    ```
+    sequenceDiagram
+        autonumber
+        participant S as OrderService
+        participant R as IOrderRepository
+        participant U as IUnitOfWork
+        participant DB as База данных
+
+        S->>R: GetById(id)
+        R-->>S: order (отслеживается)
+        S->>S: order.Pay(method)
+        S->>R: Add(newInvoice)
+        Note right of U: изменения накоплены,<br/>но в базу ещё не ушли
+        S->>U: SaveChangesAsync()
+        U->>DB: BEGIN TRANSACTION
+        U->>DB: UPDATE orders / INSERT invoices
+        U->>DB: COMMIT
+        U-->>S: количество записей
+    ```
+
 
 ```csharp
 public interface IUnitOfWork
@@ -371,7 +462,7 @@ public sealed class PlaceOrderHandler
 
 ---
 
-## Блок 7. Service Layer (8 мин)
+## Блок 7. Service Layer
 
 **Назначение.** Определяет границу приложения слоем сервисов, который задаёт набор доступных
 операций и координирует ответ приложения в каждой из них.
@@ -379,13 +470,26 @@ public sealed class PlaceOrderHandler
 Это ответ на вопрос: «где живёт сценарий целиком?» Не в контроллере (он тонкий — лекция 2),
 не в сущности (она не знает про транзакции и почту), а в отдельном слое.
 
-```mermaid
-flowchart TB
-    C["Контроллеры / gRPC / фоновые задачи"] --> SL["Слой сервисов приложения<br/>сценарии, транзакции, авторизация"]
-    SL --> DM["Доменная модель<br/>правила и инварианты"]
-    SL --> R["Репозитории и внешние сервисы"]
-    DM -.-> R
-```
+=== "Диаграмма"
+
+    ```mermaid
+    flowchart TB
+        C["Контроллеры / gRPC / фоновые задачи"] --> SL["Слой сервисов приложения<br/>сценарии, транзакции, авторизация"]
+        SL --> DM["Доменная модель<br/>правила и инварианты"]
+        SL --> R["Репозитории и внешние сервисы"]
+        DM -.-> R
+    ```
+
+=== "Исходник"
+
+    ```
+    flowchart TB
+        C["Контроллеры / gRPC / фоновые задачи"] --> SL["Слой сервисов приложения<br/>сценарии, транзакции, авторизация"]
+        SL --> DM["Доменная модель<br/>правила и инварианты"]
+        SL --> R["Репозитории и внешние сервисы"]
+        DM -.-> R
+    ```
+
 
 ```csharp
 public sealed class OrderAppService                       // Service Layer
@@ -441,7 +545,7 @@ public sealed class OrderAppService                       // Service Layer
 
 ---
 
-## Блок 8. Что из этого уже реализовано в EF Core (5 мин)
+## Блок 8. Что из этого уже реализовано в EF Core
 
 Половина сегодняшнего каталога встроена в вашу ORM — и это надо понимать, иначе вы напишете
 второй слой поверх первого.
@@ -478,18 +582,32 @@ Console.WriteLine(ReferenceEquals(a, b));      // True — контекст ве
 
 ---
 
-## Блок 9. Выбор, ошибки и домашнее задание (4 мин)
+## Блок 9. Выбор, ошибки и домашнее задание
 
 ### Как выбирать
 
-```mermaid
-flowchart TD
-    A{"Логика сложная<br/>и будет расти?"} -- нет --> B["Transaction Script<br/>+ Active Record или Dapper"]
-    A -- да --> C["Domain Model<br/>+ Data Mapper (ORM)"]
-    C --> D{"Домен должен быть<br/>независим от ORM?"}
-    D -- да --> E["Репозитории по агрегатам<br/>+ Unit of Work + Service Layer"]
-    D -- нет --> F["DbContext напрямую<br/>в обработчиках сценариев"]
-```
+=== "Диаграмма"
+
+    ```mermaid
+    flowchart TD
+        A{"Логика сложная<br/>и будет расти?"} -- нет --> B["Transaction Script<br/>+ Active Record или Dapper"]
+        A -- да --> C["Domain Model<br/>+ Data Mapper (ORM)"]
+        C --> D{"Домен должен быть<br/>независим от ORM?"}
+        D -- да --> E["Репозитории по агрегатам<br/>+ Unit of Work + Service Layer"]
+        D -- нет --> F["DbContext напрямую<br/>в обработчиках сценариев"]
+    ```
+
+=== "Исходник"
+
+    ```
+    flowchart TD
+        A{"Логика сложная<br/>и будет расти?"} -- нет --> B["Transaction Script<br/>+ Active Record или Dapper"]
+        A -- да --> C["Domain Model<br/>+ Data Mapper (ORM)"]
+        C --> D{"Домен должен быть<br/>независим от ORM?"}
+        D -- да --> E["Репозитории по агрегатам<br/>+ Unit of Work + Service Layer"]
+        D -- нет --> F["DbContext напрямую<br/>в обработчиках сценариев"]
+    ```
+
 
 ### Ошибки
 

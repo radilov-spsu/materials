@@ -45,18 +45,36 @@
 скрывает ленивость от клиента полностью, отложенная инициализация обычно локальна и видна
 владельцу поля.
 
-```mermaid
-classDiagram
-    class ReportService {
-        -Lazy~ExchangeRates~ rates
-        +Build() Report
-    }
-    class ExchangeRates {
-        +Load() void
-    }
-    ReportService o-- ExchangeRates : создаётся при первом обращении
-    note for ReportService "Стоимость создания платится<br/>только если данные реально нужны"
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        class ReportService {
+            -Lazy~ExchangeRates~ rates
+            +Build() Report
+        }
+        class ExchangeRates {
+            +Load() void
+        }
+        ReportService o-- ExchangeRates : создаётся при первом обращении
+        note for ReportService "Стоимость создания платится<br/>только если данные реально нужны"
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        class ReportService {
+            -Lazy~ExchangeRates~ rates
+            +Build() Report
+        }
+        class ExchangeRates {
+            +Load() void
+        }
+        ReportService o-- ExchangeRates : создаётся при первом обращении
+        note for ReportService "Стоимость создания платится<br/>только если данные реально нужны"
+    ```
+
 
 ### 1.2. Реализация и подводные камни
 
@@ -115,25 +133,50 @@ public sealed class ReportService
 обратно. Применяется, когда создание дорого (соединение, поток, большой буфер) или когда
 число одновременных экземпляров нужно ограничить.
 
-```mermaid
-sequenceDiagram
-    autonumber
-    participant C as Клиент
-    participant P as ObjectPool
-    participant O as Ресурс
+=== "Диаграмма"
 
-    C->>P: Rent()
-    alt в пуле есть свободный
-        P-->>C: существующий объект
-    else пул пуст
-        P->>O: создать новый
-        O-->>P: объект
-        P-->>C: объект
-    end
-    C->>C: работа с объектом
-    C->>P: Return(объект)
-    Note right of P: состояние объекта<br/>обязательно сбрасывается
-```
+    ```mermaid
+    sequenceDiagram
+        autonumber
+        participant C as Клиент
+        participant P as ObjectPool
+        participant O as Ресурс
+
+        C->>P: Rent()
+        alt в пуле есть свободный
+            P-->>C: существующий объект
+        else пул пуст
+            P->>O: создать новый
+            O-->>P: объект
+            P-->>C: объект
+        end
+        C->>C: работа с объектом
+        C->>P: Return(объект)
+        Note right of P: состояние объекта<br/>обязательно сбрасывается
+    ```
+
+=== "Исходник"
+
+    ```
+    sequenceDiagram
+        autonumber
+        participant C as Клиент
+        participant P as ObjectPool
+        participant O as Ресурс
+
+        C->>P: Rent()
+        alt в пуле есть свободный
+            P-->>C: существующий объект
+        else пул пуст
+            P->>O: создать новый
+            O-->>P: объект
+            P-->>C: объект
+        end
+        C->>C: работа с объектом
+        C->>P: Return(объект)
+        Note right of P: состояние объекта<br/>обязательно сбрасывается
+    ```
+
 
 ### 2.2. Что изучить
 
@@ -186,16 +229,32 @@ finally
 Обобщение одиночки: не один экземпляр, а **по одному на ключ**. Реестр «имя → экземпляр»
 с гарантией, что для одного имени объект создаётся однажды.
 
-```mermaid
-classDiagram
-    class ConnectionRegistry {
-        -Dictionary~string,Connection~ instances$
-        +GetInstance(string name)$ Connection
-    }
-    class Connection
-    ConnectionRegistry o-- Connection : по одному на ключ
-    note for ConnectionRegistry "Тот же одиночка,<br/>но с ключом — и та же критика"
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        class ConnectionRegistry {
+            -Dictionary~string,Connection~ instances$
+            +GetInstance(string name)$ Connection
+        }
+        class Connection
+        ConnectionRegistry o-- Connection : по одному на ключ
+        note for ConnectionRegistry "Тот же одиночка,<br/>но с ключом — и та же критика"
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        class ConnectionRegistry {
+            -Dictionary~string,Connection~ instances$
+            +GetInstance(string name)$ Connection
+        }
+        class Connection
+        ConnectionRegistry o-- Connection : по одному на ключ
+        note for ConnectionRegistry "Тот же одиночка,<br/>но с ключом — и та же критика"
+    ```
+
 
 ```csharp
 public sealed class ConnectionRegistry

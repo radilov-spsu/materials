@@ -45,22 +45,44 @@ EF Core является реализацией Data Mapper. Дальше — д
 Класс соответствует таблице, экземпляр — строке, у объекта есть и данные, и операции доступа
 к базе, и бизнес-логика.
 
-```mermaid
-classDiagram
-    class Invoice {
-        +int Id
-        +int CustomerId
-        +decimal Amount
-        +DateTime DueDate
-        +Find(int id)$ Invoice
-        +FindOverdue()$ List~Invoice~
-        +Save() void
-        +Delete() void
-        +IsOverdue() bool
-        +ApplyLateFee() void
-    }
-    Invoice ..> Database : SQL внутри объекта
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        class Invoice {
+            +int Id
+            +int CustomerId
+            +decimal Amount
+            +DateTime DueDate
+            +Find(int id)$ Invoice
+            +FindOverdue()$ List~Invoice~
+            +Save() void
+            +Delete() void
+            +IsOverdue() bool
+            +ApplyLateFee() void
+        }
+        Invoice ..> Database : SQL внутри объекта
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        class Invoice {
+            +int Id
+            +int CustomerId
+            +decimal Amount
+            +DateTime DueDate
+            +Find(int id)$ Invoice
+            +FindOverdue()$ List~Invoice~
+            +Save() void
+            +Delete() void
+            +IsOverdue() bool
+            +ApplyLateFee() void
+        }
+        Invoice ..> Database : SQL внутри объекта
+    ```
+
 
 Что изучить:
 
@@ -98,30 +120,60 @@ classDiagram
 
 Доменный объект ничего не знает о хранении; отдельный слой отображает его в таблицы и обратно.
 
-```mermaid
-classDiagram
-    direction LR
-    class Invoice {
-        -List~InvoiceLine~ lines
-        +Money Total()
-        +ApplyLateFee(LateFeePolicy p) void
-    }
-    class InvoiceMapper {
-        +Find(int id) Invoice
-        +Insert(Invoice i) void
-        +Update(Invoice i) void
-    }
-    class IdentityMap {
-        -Dictionary~int,Invoice~ loaded
-    }
-    class UnitOfWork {
-        -List~object~ dirty
-        +Commit() void
-    }
-    InvoiceMapper ..> Invoice
-    InvoiceMapper --> IdentityMap
-    UnitOfWork --> InvoiceMapper
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction LR
+        class Invoice {
+            -List~InvoiceLine~ lines
+            +Money Total()
+            +ApplyLateFee(LateFeePolicy p) void
+        }
+        class InvoiceMapper {
+            +Find(int id) Invoice
+            +Insert(Invoice i) void
+            +Update(Invoice i) void
+        }
+        class IdentityMap {
+            -Dictionary~int,Invoice~ loaded
+        }
+        class UnitOfWork {
+            -List~object~ dirty
+            +Commit() void
+        }
+        InvoiceMapper ..> Invoice
+        InvoiceMapper --> IdentityMap
+        UnitOfWork --> InvoiceMapper
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction LR
+        class Invoice {
+            -List~InvoiceLine~ lines
+            +Money Total()
+            +ApplyLateFee(LateFeePolicy p) void
+        }
+        class InvoiceMapper {
+            +Find(int id) Invoice
+            +Insert(Invoice i) void
+            +Update(Invoice i) void
+        }
+        class IdentityMap {
+            -Dictionary~int,Invoice~ loaded
+        }
+        class UnitOfWork {
+            -List~object~ dirty
+            +Commit() void
+        }
+        InvoiceMapper ..> Invoice
+        InvoiceMapper --> IdentityMap
+        UnitOfWork --> InvoiceMapper
+    ```
+
 
 Что изучить:
 

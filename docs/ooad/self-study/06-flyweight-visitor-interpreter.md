@@ -44,32 +44,64 @@
 - **внешнее (extrinsic)** — зависит от контекста, хранится или вычисляется клиентом
   и передаётся в операции параметром.
 
-```mermaid
-classDiagram
-    direction LR
-    class GlyphFactory {
-        -Dictionary~char,Glyph~ pool
-        +GetGlyph(char c) Glyph
-    }
-    class Glyph {
-        <<interface>>
-        +Draw(Context ctx) void
-    }
-    class CharacterGlyph {
-        -char symbol
-        -Font font
-        +Draw(Context ctx) void
-    }
-    class Context {
-        +Point Position
-        +int LineNumber
-    }
-    GlyphFactory o-- Glyph : разделяемые объекты
-    Glyph <|.. CharacterGlyph
-    Client ..> GlyphFactory : запрашивает
-    Client ..> Context : хранит внешнее состояние
-    note for CharacterGlyph "symbol и font — внутреннее состояние.<br/>Позиция приходит снаружи"
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction LR
+        class GlyphFactory {
+            -Dictionary~char,Glyph~ pool
+            +GetGlyph(char c) Glyph
+        }
+        class Glyph {
+            <<interface>>
+            +Draw(Context ctx) void
+        }
+        class CharacterGlyph {
+            -char symbol
+            -Font font
+            +Draw(Context ctx) void
+        }
+        class Context {
+            +Point Position
+            +int LineNumber
+        }
+        GlyphFactory o-- Glyph : разделяемые объекты
+        Glyph <|.. CharacterGlyph
+        Client ..> GlyphFactory : запрашивает
+        Client ..> Context : хранит внешнее состояние
+        note for CharacterGlyph "symbol и font — внутреннее состояние.<br/>Позиция приходит снаружи"
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction LR
+        class GlyphFactory {
+            -Dictionary~char,Glyph~ pool
+            +GetGlyph(char c) Glyph
+        }
+        class Glyph {
+            <<interface>>
+            +Draw(Context ctx) void
+        }
+        class CharacterGlyph {
+            -char symbol
+            -Font font
+            +Draw(Context ctx) void
+        }
+        class Context {
+            +Point Position
+            +int LineNumber
+        }
+        GlyphFactory o-- Glyph : разделяемые объекты
+        Glyph <|.. CharacterGlyph
+        Client ..> GlyphFactory : запрашивает
+        Client ..> Context : хранит внешнее состояние
+        note for CharacterGlyph "symbol и font — внутреннее состояние.<br/>Позиция приходит снаружи"
+    ```
+
 
 Что изучить внимательно:
 
@@ -124,20 +156,40 @@ public struct Particle                              // внешнее состо
 операцию, не меняя классы элементов. Работает за счёт **двойной диспетчеризации**:
 результат зависит от типа элемента и от типа посетителя.
 
-```mermaid
-sequenceDiagram
-    autonumber
-    participant C as Клиент
-    participant N as AssignmentNode
-    participant V as TypeCheckingVisitor
+=== "Диаграмма"
 
-    C->>N: Accept(visitor)
-    Note right of N: первый выбор —<br/>по типу узла
-    N->>V: Visit(this)
-    Note right of V: второй выбор —<br/>по типу посетителя
-    V->>N: GetChildren()
-    V-->>C: результат обхода
-```
+    ```mermaid
+    sequenceDiagram
+        autonumber
+        participant C as Клиент
+        participant N as AssignmentNode
+        participant V as TypeCheckingVisitor
+
+        C->>N: Accept(visitor)
+        Note right of N: первый выбор —<br/>по типу узла
+        N->>V: Visit(this)
+        Note right of V: второй выбор —<br/>по типу посетителя
+        V->>N: GetChildren()
+        V-->>C: результат обхода
+    ```
+
+=== "Исходник"
+
+    ```
+    sequenceDiagram
+        autonumber
+        participant C as Клиент
+        participant N as AssignmentNode
+        participant V as TypeCheckingVisitor
+
+        C->>N: Accept(visitor)
+        Note right of N: первый выбор —<br/>по типу узла
+        N->>V: Visit(this)
+        Note right of V: второй выбор —<br/>по типу посетителя
+        V->>N: GetChildren()
+        V-->>C: результат обхода
+    ```
+
 
 Что изучить:
 
@@ -188,31 +240,62 @@ static decimal Eval(Node node) => node switch
 использующий это представление для разбора предложений языка. Каждое правило грамматики
 становится классом; предложение — деревом объектов.
 
-```mermaid
-classDiagram
-    direction TB
-    class IExpression {
-        <<interface>>
-        +Interpret(Context ctx) bool
-    }
-    class TerminalExpression {
-        -string variable
-        +Interpret(Context ctx) bool
-    }
-    class AndExpression {
-        -IExpression left
-        -IExpression right
-        +Interpret(Context ctx) bool
-    }
-    class OrExpression
-    class NotExpression
-    IExpression <|.. TerminalExpression
-    IExpression <|.. AndExpression
-    IExpression <|.. OrExpression
-    IExpression <|.. NotExpression
-    AndExpression o-- IExpression : подвыражения
-    note for IExpression "Дерево выражения — это компоновщик.<br/>Обход часто делают посетителем"
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction TB
+        class IExpression {
+            <<interface>>
+            +Interpret(Context ctx) bool
+        }
+        class TerminalExpression {
+            -string variable
+            +Interpret(Context ctx) bool
+        }
+        class AndExpression {
+            -IExpression left
+            -IExpression right
+            +Interpret(Context ctx) bool
+        }
+        class OrExpression
+        class NotExpression
+        IExpression <|.. TerminalExpression
+        IExpression <|.. AndExpression
+        IExpression <|.. OrExpression
+        IExpression <|.. NotExpression
+        AndExpression o-- IExpression : подвыражения
+        note for IExpression "Дерево выражения — это компоновщик.<br/>Обход часто делают посетителем"
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction TB
+        class IExpression {
+            <<interface>>
+            +Interpret(Context ctx) bool
+        }
+        class TerminalExpression {
+            -string variable
+            +Interpret(Context ctx) bool
+        }
+        class AndExpression {
+            -IExpression left
+            -IExpression right
+            +Interpret(Context ctx) bool
+        }
+        class OrExpression
+        class NotExpression
+        IExpression <|.. TerminalExpression
+        IExpression <|.. AndExpression
+        IExpression <|.. OrExpression
+        IExpression <|.. NotExpression
+        AndExpression o-- IExpression : подвыражения
+        note for IExpression "Дерево выражения — это компоновщик.<br/>Обход часто делают посетителем"
+    ```
+
 
 ```csharp
 public interface ISpecification<T> { bool IsSatisfiedBy(T candidate); }

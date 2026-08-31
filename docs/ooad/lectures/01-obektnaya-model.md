@@ -8,25 +8,11 @@
 > GoF («Приёмы объектно-ориентированного проектирования»); в самой книге те же понятия
 > проиллюстрированы на C++ и Smalltalk, так что этот срез студенты увидят при чтении.
 
-## Хронометраж (60 минут)
-
-| # | Блок | Мин | Накопительно |
-|---|------|-----|--------------|
-| 1 | Зачем ООП: процедурный подход и его предел | 5 | 0:05 |
-| 2 | Класс, объект, операция, сигнатура | 7 | 0:12 |
-| 3 | Инкапсуляция и сокрытие | 7 | 0:19 |
-| 4 | Наследование | 7 | 0:26 |
-| 5 | Полиморфизм | 8 | 0:34 |
-| 6 | Композиция, агрегация, делегирование | 7 | 0:41 |
-| 7 | Абстрактные классы и интерфейсы | 8 | 0:49 |
-| 8 | Dependency Injection и Singleton | 5 | 0:54 |
-| 9 | SOLID — обзор (можно перенести на лекцию 2) | 6 | 1:00 |
-
 Глоссарий в конце — раздаточный материал, вслух не читаем.
 
 ---
 
-## Блок 1. Процедурный подход и его предел (5 мин)
+## Блок 1. Процедурный подход и его предел
 
 ### Что говорим
 
@@ -63,7 +49,7 @@ double a = Area(w, h);   // 50
 
 ---
 
-## Блок 2. Класс и объект (7 мин)
+## Блок 2. Класс и объект
 
 ### Понятия, без которых дальше нельзя
 
@@ -121,45 +107,49 @@ var sq = Rectangle.Square(7);    // вызов статического мето
 состояние. Само **создание** — отдельный шаг, и его можно забрать себе: тогда решение,
 какой объект вернуть и надо ли его вообще создавать, принимает не оператор `new`, а метод.
 
-```csharp
-public sealed class Color
-{
-    private static readonly Dictionary<string, Color> Cache = new();
+=== "C#"
 
-    public string Name { get; }
-
-    private Color(string name) => Name = name;         // инициализация: конструктор закрыт
-
-    public static Color Of(string name)                // создание: решаем мы
+    ```csharp
+    public sealed class Color
     {
-        if (!Cache.TryGetValue(name, out var color))   // повторный запрос — тот же объект,
-            Cache[name] = color = new Color(name);     // новый экземпляр не создаётся
-        return color;
+        private static readonly Dictionary<string, Color> Cache = new();
+
+        public string Name { get; }
+
+        private Color(string name) => Name = name;         // инициализация: конструктор закрыт
+
+        public static Color Of(string name)                // создание: решаем мы
+        {
+            if (!Cache.TryGetValue(name, out var color))   // повторный запрос — тот же объект,
+                Cache[name] = color = new Color(name);     // новый экземпляр не создаётся
+            return color;
+        }
     }
-}
 
-var red  = Color.Of("red");
-var red2 = Color.Of("red");
-Console.WriteLine(ReferenceEquals(red, red2));         // True
-```
+    var red  = Color.Of("red");
+    var red2 = Color.Of("red");
+    Console.WriteLine(ReferenceEquals(red, red2));         // True
+    ```
 
-```python
-class Color:
-    _cache: dict[str, "Color"] = {}
+=== "Python"
 
-    def __new__(cls, name):            # СОЗДАНИЕ: решаем, создавать ли объект вообще
-        if name in cls._cache:
-            return cls._cache[name]    # возвращаем готовый — __init__ отработает на нём же
-        obj = super().__new__(cls)
-        cls._cache[name] = obj
-        return obj
+    ```python
+    class Color:
+        _cache: dict[str, "Color"] = {}
 
-    def __init__(self, name):          # ИНИЦИАЛИЗАЦИЯ: объект уже существует
-        self.name = name
+        def __new__(cls, name):            # СОЗДАНИЕ: решаем, создавать ли объект вообще
+            if name in cls._cache:
+                return cls._cache[name]    # возвращаем готовый — __init__ отработает на нём же
+            obj = super().__new__(cls)
+            cls._cache[name] = obj
+            return obj
 
-red, red2 = Color("red"), Color("red")
-print(red is red2)                     # True — второй вызов нового объекта не создал
-```
+        def __init__(self, name):          # ИНИЦИАЛИЗАЦИЯ: объект уже существует
+            self.name = name
+
+    red, red2 = Color("red"), Color("red")
+    print(red is red2)                     # True — второй вызов нового объекта не создал
+    ```
 
 В Python эти два шага **разведены явно, на уровне языка**: `__new__` создаёт объект и
 возвращает его, `__init__` только настраивает уже созданный. Именно поэтому `__new__`
@@ -206,7 +196,7 @@ print(type(Person))                    # <class '__main__.Meta'>
 
 ---
 
-## Блок 3. Инкапсуляция и сокрытие (7 мин)
+## Блок 3. Инкапсуляция и сокрытие
 
 ### Определение
 
@@ -292,31 +282,35 @@ public double X { get; set; }     // стало — и это уже друго�
 > с простого атрибута и добавляет контроль тогда, когда он понадобился, — код вызывающих
 > не меняется. В C# такой возможности нет, поэтому и правило строже.
 
-```python
-class Circle:
-    def __init__(self, radius): self.radius = radius   # обычный атрибут, всем видно
+=== "Python"
 
-# позже добавили проверку — вызывающий код не поменялся ни на строку
-class Circle:
-    @property
-    def radius(self): return self._radius
+    ```python
+    class Circle:
+        def __init__(self, radius): self.radius = radius   # обычный атрибут, всем видно
 
-    @radius.setter
-    def radius(self, value):
-        if value <= 0: raise ValueError("Радиус должен быть положительным")
-        self._radius = value
-```
+    # позже добавили проверку — вызывающий код не поменялся ни на строку
+    class Circle:
+        @property
+        def radius(self): return self._radius
 
-```kotlin
-// Kotlin: свойство с самого начала, поле за ним компилятор создаёт сам
-class Circle(radius: Double) {
-    var radius: Double = radius
-        set(value) {                       // проверку добавили позже — вызывающие не тронуты
-            require(value > 0) { "Радиус должен быть положительным" }
-            field = value                  // field — то самое скрытое поле
-        }
-}
-```
+        @radius.setter
+        def radius(self, value):
+            if value <= 0: raise ValueError("Радиус должен быть положительным")
+            self._radius = value
+    ```
+
+=== "Kotlin"
+
+    ```kotlin
+    // Kotlin: свойство с самого начала, поле за ним компилятор создаёт сам
+    class Circle(radius: Double) {
+        var radius: Double = radius
+            set(value) {                       // проверку добавили позже — вызывающие не тронуты
+                require(value > 0) { "Радиус должен быть положительным" }
+                field = value                  // field — то самое скрытое поле
+            }
+    }
+    ```
 
 В Kotlin поля вообще нельзя объявить публично: `var`/`val` — это всегда свойство, а поле
 за ним (`field`) доступно только внутри аксессора. То есть язык принудительно делает то,
@@ -431,29 +425,33 @@ public class Database
 
 ### Параллели
 
-```python
-# Python: настоящего private нет — есть соглашение и name mangling
-class Rectangle:
-    def __init__(self, w, h):
-        self._width = w        # «не трогай» — соглашение, доступ технически возможен
-        self.__height = h      # name mangling → _Rectangle__height, случайно не заденешь
+=== "Python"
 
-    @property
-    def width(self): return self._width
+    ```python
+    # Python: настоящего private нет — есть соглашение и name mangling
+    class Rectangle:
+        def __init__(self, w, h):
+            self._width = w        # «не трогай» — соглашение, доступ технически возможен
+            self.__height = h      # name mangling → _Rectangle__height, случайно не заденешь
 
-    @width.setter
-    def width(self, value): self._width = 1 if value <= 0 else value
-```
+        @property
+        def width(self): return self._width
 
-```javascript
-// JS: приватные поля класса — настоящие, доступ извне даёт SyntaxError
-class Rectangle {
-  #width;
-  constructor(w) { this.#width = w; }
-  get width() { return this.#width; }
-  set width(v) { this.#width = v <= 0 ? 1 : v; }
-}
-```
+        @width.setter
+        def width(self, value): self._width = 1 if value <= 0 else value
+    ```
+
+=== "JavaScript"
+
+    ```javascript
+    // JS: приватные поля класса — настоящие, доступ извне даёт SyntaxError
+    class Rectangle {
+      #width;
+      constructor(w) { this.#width = w; }
+      get width() { return this.#width; }
+      set width(v) { this.#width = v <= 0 ? 1 : v; }
+    }
+    ```
 
 **Дружественный класс** (`friend` в C++) — класс, обладающий теми же правами доступа, что и сам
 класс. В C# точного аналога нет; ближайшее — `internal` (виден внутри сборки) плюс атрибут
@@ -471,7 +469,7 @@ class Rectangle {
 
 ---
 
-## Блок 4. Наследование (7 мин)
+## Блок 4. Наследование
 
 ### Определения
 
@@ -667,7 +665,7 @@ class LoggablePerson extends Loggable(Person) {}
 
 ---
 
-## Блок 5. Полиморфизм (8 мин)
+## Блок 5. Полиморфизм
 
 ### Определение
 
@@ -847,7 +845,7 @@ def announce(s: Speaker) -> None: s.speak()   # Robot подойдёт без н
 
 ---
 
-## Блок 6. Композиция, агрегация, делегирование (7 мин)
+## Блок 6. Композиция, агрегация, делегирование
 
 ### Определения
 
@@ -971,7 +969,7 @@ var flat = new Apartment(pine);   // один освежитель может б
 
 ---
 
-## Блок 7. Абстрактные классы и интерфейсы (8 мин)
+## Блок 7. Абстрактные классы и интерфейсы
 
 ### Определения
 
@@ -1125,7 +1123,7 @@ class Repository(ABC):
 
 ---
 
-## Блок 8. Dependency Injection и Singleton (5 мин)
+## Блок 8. Dependency Injection и Singleton
 
 ### Три похожих названия, которые надо развести
 
@@ -1248,7 +1246,7 @@ Console.WriteLine(Database.Instance.Url);   // тот же самый Url — т
 
 ---
 
-## Блок 9. SOLID — обзор (6 мин)
+## Блок 9. SOLID — обзор
 
 > Если по времени не успеваем — блок переносится в лекцию 2, он самодостаточен.
 > Здесь даём формулировку, задачу, которую принцип решает, и один маленький пример на каждый.

@@ -4,23 +4,9 @@
 > (Гамма, Хелм, Джонсон, Влиссидес). Названия, назначение и структура паттернов даются
 > по книге; примеры в книге на C++ и Smalltalk, у нас — **C#**, диаграммы — **Mermaid**.
 
-## Хронометраж (60 минут)
-
-| # | Блок | Мин | Накопительно |
-|---|------|-----|--------------|
-| 1 | Что такое паттерн и из чего состоит его описание | 5 | 0:05 |
-| 2 | Классификация: цель и уровень | 6 | 0:11 |
-| 3 | Проблема оператора `new`. Простая фабрика | 7 | 0:18 |
-| 4 | Factory Method (фабричный метод) | 8 | 0:26 |
-| 5 | Abstract Factory (абстрактная фабрика) | 9 | 0:35 |
-| 6 | Builder (строитель) | 7 | 0:42 |
-| 7 | Prototype (прототип) | 6 | 0:48 |
-| 8 | Singleton (одиночка) | 8 | 0:56 |
-| 9 | Как выбирать паттерн; связи между порождающими | 4 | 1:00 |
-
 ---
 
-## Блок 1. Что такое паттерн и из чего состоит его описание (5 мин)
+## Блок 1. Что такое паттерн и из чего состоит его описание
 
 ### Определение
 
@@ -57,7 +43,7 @@
 
 ---
 
-## Блок 2. Классификация: цель и уровень (6 мин)
+## Блок 2. Классификация: цель и уровень
 
 ### Два критерия
 
@@ -102,7 +88,7 @@
 
 ---
 
-## Блок 3. Проблема оператора `new`. Простая фабрика (7 мин)
+## Блок 3. Проблема оператора `new`. Простая фабрика
 
 Прежде чем разбирать два «фабричных» паттерна каталога, введём общее понятие фабрики.
 Здесь я иду за изложением Фрименов («Паттерны проектирования», глава 4) — оно построено
@@ -132,72 +118,105 @@ else if (type == "pepperoni") pizza = new PepperoniPizza();
 
 Выносим выбор класса в отдельный объект, единственная задача которого — создавать продукты.
 
-```csharp
-public class SimplePizzaFactory                     // «простая фабрика»
-{
-    public Pizza CreatePizza(string type) => type switch
+=== "C#"
+
+    ```csharp
+    public class SimplePizzaFactory                     // «простая фабрика»
     {
-        "cheese"    => new CheesePizza(),
-        "pepperoni" => new PepperoniPizza(),
-        "veggie"    => new VeggiePizza(),
-        _ => throw new ArgumentOutOfRangeException(nameof(type))
-    };
-}
+        public Pizza CreatePizza(string type) => type switch
+        {
+            "cheese"    => new CheesePizza(),
+            "pepperoni" => new PepperoniPizza(),
+            "veggie"    => new VeggiePizza(),
+            _ => throw new ArgumentOutOfRangeException(nameof(type))
+        };
+    }
 
-public class PizzaStore                              // клиент фабрики
-{
-    private readonly SimplePizzaFactory _factory;
-    public PizzaStore(SimplePizzaFactory factory) => _factory = factory;
-
-    public Pizza OrderPizza(string type)
+    public class PizzaStore                              // клиент фабрики
     {
-        var pizza = _factory.CreatePizza(type);      // вместо new — запрос к фабрике
-        pizza.Prepare(); pizza.Bake(); pizza.Cut(); pizza.Box();
-        return pizza;
+        private readonly SimplePizzaFactory _factory;
+        public PizzaStore(SimplePizzaFactory factory) => _factory = factory;
+
+        public Pizza OrderPizza(string type)
+        {
+            var pizza = _factory.CreatePizza(type);      // вместо new — запрос к фабрике
+            pizza.Prepare(); pizza.Bake(); pizza.Cut(); pizza.Box();
+            return pizza;
+        }
     }
-}
-```
+    ```
 
-```python
-class SimplePizzaFactory:
-    _kinds = {"cheese": CheesePizza, "pepperoni": PepperoniPizza, "veggie": VeggiePizza}
+=== "Python"
 
-    def create_pizza(self, kind: str) -> Pizza:
-        return self._kinds[kind]()          # классы — объекты первого класса, if не нужен
+    ```python
+    class SimplePizzaFactory:
+        _kinds = {"cheese": CheesePizza, "pepperoni": PepperoniPizza, "veggie": VeggiePizza}
 
-class PizzaStore:
-    def __init__(self, factory: SimplePizzaFactory) -> None:
-        self._factory = factory
+        def create_pizza(self, kind: str) -> Pizza:
+            return self._kinds[kind]()          # классы — объекты первого класса, if не нужен
 
-    def order_pizza(self, kind: str) -> Pizza:
-        pizza = self._factory.create_pizza(kind)
-        pizza.prepare(); pizza.bake(); pizza.cut(); pizza.box()
-        return pizza
-```
+    class PizzaStore:
+        def __init__(self, factory: SimplePizzaFactory) -> None:
+            self._factory = factory
 
-```mermaid
-classDiagram
-    direction LR
-    class PizzaStore {
-        +OrderPizza(string type) Pizza
-    }
-    class SimplePizzaFactory {
-        +CreatePizza(string type) Pizza
-    }
-    class Pizza {
-        <<abstract>>
-        +Prepare() void
-        +Bake() void
-        +Cut() void
-        +Box() void
-    }
-    class CheesePizza
-    class VeggiePizza
-    PizzaStore --> SimplePizzaFactory : клиент фабрики
-    SimplePizzaFactory ..> Pizza : создаёт
-    Pizza <|-- CheesePizza
-    Pizza <|-- VeggiePizza
-```
+        def order_pizza(self, kind: str) -> Pizza:
+            pizza = self._factory.create_pizza(kind)
+            pizza.prepare(); pizza.bake(); pizza.cut(); pizza.box()
+            return pizza
+    ```
+
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction LR
+        class PizzaStore {
+            +OrderPizza(string type) Pizza
+        }
+        class SimplePizzaFactory {
+            +CreatePizza(string type) Pizza
+        }
+        class Pizza {
+            <<abstract>>
+            +Prepare() void
+            +Bake() void
+            +Cut() void
+            +Box() void
+        }
+        class CheesePizza
+        class VeggiePizza
+        PizzaStore --> SimplePizzaFactory : клиент фабрики
+        SimplePizzaFactory ..> Pizza : создаёт
+        Pizza <|-- CheesePizza
+        Pizza <|-- VeggiePizza
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction LR
+        class PizzaStore {
+            +OrderPizza(string type) Pizza
+        }
+        class SimplePizzaFactory {
+            +CreatePizza(string type) Pizza
+        }
+        class Pizza {
+            <<abstract>>
+            +Prepare() void
+            +Bake() void
+            +Cut() void
+            +Box() void
+        }
+        class CheesePizza
+        class VeggiePizza
+        PizzaStore --> SimplePizzaFactory : клиент фабрики
+        SimplePizzaFactory ..> Pizza : создаёт
+        Pizza <|-- CheesePizza
+        Pizza <|-- VeggiePizza
+    ```
+
 
 Важная оговорка, которую делают Фримены: **простая фабрика — не паттерн проектирования,
 а идиома программирования**. Но встречается она так часто, что путать её с паттернами
@@ -241,7 +260,7 @@ CheesePizza, VeggiePizza…»), а надо начать с конкретных
 
 ---
 
-## Блок 4. Factory Method — фабричный метод (8 мин)
+## Блок 4. Factory Method — фабричный метод
 
 **Назначение.** Определяет интерфейс создания объекта, но позволяет подклассам решить,
 экземпляр какого класса создавать. Класс передаёт ответственность за создание экземпляра
@@ -255,77 +274,114 @@ CheesePizza, VeggiePizza…»), а надо начать с конкретных
 
 Решение: вернуть создание в `PizzaStore`, но объявить его **абстрактным методом**.
 
-```csharp
-public abstract class PizzaStore
-{
-    public Pizza OrderPizza(string type)             // проверенная процедура, одна на всех
+=== "C#"
+
+    ```csharp
+    public abstract class PizzaStore
     {
-        var pizza = CreatePizza(type);               // а вот это решит подкласс
-        pizza.Prepare(); pizza.Bake(); pizza.Cut(); pizza.Box();
-        return pizza;
+        public Pizza OrderPizza(string type)             // проверенная процедура, одна на всех
+        {
+            var pizza = CreatePizza(type);               // а вот это решит подкласс
+            pizza.Prepare(); pizza.Bake(); pizza.Cut(); pizza.Box();
+            return pizza;
+        }
+
+        protected abstract Pizza CreatePizza(string type);   // фабричный метод
     }
 
-    protected abstract Pizza CreatePizza(string type);   // фабричный метод
-}
-
-public sealed class NyPizzaStore : PizzaStore
-{
-    protected override Pizza CreatePizza(string type) => type switch
+    public sealed class NyPizzaStore : PizzaStore
     {
-        "cheese" => new NyStyleCheesePizza(),
-        "veggie" => new NyStyleVeggiePizza(),
-        "clam"   => new NyStyleClamPizza(),
-        _ => throw new ArgumentOutOfRangeException(nameof(type))
-    };
-}
-```
-
-```python
-from abc import ABC, abstractmethod
-
-class PizzaStore(ABC):
-    def order_pizza(self, kind: str) -> Pizza:
-        pizza = self.create_pizza(kind)              # шаблон процедуры зафиксирован
-        pizza.prepare(); pizza.bake(); pizza.cut(); pizza.box()
-        return pizza
-
-    @abstractmethod
-    def create_pizza(self, kind: str) -> Pizza: ...
-
-class NyPizzaStore(PizzaStore):
-    _kinds = {"cheese": NyStyleCheesePizza, "veggie": NyStyleVeggiePizza}
-
-    def create_pizza(self, kind: str) -> Pizza:
-        return self._kinds[kind]()
-```
-
-```mermaid
-classDiagram
-    direction TB
-    class PizzaStore {
-        <<abstract>>
-        +OrderPizza(string type) Pizza
-        #CreatePizza(string type)* Pizza
+        protected override Pizza CreatePizza(string type) => type switch
+        {
+            "cheese" => new NyStyleCheesePizza(),
+            "veggie" => new NyStyleVeggiePizza(),
+            "clam"   => new NyStyleClamPizza(),
+            _ => throw new ArgumentOutOfRangeException(nameof(type))
+        };
     }
-    class NyPizzaStore {
-        #CreatePizza(string type) Pizza
-    }
-    class ChicagoPizzaStore {
-        #CreatePizza(string type) Pizza
-    }
-    class Pizza {
-        <<abstract>>
-        +Prepare() void
-    }
-    class NyStyleCheesePizza
-    class ChicagoStyleCheesePizza
-    PizzaStore <|-- NyPizzaStore
-    PizzaStore <|-- ChicagoPizzaStore
-    Pizza <|-- NyStyleCheesePizza
-    Pizza <|-- ChicagoStyleCheesePizza
-    PizzaStore ..> Pizza : работает с абстракцией
-    NyPizzaStore ..> NyStyleCheesePizza : создаёт
-```
+    ```
+
+=== "Python"
+
+    ```python
+    from abc import ABC, abstractmethod
+
+    class PizzaStore(ABC):
+        def order_pizza(self, kind: str) -> Pizza:
+            pizza = self.create_pizza(kind)              # шаблон процедуры зафиксирован
+            pizza.prepare(); pizza.bake(); pizza.cut(); pizza.box()
+            return pizza
+
+        @abstractmethod
+        def create_pizza(self, kind: str) -> Pizza: ...
+
+    class NyPizzaStore(PizzaStore):
+        _kinds = {"cheese": NyStyleCheesePizza, "veggie": NyStyleVeggiePizza}
+
+        def create_pizza(self, kind: str) -> Pizza:
+            return self._kinds[kind]()
+    ```
+
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction TB
+        class PizzaStore {
+            <<abstract>>
+            +OrderPizza(string type) Pizza
+            #CreatePizza(string type)* Pizza
+        }
+        class NyPizzaStore {
+            #CreatePizza(string type) Pizza
+        }
+        class ChicagoPizzaStore {
+            #CreatePizza(string type) Pizza
+        }
+        class Pizza {
+            <<abstract>>
+            +Prepare() void
+        }
+        class NyStyleCheesePizza
+        class ChicagoStyleCheesePizza
+        PizzaStore <|-- NyPizzaStore
+        PizzaStore <|-- ChicagoPizzaStore
+        Pizza <|-- NyStyleCheesePizza
+        Pizza <|-- ChicagoStyleCheesePizza
+        PizzaStore ..> Pizza : работает с абстракцией
+        NyPizzaStore ..> NyStyleCheesePizza : создаёт
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction TB
+        class PizzaStore {
+            <<abstract>>
+            +OrderPizza(string type) Pizza
+            #CreatePizza(string type)* Pizza
+        }
+        class NyPizzaStore {
+            #CreatePizza(string type) Pizza
+        }
+        class ChicagoPizzaStore {
+            #CreatePizza(string type) Pizza
+        }
+        class Pizza {
+            <<abstract>>
+            +Prepare() void
+        }
+        class NyStyleCheesePizza
+        class ChicagoStyleCheesePizza
+        PizzaStore <|-- NyPizzaStore
+        PizzaStore <|-- ChicagoPizzaStore
+        Pizza <|-- NyStyleCheesePizza
+        Pizza <|-- ChicagoStyleCheesePizza
+        PizzaStore ..> Pizza : работает с абстракцией
+        NyPizzaStore ..> NyStyleCheesePizza : создаёт
+    ```
+
 
 **Кто здесь принимает решение.** Частый вопрос студентов: где в `NyPizzaStore` «решение»?
 Метод `OrderPizza` объявлен в абстрактном классе и не знает, с каким конкретным продуктом
@@ -362,7 +418,7 @@ classDiagram
 > нередко играет classmethod-конструктор (`Pizza.from_order(order)`), в Kotlin — companion
 > object.
 
-## Блок 5. Abstract Factory — абстрактная фабрика (9 мин)
+## Блок 5. Abstract Factory — абстрактная фабрика
 
 **Назначение.** Предоставляет интерфейс для создания **семейств** взаимосвязанных или
 взаимозависимых объектов, не специфицируя их конкретных классов.
@@ -372,91 +428,132 @@ classDiagram
 соус «маринара», сыр «реджано» и свежие мидии, в Чикаго — томатный соус, моцарелла
 и мороженые мидии. Ингредиенты образуют **семейство**, и смешивать семейства нельзя.
 
-```csharp
-public interface IPizzaIngredientFactory              // интерфейс семейства
-{
-    IDough CreateDough();
-    ISauce CreateSauce();
-    ICheese CreateCheese();
-    IClams CreateClam();
-}
+=== "C#"
 
-public sealed class NyIngredientFactory : IPizzaIngredientFactory
-{
-    public IDough CreateDough() => new ThinCrustDough();
-    public ISauce CreateSauce() => new MarinaraSauce();
-    public ICheese CreateCheese() => new ReggianoCheese();
-    public IClams CreateClam() => new FreshClams();     // побережье — мидии свежие
-}
-
-public sealed class CheesePizza : Pizza                // клиент фабрики
-{
-    private readonly IPizzaIngredientFactory _ingredients;
-    public CheesePizza(IPizzaIngredientFactory ingredients) => _ingredients = ingredients;
-
-    public override void Prepare()                     // рецепт один, ингредиенты — региональные
+    ```csharp
+    public interface IPizzaIngredientFactory              // интерфейс семейства
     {
-        Dough  = _ingredients.CreateDough();
-        Sauce  = _ingredients.CreateSauce();
-        Cheese = _ingredients.CreateCheese();
+        IDough CreateDough();
+        ISauce CreateSauce();
+        ICheese CreateCheese();
+        IClams CreateClam();
     }
-}
-```
 
-```python
-from typing import Protocol
-
-class PizzaIngredientFactory(Protocol):               # структурный интерфейс
-    def create_dough(self) -> Dough: ...
-    def create_sauce(self) -> Sauce: ...
-    def create_cheese(self) -> Cheese: ...
-
-class NyIngredientFactory:                            # implements писать не нужно
-    def create_dough(self) -> Dough:   return ThinCrustDough()
-    def create_sauce(self) -> Sauce:   return MarinaraSauce()
-    def create_cheese(self) -> Cheese: return ReggianoCheese()
-
-class CheesePizza(Pizza):
-    def __init__(self, ingredients: PizzaIngredientFactory) -> None:
-        self._ingredients = ingredients
-
-    def prepare(self) -> None:
-        self.dough  = self._ingredients.create_dough()
-        self.sauce  = self._ingredients.create_sauce()
-        self.cheese = self._ingredients.create_cheese()
-```
-
-```mermaid
-classDiagram
-    direction TB
-    class IPizzaIngredientFactory {
-        <<interface>>
-        +CreateDough() IDough
-        +CreateSauce() ISauce
-        +CreateCheese() ICheese
+    public sealed class NyIngredientFactory : IPizzaIngredientFactory
+    {
+        public IDough CreateDough() => new ThinCrustDough();
+        public ISauce CreateSauce() => new MarinaraSauce();
+        public ICheese CreateCheese() => new ReggianoCheese();
+        public IClams CreateClam() => new FreshClams();     // побережье — мидии свежие
     }
-    class NyIngredientFactory
-    class ChicagoIngredientFactory
-    class IDough {
-        <<interface>>
+
+    public sealed class CheesePizza : Pizza                // клиент фабрики
+    {
+        private readonly IPizzaIngredientFactory _ingredients;
+        public CheesePizza(IPizzaIngredientFactory ingredients) => _ingredients = ingredients;
+
+        public override void Prepare()                     // рецепт один, ингредиенты — региональные
+        {
+            Dough  = _ingredients.CreateDough();
+            Sauce  = _ingredients.CreateSauce();
+            Cheese = _ingredients.CreateCheese();
+        }
     }
-    class ThinCrustDough
-    class ThickCrustDough
-    class ISauce {
-        <<interface>>
-    }
-    class MarinaraSauce
-    class PlumTomatoSauce
-    IPizzaIngredientFactory <|.. NyIngredientFactory
-    IPizzaIngredientFactory <|.. ChicagoIngredientFactory
-    IDough <|.. ThinCrustDough
-    IDough <|.. ThickCrustDough
-    ISauce <|.. MarinaraSauce
-    ISauce <|.. PlumTomatoSauce
-    NyIngredientFactory ..> ThinCrustDough : создаёт
-    NyIngredientFactory ..> MarinaraSauce : создаёт
-    Pizza --> IPizzaIngredientFactory : клиент
-```
+    ```
+
+=== "Python"
+
+    ```python
+    from typing import Protocol
+
+    class PizzaIngredientFactory(Protocol):               # структурный интерфейс
+        def create_dough(self) -> Dough: ...
+        def create_sauce(self) -> Sauce: ...
+        def create_cheese(self) -> Cheese: ...
+
+    class NyIngredientFactory:                            # implements писать не нужно
+        def create_dough(self) -> Dough:   return ThinCrustDough()
+        def create_sauce(self) -> Sauce:   return MarinaraSauce()
+        def create_cheese(self) -> Cheese: return ReggianoCheese()
+
+    class CheesePizza(Pizza):
+        def __init__(self, ingredients: PizzaIngredientFactory) -> None:
+            self._ingredients = ingredients
+
+        def prepare(self) -> None:
+            self.dough  = self._ingredients.create_dough()
+            self.sauce  = self._ingredients.create_sauce()
+            self.cheese = self._ingredients.create_cheese()
+    ```
+
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction TB
+        class IPizzaIngredientFactory {
+            <<interface>>
+            +CreateDough() IDough
+            +CreateSauce() ISauce
+            +CreateCheese() ICheese
+        }
+        class NyIngredientFactory
+        class ChicagoIngredientFactory
+        class IDough {
+            <<interface>>
+        }
+        class ThinCrustDough
+        class ThickCrustDough
+        class ISauce {
+            <<interface>>
+        }
+        class MarinaraSauce
+        class PlumTomatoSauce
+        IPizzaIngredientFactory <|.. NyIngredientFactory
+        IPizzaIngredientFactory <|.. ChicagoIngredientFactory
+        IDough <|.. ThinCrustDough
+        IDough <|.. ThickCrustDough
+        ISauce <|.. MarinaraSauce
+        ISauce <|.. PlumTomatoSauce
+        NyIngredientFactory ..> ThinCrustDough : создаёт
+        NyIngredientFactory ..> MarinaraSauce : создаёт
+        Pizza --> IPizzaIngredientFactory : клиент
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction TB
+        class IPizzaIngredientFactory {
+            <<interface>>
+            +CreateDough() IDough
+            +CreateSauce() ISauce
+            +CreateCheese() ICheese
+        }
+        class NyIngredientFactory
+        class ChicagoIngredientFactory
+        class IDough {
+            <<interface>>
+        }
+        class ThinCrustDough
+        class ThickCrustDough
+        class ISauce {
+            <<interface>>
+        }
+        class MarinaraSauce
+        class PlumTomatoSauce
+        IPizzaIngredientFactory <|.. NyIngredientFactory
+        IPizzaIngredientFactory <|.. ChicagoIngredientFactory
+        IDough <|.. ThinCrustDough
+        IDough <|.. ThickCrustDough
+        ISauce <|.. MarinaraSauce
+        ISauce <|.. PlumTomatoSauce
+        NyIngredientFactory ..> ThinCrustDough : создаёт
+        NyIngredientFactory ..> MarinaraSauce : создаёт
+        Pizza --> IPizzaIngredientFactory : клиент
+    ```
+
 
 Где фабрика попадает в пиццу: конкретная пиццерия выбирает свою фабрику ингредиентов
 и передаёт её в конструктор продукта. То есть фабричный метод создаёт **пиццу**,
@@ -507,7 +604,7 @@ public sealed class NyPizzaStore : PizzaStore
 > **В .NET.** `DbProviderFactory` (создаёт `DbConnection`, `DbCommand`, `DbParameter` одного
 > провайдера) — учебниковый пример абстрактной фабрики в стандартной библиотеке.
 
-## Блок 6. Builder — строитель (7 мин)
+## Блок 6. Builder — строитель
 
 **Назначение.** Отделяет конструирование сложного объекта от его представления, так что
 один и тот же процесс конструирования может создавать разные представления.
@@ -516,29 +613,58 @@ public sealed class NyPizzaStore : PizzaStore
 элемент зовёт строителя; какой получится результат — обычный текст, TeX или виджет —
 зависит от подставленного строителя. Процесс разбора один, представлений много.
 
-```mermaid
-classDiagram
-    direction LR
-    class RtfReader {
-        -ITextConverter builder
-        +ParseRtf() void
-    }
-    class ITextConverter {
-        <<interface>>
-        +ConvertCharacter(char c) void
-        +ConvertParagraph() void
-        +ConvertFont(Font f) void
-    }
-    class AsciiConverter {
-        +GetResult() string
-    }
-    class TexConverter {
-        +GetResult() TexText
-    }
-    RtfReader o-- ITextConverter : распорядитель
-    ITextConverter <|.. AsciiConverter
-    ITextConverter <|.. TexConverter
-```
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction LR
+        class RtfReader {
+            -ITextConverter builder
+            +ParseRtf() void
+        }
+        class ITextConverter {
+            <<interface>>
+            +ConvertCharacter(char c) void
+            +ConvertParagraph() void
+            +ConvertFont(Font f) void
+        }
+        class AsciiConverter {
+            +GetResult() string
+        }
+        class TexConverter {
+            +GetResult() TexText
+        }
+        RtfReader o-- ITextConverter : распорядитель
+        ITextConverter <|.. AsciiConverter
+        ITextConverter <|.. TexConverter
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction LR
+        class RtfReader {
+            -ITextConverter builder
+            +ParseRtf() void
+        }
+        class ITextConverter {
+            <<interface>>
+            +ConvertCharacter(char c) void
+            +ConvertParagraph() void
+            +ConvertFont(Font f) void
+        }
+        class AsciiConverter {
+            +GetResult() string
+        }
+        class TexConverter {
+            +GetResult() TexText
+        }
+        RtfReader o-- ITextConverter : распорядитель
+        ITextConverter <|.. AsciiConverter
+        ITextConverter <|.. TexConverter
+    ```
+
 
 Участники: **Director** (здесь `RtfReader`) знает порядок шагов, **Builder** — интерфейс
 шагов, **ConcreteBuilder** собирает и хранит результат, **Product** — то, что получилось.
@@ -595,7 +721,7 @@ fluent-builder — читаемая сборка одного продукта �
 
 ---
 
-## Блок 7. Prototype — прототип (6 мин)
+## Блок 7. Prototype — прототип
 
 **Назначение.** Задаёт виды создаваемых объектов с помощью экземпляра-прототипа и создаёт
 новые объекты копированием этого прототипа.
@@ -605,66 +731,96 @@ fluent-builder — читаемая сборка одного продукта �
 новую фигуру — значит зарегистрировать новый прототип, а не написать новый подкласс
 инструмента.
 
-```mermaid
-classDiagram
-    direction LR
-    class IGraphic {
-        <<interface>>
-        +Clone() IGraphic
-        +Draw() void
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        direction LR
+        class IGraphic {
+            <<interface>>
+            +Clone() IGraphic
+            +Draw() void
+        }
+        class Staff
+        class WholeNote
+        class HalfNote
+        class GraphicTool {
+            -IGraphic prototype
+            +Manipulate() void
+        }
+        IGraphic <|.. Staff
+        IGraphic <|.. WholeNote
+        IGraphic <|.. HalfNote
+        GraphicTool o-- IGraphic : прототип
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        direction LR
+        class IGraphic {
+            <<interface>>
+            +Clone() IGraphic
+            +Draw() void
+        }
+        class Staff
+        class WholeNote
+        class HalfNote
+        class GraphicTool {
+            -IGraphic prototype
+            +Manipulate() void
+        }
+        IGraphic <|.. Staff
+        IGraphic <|.. WholeNote
+        IGraphic <|.. HalfNote
+        GraphicTool o-- IGraphic : прототип
+    ```
+
+
+=== "C#"
+
+    ```csharp
+    public interface IGraphic
+    {
+        IGraphic Clone();
+        void Draw();
     }
-    class Staff
-    class WholeNote
-    class HalfNote
-    class GraphicTool {
-        -IGraphic prototype
-        +Manipulate() void
+
+    public sealed class Note : IGraphic
+    {
+        private readonly int _duration;
+        private Position _position;
+
+        public Note(int duration) => _duration = duration;
+        private Note(Note other) => (_duration, _position) = (other._duration, other._position);
+
+        public IGraphic Clone() => new Note(this);           // копирующий конструктор
+        public void Draw() { }
     }
-    IGraphic <|.. Staff
-    IGraphic <|.. WholeNote
-    IGraphic <|.. HalfNote
-    GraphicTool o-- IGraphic : прототип
-```
 
-```csharp
-public interface IGraphic
-{
-    IGraphic Clone();
-    void Draw();
-}
+    public sealed class GraphicTool
+    {
+        private readonly IGraphic _prototype;
+        public GraphicTool(IGraphic prototype) => _prototype = prototype;
+        public IGraphic Create() => _prototype.Clone();      // ни одного имени класса фигуры
+    }
+    ```
 
-public sealed class Note : IGraphic
-{
-    private readonly int _duration;
-    private Position _position;
+=== "Python"
 
-    public Note(int duration) => _duration = duration;
-    private Note(Note other) => (_duration, _position) = (other._duration, other._position);
+    ```python
+    import copy
 
-    public IGraphic Clone() => new Note(this);           // копирующий конструктор
-    public void Draw() { }
-}
+    class GraphicTool:
+        def __init__(self, prototype: Graphic) -> None:
+            self._prototype = prototype
 
-public sealed class GraphicTool
-{
-    private readonly IGraphic _prototype;
-    public GraphicTool(IGraphic prototype) => _prototype = prototype;
-    public IGraphic Create() => _prototype.Clone();      // ни одного имени класса фигуры
-}
-```
+        def create(self) -> Graphic:
+            return copy.deepcopy(self._prototype)   # клонирование встроено в язык
 
-```python
-import copy
-
-class GraphicTool:
-    def __init__(self, prototype: Graphic) -> None:
-        self._prototype = prototype
-
-    def create(self) -> Graphic:
-        return copy.deepcopy(self._prototype)   # клонирование встроено в язык
-
-# тонкая настройка копирования — через __copy__ / __deepcopy__ у самого объекта
-```
+    # тонкая настройка копирования — через __copy__ / __deepcopy__ у самого объекта
+    ```
 
 **Применимость.** Классы создаваемых объектов известны только во время выполнения; нужно
 избежать построения иерархии фабрик, параллельной иерархии продуктов; экземпляры класса
@@ -685,7 +841,7 @@ class GraphicTool:
 
 ---
 
-## Блок 8. Singleton — одиночка (8 мин)
+## Блок 8. Singleton — одиночка
 
 **Назначение.** Гарантирует, что у класса есть только один экземпляр, и предоставляет
 к нему глобальную точку доступа.
@@ -693,41 +849,61 @@ class GraphicTool:
 **Задача.** В системе должен быть ровно один объект: реестр окон, пул соединений,
 конфигурация. Глобальная переменная это не решает — она не мешает создать второй экземпляр.
 
-```mermaid
-classDiagram
-    class Singleton {
-        -Singleton instance$
-        -Singleton()
-        +Instance() Singleton$
-        +SomeOperation() void
+=== "Диаграмма"
+
+    ```mermaid
+    classDiagram
+        class Singleton {
+            -Singleton instance$
+            -Singleton()
+            +Instance() Singleton$
+            +SomeOperation() void
+        }
+        note for Singleton "Конструктор закрыт.<br/>Экземпляр создаёт и хранит сам класс"
+    ```
+
+=== "Исходник"
+
+    ```
+    classDiagram
+        class Singleton {
+            -Singleton instance$
+            -Singleton()
+            +Instance() Singleton$
+            +SomeOperation() void
+        }
+        note for Singleton "Конструктор закрыт.<br/>Экземпляр создаёт и хранит сам класс"
+    ```
+
+
+=== "C#"
+
+    ```csharp
+    public sealed class ConnectionRegistry
+    {
+        private static readonly Lazy<ConnectionRegistry> _instance =
+            new(() => new ConnectionRegistry());              // потокобезопасно и лениво
+
+        public static ConnectionRegistry Instance => _instance.Value;
+
+        private ConnectionRegistry() { }                      // ключевой элемент паттерна
     }
-    note for Singleton "Конструктор закрыт.<br/>Экземпляр создаёт и хранит сам класс"
-```
+    ```
 
-```csharp
-public sealed class ConnectionRegistry
-{
-    private static readonly Lazy<ConnectionRegistry> _instance =
-        new(() => new ConnectionRegistry());              // потокобезопасно и лениво
+=== "Python"
 
-    public static ConnectionRegistry Instance => _instance.Value;
+    ```python
+    class ConnectionRegistry:
+        _instance = None
 
-    private ConnectionRegistry() { }                      // ключевой элемент паттерна
-}
-```
+        def __new__(cls):                       # перехватываем создание, а не инициализацию
+            if cls._instance is None:
+                cls._instance = super().__new__(cls)
+            return cls._instance
 
-```python
-class ConnectionRegistry:
-    _instance = None
-
-    def __new__(cls):                       # перехватываем создание, а не инициализацию
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-        return cls._instance
-
-# но идиоматичнее в Python — модуль: он импортируется один раз
-# registry.py:  registry = ConnectionRegistry()
-```
+    # но идиоматичнее в Python — модуль: он импортируется один раз
+    # registry.py:  registry = ConnectionRegistry()
+    ```
 
 **Применимость.** Должен быть ровно один экземпляр, доступный клиентам из известной точки;
 единственный экземпляр должен расширяться подклассами, и клиенты должны получать
@@ -777,7 +953,7 @@ class ConnectionRegistry:
 
 ---
 
-## Блок 9. Как выбирать паттерн; связи между порождающими (4 мин)
+## Блок 9. Как выбирать паттерн; связи между порождающими
 
 ### Способы выбора (по книге)
 
@@ -796,15 +972,30 @@ class ConnectionRegistry:
 
 ### Как порождающие связаны
 
-```mermaid
-flowchart LR
-    FM["Фабричный метод<br/>наследование"] -->|часто вырастает в| AF["Абстрактная фабрика<br/>композиция"]
-    AF -->|реализуется через| FM
-    AF -->|или через| PR["Прототип"]
-    AF -->|обычно является| SG["Одиночка"]
-    BD["Строитель"] -->|собирает продукт<br/>по шагам| PRD["Сложный продукт"]
-    AF -->|создаёт продукт<br/>одним вызовом| PRD
-```
+=== "Диаграмма"
+
+    ```mermaid
+    flowchart LR
+        FM["Фабричный метод<br/>наследование"] -->|часто вырастает в| AF["Абстрактная фабрика<br/>композиция"]
+        AF -->|реализуется через| FM
+        AF -->|или через| PR["Прототип"]
+        AF -->|обычно является| SG["Одиночка"]
+        BD["Строитель"] -->|собирает продукт<br/>по шагам| PRD["Сложный продукт"]
+        AF -->|создаёт продукт<br/>одним вызовом| PRD
+    ```
+
+=== "Исходник"
+
+    ```
+    flowchart LR
+        FM["Фабричный метод<br/>наследование"] -->|часто вырастает в| AF["Абстрактная фабрика<br/>композиция"]
+        AF -->|реализуется через| FM
+        AF -->|или через| PR["Прототип"]
+        AF -->|обычно является| SG["Одиночка"]
+        BD["Строитель"] -->|собирает продукт<br/>по шагам| PRD["Сложный продукт"]
+        AF -->|создаёт продукт<br/>одним вызовом| PRD
+    ```
+
 
 Из книги: абстрактная фабрика, строитель и прототип часто взаимозаменяемы —
 все они инкапсулируют знание о конкретных классах. Абстрактная фабрика начинается
