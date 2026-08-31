@@ -46,6 +46,7 @@ EF Core является реализацией Data Mapper. Дальше — д
 к базе, и бизнес-логика.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     class Invoice {
         +int Id
@@ -119,6 +120,7 @@ classDiagram
 Доменный объект ничего не знает о хранении; отдельный слой отображает его в таблицы и обратно.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class Invoice {

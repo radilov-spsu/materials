@@ -45,6 +45,7 @@
 пользуются.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class Composition {
@@ -148,6 +149,7 @@ classDiagram
 шаги на подклассы. Позволяет переопределять шаги, не меняя структуру алгоритма.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     class ReportGenerator {
         <<abstract>>
@@ -241,6 +243,7 @@ classDiagram
 ничего не знают.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class ISubject {
@@ -365,6 +368,7 @@ classDiagram
 он делает. Он знает объект-команду, у которой есть `Execute`.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction TB
     class ICommand {
@@ -510,6 +514,7 @@ classDiagram
 в каждом методе.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class TcpConnection {
@@ -604,6 +609,7 @@ public sealed class TcpClosed : TcpState
 диалогу, тот — приложению. Обработает тот, у кого есть ответ.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class Handler {
@@ -678,6 +684,7 @@ public sealed class ValidationHandler : Handler
 его внутреннего представления.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class IAggregate~T~ {
@@ -787,6 +794,7 @@ classDiagram
 знает про остальных, диалог невозможно переиспользовать.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction TB
     class DialogDirector {
@@ -877,6 +885,7 @@ public sealed class FontDialogDirector
 значит сломать инкапсуляцию, ради которой всё и затевалось.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class Originator {
@@ -962,6 +971,7 @@ var history = new Stack<Editor.Snapshot>();
 значит превращать их в свалку.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction TB
     class INodeVisitor {

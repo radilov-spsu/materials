@@ -45,6 +45,7 @@
   и передаётся в операции параметром.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class GlyphFactory {
@@ -155,6 +156,7 @@ public struct Particle                              // внешнее состо
 результат зависит от типа элемента и от типа посетителя.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 sequenceDiagram
     autonumber
     participant C as Клиент
@@ -237,6 +239,7 @@ static decimal Eval(Node node) => node switch
 становится классом; предложение — деревом объектов.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction TB
     class IExpression {

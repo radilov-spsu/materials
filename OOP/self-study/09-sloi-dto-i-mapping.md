@@ -41,6 +41,7 @@
 ### Классические три слоя и их современные варианты
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 flowchart LR
     subgraph "Слоистая (Фаулер)"
         P1[Представление] --> D1[Домен] --> S1[Источник данных]
@@ -113,6 +114,7 @@ public void Домен_не_зависит_от_инфраструктуры() =
 Он отделяет то, что видит внешний мир, от того, как устроена ваша модель.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 flowchart LR
     Client[Клиент HTTP] -- JSON --> API[Контроллер]
     API -- "OrderDto" --> APP[Слой приложения]

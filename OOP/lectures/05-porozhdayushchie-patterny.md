@@ -166,6 +166,7 @@ else if (type == "pepperoni") pizza = new PepperoniPizza();
     ```
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class PizzaStore {
@@ -321,6 +322,7 @@ CheesePizza, VeggiePizza…»), а надо начать с конкретных
     ```
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction TB
     class PizzaStore {
@@ -483,6 +485,7 @@ classDiagram
     ```
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction TB
     class IPizzaIngredientFactory {
@@ -608,6 +611,7 @@ public sealed class NyPizzaStore : PizzaStore
 зависит от подставленного строителя. Процесс разбора один, представлений много.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class RtfReader {
@@ -724,6 +728,7 @@ fluent-builder — читаемая сборка одного продукта �
 инструмента.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class IGraphic {
@@ -840,6 +845,7 @@ classDiagram
 конфигурация. Глобальная переменная это не решает — она не мешает создать второй экземпляр.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     class Singleton {
         -Singleton instance$
@@ -961,6 +967,7 @@ classDiagram
 ### Как порождающие связаны
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 flowchart LR
     FM["Фабричный метод<br/>наследование"] -->|часто вырастает в| AF["Абстрактная фабрика<br/>композиция"]
     AF -->|реализуется через| FM

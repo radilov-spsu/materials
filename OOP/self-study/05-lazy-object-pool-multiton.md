@@ -46,6 +46,7 @@
 владельцу поля.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     class ReportService {
         -Lazy~ExchangeRates~ rates
@@ -132,6 +133,7 @@ public sealed class ReportService
 число одновременных экземпляров нужно ограничить.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 sequenceDiagram
     autonumber
     participant C as Клиент
@@ -226,6 +228,7 @@ finally
 с гарантией, что для одного имени объект создаётся однажды.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     class ConnectionRegistry {
         -Dictionary~string,Connection~ instances$

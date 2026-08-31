@@ -56,6 +56,7 @@ GoF описывает **две схемы** адаптера — редкий �
 ### Адаптер объектов
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class Client
@@ -136,6 +137,7 @@ public sealed class LegacyPrinterAdapter : IDocumentPrinter
 нарисована у GoF:
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class Client
@@ -212,6 +214,7 @@ class LegacyPrinterAdapter(DocumentPrinter, LegacyPrinter):   # наследуе
 Решение — **две иерархии вместо одной**, связанные композицией.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class Window {
@@ -318,6 +321,7 @@ public sealed class XWindowImpl : IWindowImpl           // конкретная 
 группа может содержать другие группы. Клиент не должен различать лист и узел.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction TB
     class IGraphic {
@@ -428,6 +432,7 @@ public sealed class Picture : IGraphic                   // составной �
 делегирования.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction TB
     class IVisualComponent {
@@ -642,6 +647,7 @@ class LoggingProxy:                # прозрачная обёртка над 
 Большинству клиентов нужен один вызов «скомпилируй файл», а не знание о всех классах.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class Compiler {
@@ -712,6 +718,7 @@ public sealed class Compiler                              // фасад
 загружать только когда их действительно надо нарисовать. Клиент об этом знать не должен.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class IGraphic {
@@ -835,6 +842,7 @@ classDiagram
   в операции: позиция на странице, стиль абзаца.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class GlyphFactory {

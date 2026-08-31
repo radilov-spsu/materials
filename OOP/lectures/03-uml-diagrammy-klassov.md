@@ -73,6 +73,7 @@ UML 2 описывает **13 официальных типов диаграмм
 Диаграмма классов начинается с ключевого слова, дальше идут классы и связи:
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class Order {
@@ -135,6 +136,7 @@ classDiagram
 `<<interface>>` / `<<abstract>>` / `<<enumeration>>` — стереотип над именем.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     class Customer {
         +Guid Id
@@ -194,6 +196,7 @@ public class Customer
 ### Абстрактные классы, интерфейсы, перечисления
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class IPaymentMethod {
@@ -250,6 +253,7 @@ classDiagram
 сослаться в коде.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class Customer {
@@ -296,6 +300,7 @@ classDiagram
 ### Направление и его цена
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class Order
@@ -327,6 +332,7 @@ classDiagram
 концы — это **роли**:
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     class Employee {
         +string Name
@@ -354,6 +360,7 @@ classDiagram
 Обе — частные случаи ассоциации «часть-целое», из лекции 1.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class Car
@@ -405,6 +412,7 @@ classDiagram
 к родителю. **Реализация** интерфейса — пунктирная линия с пустым треугольником.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction TB
     class IPaymentMethod {
@@ -495,6 +503,7 @@ public sealed class CardPayment : PaymentMethod
 статический вызов.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class OrderService {
@@ -536,6 +545,7 @@ classDiagram
 ### Обобщённые типы
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class IRepository~T~ {
@@ -584,6 +594,7 @@ classDiagram
 ### Заметки
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     class Money {
         <<value object>>
@@ -618,6 +629,7 @@ classDiagram
 одним из способов, заказ доставляется. Рисуем **логическую** модель.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction TB
 

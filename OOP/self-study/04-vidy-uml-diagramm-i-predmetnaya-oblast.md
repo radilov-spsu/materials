@@ -46,6 +46,7 @@ UML 2 делит диаграммы на две группы: **структур
 на какой вопрос диаграмма отвечает, чем к какому типу она формально отнесена.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 mindmap
   root((UML 2.x))
     Структурные
@@ -100,6 +101,7 @@ mindmap
 Незаменима, когда диаграмма классов допускает несколько толкований: «покажи мне пример».
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     class order1["order1 : Order"] {
         Status = Paid
@@ -138,6 +140,7 @@ classDiagram
 проверяют правила из лекции 2 (циклы, направление зависимостей).
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 flowchart TB
     subgraph Presentation
         Api[Shop.Api]
@@ -195,6 +198,7 @@ flowchart TB
 Не показывает алгоритм: показывает границу системы и набор целей пользователей.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 flowchart LR
     customer([Покупатель])
     manager([Менеджер])
@@ -239,6 +243,7 @@ flowchart LR
 и зонами ответственности (дорожками). Ближайший родственник BPMN.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 flowchart TD
     A[Получен заказ] --> B{Товар в наличии?}
     B -- да --> C[Зарезервировать]
@@ -456,6 +461,7 @@ UML — не единственный язык, и на практике час�
   и это нормально: их не надо объединять в один класс.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction TB
     class Order {

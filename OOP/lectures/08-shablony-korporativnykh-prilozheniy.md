@@ -45,6 +45,7 @@ GoF описывает приёмы уровня классов и объект�
 ### Три слоя по Фаулеру
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 flowchart TB
     P["Слой представления<br/>UI, REST, консоль"]
     D["Слой домена<br/>бизнес-логика"]
@@ -114,6 +115,7 @@ Table Module — золотая середина: структуры больш�
 `Find` — и здесь же бизнес-правила.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     class Customer {
         +int Id
@@ -187,6 +189,7 @@ customer.Save();
 сохраняя их **независимыми друг от друга** и от самого преобразователя.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class Customer {
@@ -256,6 +259,7 @@ Data Mapper почти всегда берут готовым: EF Core, NHiberna
 о котором говорил DIP.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 classDiagram
     direction LR
     class IOrderRepository {
@@ -355,6 +359,7 @@ Repository + Unit of Work). Промежуточный вариант — «об
 транзакцией — либо всё, либо ничего.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 sequenceDiagram
     autonumber
     participant S as OrderService
@@ -461,6 +466,7 @@ public sealed class PlaceOrderHandler
 не в сущности (она не знает про транзакции и почту), а в отдельном слое.
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 flowchart TB
     C["Контроллеры / gRPC / фоновые задачи"] --> SL["Слой сервисов приложения<br/>сценарии, транзакции, авторизация"]
     SL --> DM["Доменная модель<br/>правила и инварианты"]
@@ -575,6 +581,7 @@ Console.WriteLine(ReferenceEquals(a, b));      // True — контекст ве
 ### Как выбирать
 
 ```mermaid
+%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
 flowchart TD
     A{"Логика сложная<br/>и будет расти?"} -- нет --> B["Transaction Script<br/>+ Active Record или Dapper"]
     A -- да --> C["Domain Model<br/>+ Data Mapper (ORM)"]
