@@ -11,16 +11,15 @@ copyright: ПГУ им. Т. Г. Шевченко, Тирасполь
 docs_dir: ..
 
 # Всё, что не является материалами курсов.
-# Parallel и TechProg спрятаны, пока там только заглушки: файлы остаются
-# в репозитории, но на сайт не попадают. Чтобы вернуть — убрать две строки
-# отсюда и раскомментировать разделы в nav.
+# Parallel спрятан, пока там только заглушка: файлы остаются в репозитории,
+# но на сайт не попадают. Чтобы вернуть — убрать строку отсюда и
+# раскомментировать раздел в nav.
 exclude_docs: |
   README.md
   .github/
   site/mkdocs.yml
   site/requirements.txt
   Parallel/
-  TechProg/
 
 theme:
   name: material
@@ -119,10 +118,31 @@ nav:
           - "Самостоятельно · Active Record и Data Mapper": OOP/self-study/08-active-record-i-data-mapper.md
           - "Самостоятельно · Слои, DTO и маппинг": OOP/self-study/09-sloi-dto-i-mapping.md
       - Лабораторные работы: OOP/labs.md
-  # Появятся, когда будет что показывать:
+  - Технология программирования:
+      - О курсе: TechProg/index.md
+      - "Проект курса":
+          - "ТЗ · HR-система найма": TechProg/tz.md
+      - "Лекции":
+          - "Лекция 1 · Архитектура приложения": TechProg/lectures/01-arkhitektura-prilozheniya.md
+          - "Лекция 2 · Тактический DDD": TechProg/lectures/02-takticheskiy-ddd.md
+          - "Лекция 3 · Слой сценариев": TechProg/lectures/03-sloy-stsenariev.md
+          - "Лекция 4 · Хранение состояния": TechProg/lectures/04-khranenie-sostoyaniya.md
+          - "Лекция 5 · Контракт наружу": TechProg/lectures/05-kontrakt-naruzhu.md
+          - "Лекция 6 · Аутентификация и авторизация": TechProg/lectures/06-autentifikatsiya-i-avtorizatsiya.md
+          - "Лекция 7 · События и надёжная доставка": TechProg/lectures/07-sobytiya-i-nadezhnaya-dostavka.md
+          - "Лекция 8 · Приём внешних событий": TechProg/lectures/08-priem-vneshnikh-sobytiy.md
+          - "Лекция 9 · Качество и сопровождение": TechProg/lectures/09-kachestvo-i-soprovozhdenie.md
+      - "Лабораторные работы":
+          - "ЛР 1 · Моделирование": TechProg/labs/01-modelirovanie-predmetnoy-oblasti.md
+          - "ЛР 2 · Доменная модель": TechProg/labs/02-domennaya-model.md
+          - "ЛР 3 · Слой сценариев": TechProg/labs/03-sloy-stsenariev.md
+          - "ЛР 4 · Хранение состояния": TechProg/labs/04-khranenie-sostoyaniya.md
+          - "ЛР 5 · Веб-интерфейс": TechProg/labs/05-veb-interfeys.md
+          - "ЛР 6 · Роли и доступ": TechProg/labs/06-roli-i-dostup.md
+          - "ЛР 7 · События и уведомления": TechProg/labs/07-sobytiya-i-uvedomleniya.md
+          - "ЛР 8 · Приём извне": TechProg/labs/08-priem-izvne.md
+          - "ЛР 9 · Защита проекта": TechProg/labs/09-zashchita-proekta.md
+  # Появится, когда будет что показывать:
   # - Технологии параллельного программирования:
   #     - О курсе: Parallel/index.md
   #     - Лабораторные работы: Parallel/labs.md
-  # - Технология программирования:
-  #     - О курсе: TechProg/index.md
-  #     - Лабораторные работы: TechProg/labs.md
