@@ -32,6 +32,25 @@
 Если правило «отклонённого кандидата нельзя двигать дальше» меняется, а трогать
 приходится контроллер, три сервиса и SQL-запрос — архитектуры нет, есть привычка.
 
+### Курс не про C#
+
+Ещё одно, что стоит сказать сразу. Всё, о чём идёт речь дальше — слои, границы,
+инверсия зависимостей, события, идемпотентность, — не свойства языка и не свойства
+платформы. Это способ организовать программу, и он одинаково применим в C#, Go,
+Python, Java, TypeScript и Rust.
+
+Примеры на лекциях будут в основном на C#: нужен какой-то один язык, чтобы код
+не приходилось каждый раз объяснять заново. **Свой проект вы вправе писать на любом
+стеке.** Требования к результату при этом не меняются: контракт из технического
+задания, разделение на слои, тесты на каждом уровне, запуск одной командой. Меняются
+только имена инструментов.
+
+Если выбираете стек, отличный от .NET, — согласуйте его со мной на первой лабораторной
+и запишите выбор отдельным ADR. Единственное настоящее ограничение: экосистема должна
+позволять сделать всё из раздела 10 технического задания. Если для языка нет
+работающего способа поднять настоящую базу в тестах или сгенерировать спецификацию
+контракта, вы обнаружите это на пятой неделе, и это будет дорого.
+
 ### Ключевая мысль блока
 
 Архитектура — это ограничения, которые вы накладываете на себя **добровольно**.
@@ -46,26 +65,75 @@
 
 Покажем код, который пишут все и всегда. Он работает. Именно поэтому он опасен.
 
-```csharp
-[HttpPost("applications/{id}/approve")]
-public async Task<IActionResult> Approve(Guid id)
-{
-    var app = await _storage.LoadApplicationAsync(id);
+=== "C#"
 
-    if (app is null) return NotFound();
-    if (app.Status == "Rejected") return BadRequest("уже отклонён");
-    if (app.StageIndex >= app.Vacancy.Stages.Count - 1)
-        return BadRequest("этапов больше нет");
+    ```csharp
+    [HttpPost("applications/{id}/approve")]
+    public async Task<IActionResult> Approve(Guid id)
+    {
+        var app = await _storage.LoadApplicationAsync(id);
 
-    app.StageIndex++;                                  // правило перехода
-    await _storage.SaveAsync(app);
+        if (app is null) return NotFound();
+        if (app.Status == "Rejected") return BadRequest("уже отклонён");
+        if (app.StageIndex >= app.Vacancy.Stages.Count - 1)
+            return BadRequest("этапов больше нет");
 
-    await _smtp.SendAsync(app.CandidateEmail,          // письмо
-        "Вы прошли на следующий этап");
+        app.StageIndex++;                                  // правило перехода
+        await _storage.SaveAsync(app);
 
-    return Ok();
-}
-```
+        await _smtp.SendAsync(app.CandidateEmail,          // письмо
+            "Вы прошли на следующий этап");
+
+        return Ok();
+    }
+    ```
+
+=== "Go"
+
+    ```go
+    func (h *Handler) Approve(w http.ResponseWriter, r *http.Request) {
+        id := chi.URLParam(r, "id")
+        app, err := h.storage.LoadApplication(r.Context(), id)
+
+        if err != nil { http.Error(w, "not found", 404); return }
+        if app.Status == "Rejected" { http.Error(w, "уже отклонён", 400); return }
+        if app.StageIndex >= len(app.Vacancy.Stages)-1 {
+            http.Error(w, "этапов больше нет", 400); return
+        }
+
+        app.StageIndex++                                   // правило перехода
+        h.storage.Save(r.Context(), app)
+
+        h.smtp.Send(app.CandidateEmail,                    // письмо
+            "Вы прошли на следующий этап")
+
+        w.WriteHeader(http.StatusOK)
+    }
+    ```
+
+=== "Python"
+
+    ```python
+    @router.post("/applications/{app_id}/approve")
+    async def approve(app_id: UUID):
+        app = await storage.load_application(app_id)
+
+        if app is None:
+            raise HTTPException(404)
+        if app.status == "Rejected":
+            raise HTTPException(400, "уже отклонён")
+        if app.stage_index >= len(app.vacancy.stages) - 1:
+            raise HTTPException(400, "этапов больше нет")
+
+        app.stage_index += 1                               # правило перехода
+        await storage.save(app)
+
+        await smtp.send(app.candidate_email,               # письмо
+                        "Вы прошли на следующий этап")
+    ```
+
+Переключите вкладки. Код разный, беда одна и та же — и это первое наблюдение курса:
+всё, о чём мы будем говорить, к языку не привязано.
 
 Разберём, что здесь сломано, по пунктам — и заметим, что «всё в одном методе» в этом
 списке даже не самое серьёзное.
@@ -141,26 +209,89 @@ flowchart TB
 Ответ — буква **D** из SOLID, инверсия зависимостей. Интерфейс объявляется **там, где
 он нужен**, а реализуется снаружи.
 
-```csharp
-// Application/Abstractions/IApplicationRepository.cs — ПОРТ, внутренний слой
-public interface IApplicationRepository
-{
-    Task<JobApplication?> FindAsync(ApplicationId id, CancellationToken ct);
-    Task AddAsync(JobApplication application, CancellationToken ct);
-}
-```
+=== "C#"
 
-```csharp
-// Infrastructure/Persistence/EfApplicationRepository.cs — АДАПТЕР, внешний слой
-internal sealed class ApplicationRepository(IStorageSession session) : IApplicationRepository
-{
-    public Task<JobApplication?> FindAsync(ApplicationId id, CancellationToken ct) =>
-        session.LoadAsync<JobApplication>(id.Value, ct);
+    ```csharp
+    // Application/Abstractions/IApplicationRepository.cs — ПОРТ, внутренний слой
+    public interface IApplicationRepository
+    {
+        Task<JobApplication?> FindAsync(ApplicationId id, CancellationToken ct);
+        Task AddAsync(JobApplication application, CancellationToken ct);
+    }
+    ```
 
-    public Task AddAsync(JobApplication application, CancellationToken ct) =>
-        session.StoreAsync(application, ct);
-}
-```
+=== "Go"
+
+    ```go
+    // application/ports.go — ПОРТ, внутренний слой
+    type ApplicationRepository interface {
+        Find(ctx context.Context, id ApplicationID) (*JobApplication, error)
+        Add(ctx context.Context, application *JobApplication) error
+    }
+    ```
+
+=== "Python"
+
+    ```python
+    # application/ports.py — ПОРТ, внутренний слой
+    class ApplicationRepository(Protocol):
+        async def find(self, id: ApplicationId) -> JobApplication | None: ...
+        async def add(self, application: JobApplication) -> None: ...
+    ```
+
+Порт объявлен внутри и не знает, кто его реализует. Реализация живёт снаружи и знает
+о порте всё:
+
+=== "C#"
+
+    ```csharp
+    // Infrastructure/Persistence/ApplicationRepository.cs — АДАПТЕР, внешний слой
+    internal sealed class ApplicationRepository(IStorageSession session) : IApplicationRepository
+    {
+        public Task<JobApplication?> FindAsync(ApplicationId id, CancellationToken ct) =>
+            session.LoadAsync<JobApplication>(id.Value, ct);
+
+        public Task AddAsync(JobApplication application, CancellationToken ct) =>
+            session.StoreAsync(application, ct);
+    }
+    ```
+
+=== "Go"
+
+    ```go
+    // infrastructure/repository.go — АДАПТЕР, внешний слой
+    type applicationRepository struct{ session StorageSession }
+
+    func (r *applicationRepository) Find(ctx context.Context, id ApplicationID) (*JobApplication, error) {
+        return r.session.Load(ctx, id.Value)
+    }
+
+    func (r *applicationRepository) Add(ctx context.Context, application *JobApplication) error {
+        return r.session.Store(ctx, application)
+    }
+    ```
+
+=== "Python"
+
+    ```python
+    # infrastructure/repository.py — АДАПТЕР, внешний слой
+    class SqlApplicationRepository:
+        def __init__(self, session: StorageSession) -> None:
+            self._session = session
+
+        async def find(self, id: ApplicationId) -> JobApplication | None:
+            return await self._session.load(JobApplication, id.value)
+
+        async def add(self, application: JobApplication) -> None:
+            await self._session.store(application)
+    ```
+
+Обратите внимание на разницу, которая здесь не косметическая. В C# адаптер обязан
+назвать порт, который реализует. В Go и Python он этого не делает: соответствие
+интерфейсу проверяется по составу методов, а не по объявлению. Стрелка зависимости
+там существует только в вашей голове и в проверяющем инструменте — язык за ней
+не следит. Это не делает подход хуже, но объясняет, почему в таких экосистемах
+архитектурные тесты нужнее, чем в C#.
 
 ### Ключевая мысль блока
 
@@ -205,46 +336,135 @@ internal sealed class ApplicationRepository(IStorageSession session) : IApplicat
 описывающий понятия вашей области, — часть языка; пакет, знающий про хранение,
 сеть или формат передачи, — нет.
 
-```csharp
-public sealed class JobApplication
-{
-    private readonly List<StageTransition> _history = [];
+=== "C#"
 
-    public ApplicationId Id { get; }
-    public ApplicationStatus Status { get; private set; }   // private set — не мешок свойств
-    public IReadOnlyList<StageTransition> History => _history;
-
-    public void Approve(EmployeeId by, IClock clock)
+    ```csharp
+    public sealed class JobApplication
     {
-        if (Status is ApplicationStatus.Rejected)
-            throw new DomainException("отклонённая кандидатура не двигается");
-        // ... переход на следующий этап
+        private readonly List<StageTransition> _history = [];
+
+        public ApplicationId Id { get; }
+        public ApplicationStatus Status { get; private set; }   // private set — не мешок свойств
+        public IReadOnlyList<StageTransition> History => _history;
+
+        public void Approve(EmployeeId by, IClock clock)
+        {
+            if (Status is ApplicationStatus.Rejected)
+                throw new DomainException("отклонённая кандидатура не двигается");
+            // ... переход на следующий этап
+        }
     }
-}
-```
+    ```
+
+=== "Go"
+
+    ```go
+    type JobApplication struct {
+        id      ApplicationID
+        status  ApplicationStatus   // с маленькой буквы — снаружи пакета не изменить
+        history []StageTransition
+    }
+
+    func (a *JobApplication) Status() ApplicationStatus { return a.status }
+
+    func (a *JobApplication) Approve(by EmployeeID, clock Clock) error {
+        if a.status == StatusRejected {
+            return ErrTerminalState     // отклонённая кандидатура не двигается
+        }
+        // ... переход на следующий этап
+        return nil
+    }
+    ```
+
+=== "Python"
+
+    ```python
+    class JobApplication:
+        def __init__(self, id: ApplicationId) -> None:
+            self._id = id
+            self._status = ApplicationStatus.IN_PROGRESS
+            self._history: list[StageTransition] = []
+
+        @property
+        def status(self) -> ApplicationStatus:
+            return self._status
+
+        def approve(self, by: EmployeeId, clock: Clock) -> None:
+            if self._status is ApplicationStatus.REJECTED:
+                raise DomainError("отклонённая кандидатура не двигается")
+            # ... переход на следующий этап
+    ```
+
+Три языка защищают состояние с разной строгостью. C# запрещает запись снаружи
+компилятором, Go — границей пакета, Python не запрещает ничего: подчёркивание перед
+именем означает только «трогать не следует». Чем слабее гарантия языка, тем важнее
+всё остальное: соглашения, ревью и тесты.
 
 ### Application
 
 Сценарий — это ответ на вопрос «что система умеет делать», выраженный без единого
 слова про HTTP и SQL. Один класс — один сценарий.
 
-```csharp
-public sealed class ApproveApplicationHandler(
-    IApplicationRepository repository,
-    IUnitOfWork unitOfWork,
-    IClock clock) : ICommandHandler<ApproveApplicationCommand>
-{
-    public async Task HandleAsync(ApproveApplicationCommand cmd, CancellationToken ct)
+=== "C#"
+
+    ```csharp
+    public sealed class ApproveApplicationHandler(
+        IApplicationRepository repository,
+        IUnitOfWork unitOfWork,
+        IClock clock) : ICommandHandler<ApproveApplicationCommand>
     {
-        var application = await repository.FindAsync(cmd.ApplicationId, ct)
-            ?? throw new NotFoundException(cmd.ApplicationId);
+        public async Task HandleAsync(ApproveApplicationCommand cmd, CancellationToken ct)
+        {
+            var application = await repository.FindAsync(cmd.ApplicationId, ct)
+                ?? throw new NotFoundException(cmd.ApplicationId);
 
-        application.Approve(cmd.ApprovedBy, clock);   // решение принимает домен
+            application.Approve(cmd.ApprovedBy, clock);   // решение принимает домен
 
-        await unitOfWork.CommitAsync(ct);
+            await unitOfWork.CommitAsync(ct);
+        }
     }
-}
-```
+    ```
+
+=== "Go"
+
+    ```go
+    type ApproveApplicationHandler struct {
+        repository ApplicationRepository
+        unitOfWork UnitOfWork
+        clock      Clock
+    }
+
+    func (h *ApproveApplicationHandler) Handle(ctx context.Context, cmd ApproveApplication) error {
+        application, err := h.repository.Find(ctx, cmd.ApplicationID)
+        if err != nil {
+            return err
+        }
+        if err := application.Approve(cmd.ApprovedBy, h.clock); err != nil {
+            return err                                   // решение принимает домен
+        }
+        return h.unitOfWork.Commit(ctx)
+    }
+    ```
+
+=== "Python"
+
+    ```python
+    class ApproveApplicationHandler:
+        def __init__(self, repository: ApplicationRepository,
+                     unit_of_work: UnitOfWork, clock: Clock) -> None:
+            self._repository = repository
+            self._unit_of_work = unit_of_work
+            self._clock = clock
+
+        async def handle(self, cmd: ApproveApplication) -> None:
+            application = await self._repository.find(cmd.application_id)
+            if application is None:
+                raise NotFoundError(cmd.application_id)
+
+            application.approve(cmd.approved_by, self._clock)   # решение принимает домен
+
+            await self._unit_of_work.commit()
+    ```
 
 Обратите внимание: сценарий ничего не решает сам. Он находит нужные объекты, вызывает
 доменный метод и фиксирует транзакцию. Вся развилка — внутри `Approve`. Если в хендлере
@@ -368,12 +588,16 @@ HTTP — это **тоже адаптер**, а не главный вход и 
 Каждому слою соответствует свой вид проверки — это не отдельная тема курса,
 а прямое следствие предыдущих блоков.
 
-| Слой | Вид тестов | Что подменяем | Инструмент |
+| Слой | Вид тестов | Что подменяем | Инструмент в .NET |
 |---|---|---|---|
 | Domain | модульные | **ничего** | xUnit |
 | Application | модульные | все порты | тест-даблы, вручную или Moq/NSubstitute |
 | Infrastructure | интеграционные | ничего, зависимости настоящие | Testcontainers |
 | Web API | сквозные | внешние сервисы | `WebApplicationFactory` + Testcontainers |
+
+Последняя колонка — для .NET; в любой другой экосистеме найдётся тот же набор
+под другими именами. Важна не библиотека, а то, что именно вы подменяете
+на каждом уровне.
 
 Терминология тест-даблов (по Мезаросу), потому что путают постоянно:
 
@@ -382,17 +606,41 @@ HTTP — это **тоже адаптер**, а не главный вход и 
 - **Фейк** — рабочая, но упрощённая реализация. In-memory репозиторий на `Dictionary`.
   Часто удобнее моков: тест читается как сценарий, а не как список ожиданий.
 
-```csharp
-[Fact]
-public void BR_04_rejected_application_cannot_be_approved()
-{
-    var application = JobApplicationBuilder.Rejected();      // домен, никаких моков
+=== "C#"
 
-    var act = () => application.Approve(EmployeeId.New(), FixedClock.Default);
+    ```csharp
+    [Fact]
+    public void BR_04_rejected_application_cannot_be_approved()
+    {
+        var application = JobApplicationBuilder.Rejected();      // домен, никаких моков
 
-    act.Should().Throw<DomainException>();
-}
-```
+        var act = () => application.Approve(EmployeeId.New(), FixedClock.Default);
+
+        act.Should().Throw<DomainException>();
+    }
+    ```
+
+=== "Go"
+
+    ```go
+    func TestBR04_RejectedApplicationCannotBeApproved(t *testing.T) {
+        application := builders.RejectedApplication()            // домен, никаких моков
+
+        err := application.Approve(NewEmployeeID(), FixedClock{})
+
+        require.ErrorIs(t, err, domain.ErrTerminalState)
+    }
+    ```
+
+=== "Python"
+
+    ```python
+    def test_br_04_rejected_application_cannot_be_approved():
+        application = rejected_application()                     # домен, никаких моков
+
+        with pytest.raises(DomainError):
+            application.approve(EmployeeId.new(), FixedClock())
+    ```
 
 ### Ключевая мысль блока
 
@@ -528,9 +776,22 @@ Hr.slnx
     └── Hr.Architecture.Tests/
 ```
 
-Ссылки между проектами — первая линия обороны: `Hr.Domain` физически не может
-обратиться к внешним библиотекам инфраструктуры, потому что не видит их.
-Компилятор здесь работает на вас, и это лучше любой договорённости в чате.
+Имена здесь .NET-овские, но идея от платформы не зависит: слой — это отдельная
+единица сборки, а не каталог. Ссылки между такими единицами — первая линия обороны:
+`Hr.Domain` физически не может обратиться к внешним библиотекам инфраструктуры,
+потому что не видит их. Компилятор здесь работает на вас, и это лучше любой
+договорённости в чате.
+
+| .NET | Go | Python |
+|---|---|---|
+| проект и `ProjectReference` | модуль или пакет, `internal/` | пакет и `import-linter` |
+| NetArchTest, ArchUnitNET | go-arch-lint, depguard | import-linter |
+| xUnit | `testing`, testify | pytest |
+| Testcontainers | Testcontainers-Go | testcontainers-python |
+
+В Go правило зависимостей отчасти обеспечивает сам язык: каталог `internal/` недоступен
+извне модуля. В Python границы держатся только на договорённости, поэтому проверяющий
+инструмент там не роскошь, а единственный способ вообще иметь слои.
 
 ### Чего ссылки не ловят
 
@@ -658,7 +919,7 @@ public void Command_handlers_must_be_sealed_and_suffixed()
 | **Доменное исключение** | Сигнал о нарушении бизнес-правила, не об ошибке техники | `DomainException` |
 | **Инвариант** | Утверждение о состоянии, истинное всё время жизни объекта | «отклонённый не двигается» |
 | **Инверсия зависимостей** | Приём: и модуль, и деталь зависят от абстракции, объявленной модулем | буква D в SOLID |
-| **Композиционный корень** | Единственная точка сборки графа зависимостей | `Program.cs` |
+| **Композиционный корень** | Единственная точка сборки графа зависимостей | точка входа приложения |
 | **Мок** | Тест-дабл, проверяющий факт и параметры вызова | проверка отправки письма |
 | **Порт** | Интерфейс на границе ядра, объявленный внутренним слоем | `Application/Abstractions` |
 | **Правило зависимостей** | Исходный код внутреннего слоя не ссылается на внешний | проверяется тестом |
@@ -699,10 +960,11 @@ public void Command_handlers_must_be_sealed_and_suffixed()
 на занятии. Репозиторий создастся автоматически — вся работа за семестр идёт в нём,
 заводить свой не нужно. Создайте ветку `lab-01`.
 
-**Второе.** Соберите скелет решения: четыре проекта из блока 8, ссылки между ними
-расставлены, `dotnet build` проходит. Проверка приёмки: попытка добавить ссылку
-`Hr.Domain → Hr.Infrastructure` должна ломать сборку. Проекты пустые — ни классов,
-ни пакетов.
+**Второе.** Соберите скелет решения: четыре единицы сборки из блока 8, зависимости
+между ними расставлены, сборка проходит. Проверка приёмки: попытка сделать домен
+зависимым от инфраструктуры должна ломать сборку или падать в проверяющем инструменте.
+Модули пустые — ни классов, ни пакетов. Если пишете не на .NET, назовите модули
+по смыслу так же, согласуйте стек со мной и зафиксируйте выбор в `docs/adr/0000-stack.md`.
 
 **Третье.** Напишите первый ADR в `docs/adr/0001-layers.md`: почему слоёв четыре,
 а не три. Раздел «Альтернативы» обязателен — без него запись превращается в пересказ
