@@ -43,7 +43,7 @@
   занят обработкой.
 
 ```mermaid
-%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
+%%{init: {'themeVariables': {'noteBkgColor': 'transparent', 'noteBorderColor': '#c9a227'}}}%%
 sequenceDiagram
     autonumber
     actor User as Покупатель
@@ -127,7 +127,7 @@ sequenceDiagram
 в очередь, публикация события, `fire-and-forget`.
 
 ```mermaid
-%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
+%%{init: {'themeVariables': {'noteBkgColor': 'transparent', 'noteBorderColor': '#c9a227'}}}%%
 sequenceDiagram
     participant S as OrderService
     participant Q as MessageBus
@@ -169,7 +169,7 @@ sequenceDiagram
 ### Создание и уничтожение объектов
 
 ```mermaid
-%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
+%%{init: {'themeVariables': {'noteBkgColor': 'transparent', 'noteBorderColor': '#c9a227'}}}%%
 sequenceDiagram
     participant S as OrderService
     create participant O as Order
@@ -209,7 +209,7 @@ sequenceDiagram
 Комбинированные фрагменты — рамки, задающие управляющую логику. Их пять, и их хватает.
 
 ```mermaid
-%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
+%%{init: {'themeVariables': {'noteBkgColor': 'transparent', 'noteBorderColor': '#c9a227'}}}%%
 sequenceDiagram
     autonumber
     participant C as Checkout
@@ -307,7 +307,7 @@ sequenceDiagram
 в отчётах.
 
 ```mermaid
-%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
+%%{init: {'themeVariables': {'noteBkgColor': 'transparent', 'noteBorderColor': '#c9a227'}}}%%
 sequenceDiagram
     autonumber
     actor U as Покупатель
@@ -431,7 +431,7 @@ sequenceDiagram
 при этом выполняются.
 
 ```mermaid
-%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
+%%{init: {'themeVariables': {'noteBkgColor': 'transparent', 'noteBorderColor': '#c9a227'}}}%%
 stateDiagram-v2
     [*] --> Draft : создан
     Draft --> Paid : pay / списать деньги
@@ -472,7 +472,7 @@ stateDiagram-v2
 ### Действия внутри состояния
 
 ```mermaid
-%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
+%%{init: {'themeVariables': {'noteBkgColor': 'transparent', 'noteBorderColor': '#c9a227'}}}%%
 stateDiagram-v2
     state Paid {
         [*] --> AwaitingPacking
@@ -527,7 +527,7 @@ stateDiagram-v2
 ### Составные (вложенные) состояния
 
 ```mermaid
-%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
+%%{init: {'themeVariables': {'noteBkgColor': 'transparent', 'noteBorderColor': '#c9a227'}}}%%
 stateDiagram-v2
     [*] --> Active
     state Active {
@@ -568,7 +568,7 @@ stateDiagram-v2
 ### Выбор и параллельность
 
 ```mermaid
-%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
+%%{init: {'themeVariables': {'noteBkgColor': 'transparent', 'noteBorderColor': '#c9a227'}}}%%
 stateDiagram-v2
     state check <<choice>>
     [*] --> Submitted
@@ -594,7 +594,7 @@ stateDiagram-v2
 
 
 ```mermaid
-%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
+%%{init: {'themeVariables': {'noteBkgColor': 'transparent', 'noteBorderColor': '#c9a227'}}}%%
 stateDiagram-v2
     state fork_state <<fork>>
     state join_state <<join>>

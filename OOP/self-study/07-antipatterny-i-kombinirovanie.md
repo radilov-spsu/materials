@@ -92,7 +92,7 @@ Development. Последние два прямо касаются паттер�
 рефакторят **прочь** (упрощение — тоже движение).
 
 ```mermaid
-%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
+%%{init: {'themeVariables': {'noteBkgColor': 'transparent', 'noteBorderColor': '#c9a227'}}}%%
 flowchart LR
     S["Запах кода<br/>лекция 2"] --> R["Серия мелких<br/>рефакторингов"]
     R --> P["Паттерн<br/>лекции 5-7"]
@@ -157,7 +157,7 @@ flowchart LR
 (добавление прокрутки). Основными авторы называют первые три.
 
 ```mermaid
-%%{init: {'themeVariables': {'noteTextColor': '#26251c'}}}%%
+%%{init: {'themeVariables': {'noteBkgColor': 'transparent', 'noteBorderColor': '#c9a227'}}}%%
 flowchart TB
     MVC["MVC"] --> OB["Наблюдатель<br/>модель → представления"]
     MVC --> CO["Компоновщик<br/>вложенные представления"]
