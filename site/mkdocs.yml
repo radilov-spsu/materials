@@ -20,6 +20,10 @@ exclude_docs: |
   site/mkdocs.yml
   site/requirements.txt
   Parallel/
+  OOP/examples/**/*.cs
+  OOP/examples/**/*.csproj
+  OOP/examples/**/.gitignore
+  !OOP/examples/LegacyShop/README.md
 
 theme:
   name: material
@@ -100,6 +104,7 @@ nav:
       - "Раздел 1. Основы и принципы объектно-ориентированного проектирования":
           - "Лекция 1 · Объектная модель": OOP/lectures/01-obektnaya-model.md
           - "Лекция 2 · Архитектура и рефакторинг": OOP/lectures/02-arkhitektura-i-refaktoring.md
+          - "Пример · LegacyShop: проект с запахами": OOP/examples/LegacyShop/README.md
           - "Самостоятельно · Классы, объекты, инкапсуляция": OOP/self-study/01-klassy-obekty-inkapsulyatsiya.md
           - "Самостоятельно · Наследование и полиморфизм": OOP/self-study/02-nasledovanie-i-polimorfizm.md
           - "Самостоятельно · Архитектурные стили и связность": OOP/self-study/03-arkhitekturnye-stili-i-svyaznost.md
