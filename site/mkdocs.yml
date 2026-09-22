@@ -132,7 +132,7 @@ nav:
           - "ТЗ · HR-система найма": TechProg/tz.md
       - "Лекции":
           - "Лекция 1 · Архитектура приложения": TechProg/lectures/01-arkhitektura-prilozheniya.md
-          - "Лекция 2 · Тактический DDD": TechProg/lectures/02-takticheskiy-ddd.md
+          - "Лекция 2 · Модель предметной области": TechProg/lectures/02-model-predmetnoy-oblasti.md
           - "Лекция 3 · Слой сценариев": TechProg/lectures/03-sloy-stsenariev.md
           - "Лекция 4 · Хранение состояния": TechProg/lectures/04-khranenie-sostoyaniya.md
           - "Лекция 5 · Контракт наружу": TechProg/lectures/05-kontrakt-naruzhu.md
