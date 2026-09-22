@@ -22,3 +22,29 @@
 .grid.cards > :is(ul, ol) > li {
   border-radius: .3rem;
 }
+
+/* ── Схемы, нарисованные в конспекте ──────────────────────────────────────
+   Часть рисунков приходит из конспекта лектора готовым SVG и красится его
+   переменными. Здесь они привязаны к токенам Material, чтобы схема читалась
+   в обеих темах и не приходилось править разметку при каждом импорте.
+
+   Объявлены на body, а не на :root: схему Material ставит атрибутом именно
+   на body, и на уровне html токены темы ещё светлые. */
+body {
+  --sans: var(--md-text-font-family, system-ui, sans-serif);
+  --ink: var(--md-default-fg-color);
+  --ink-soft: var(--md-default-fg-color--light);
+  --ink-faint: color-mix(in srgb, var(--md-default-fg-color) 55%, transparent);
+  --panel: var(--md-default-bg-color);
+  --accent: var(--md-primary-fg-color);
+  --accent-soft: color-mix(in srgb, var(--md-primary-fg-color) 14%, var(--md-default-bg-color));
+  --hot: #b24a12;
+}
+
+/* В тёмной теме индиго и кирпичный уходят в фон — берём светлее. Заодно
+   надпись поверх заливки акцентом остаётся читаемой: она красится цветом
+   страницы, а он в этой теме тёмный. */
+body[data-md-color-scheme="slate"] {
+  --accent: #8c9cff;
+  --hot: #e08a4f;
+}
