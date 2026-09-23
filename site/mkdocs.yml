@@ -125,7 +125,9 @@ nav:
           - "Лекция 8 · Шаблоны корпоративных приложений": OOP/lectures/08-shablony-korporativnykh-prilozheniy.md
           - "Самостоятельно · Active Record и Data Mapper": OOP/self-study/08-active-record-i-data-mapper.md
           - "Самостоятельно · Слои, DTO и маппинг": OOP/self-study/09-sloi-dto-i-mapping.md
-      - Лабораторные работы: OOP/labs.md
+      - "Лабораторные работы":
+          - Как сдаются: OOP/labs.md
+          - "Лабораторная 1 · Фабрики": OOP/labs/01-fabriki-prostaya-metod-abstraktnaya.md
   - Технология программирования:
       - О курсе: TechProg/index.md
       - "Проект курса":
