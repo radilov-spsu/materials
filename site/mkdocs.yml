@@ -129,6 +129,7 @@ nav:
       - "Лабораторные работы":
           - Как сдаются: OOP/labs.md
           - "Лабораторная 1 · Фабрики": OOP/labs/01-fabriki-prostaya-metod-abstraktnaya.md
+          - "Лабораторная 2 · Строитель": OOP/labs/02-stroitel-protsess-i-predstavlenie.md
   - Технология программирования:
       - О курсе: TechProg/index.md
       - "Проект курса":
