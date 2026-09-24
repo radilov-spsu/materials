@@ -33,9 +33,9 @@
 ## Этап 0. Разминка: посчитать зависимости
 
 Заготовка проекта лежит в материалах курса:
-[`OOP/examples/GameFactories`](../examples/GameFactories/README.md) — решение
-`GameFactories.sln`, консольное приложение, доменные классы и проект тестов на xUnit.
-Как её забрать, написано там же в README. Скопируйте папку к себе, проверьте, что
+<https://github.com/radilov-spsu/materials/tree/main/OOP/examples/GameFactories> —
+решение `GameFactories.sln`, консольное приложение, доменные классы и проект тестов
+на xUnit. Как её забрать, написано там же в README. Скопируйте папку к себе, проверьте, что
 `dotnet run` и `dotnet test` отрабатывают, — и это ваш первый коммит, до единой
 собственной правки. Если хотите собрать проект сами, обойдётесь `dotnet new console`
 плюс `dotnet new xunit` и листингом ниже.
