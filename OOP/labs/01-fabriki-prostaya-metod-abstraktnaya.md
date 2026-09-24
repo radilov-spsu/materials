@@ -32,33 +32,44 @@
 
 ## Этап 0. Разминка: посчитать зависимости
 
-Дан заведомо плохой код — начните с него, он лежит в заготовке репозитория:
+Заготовка проекта лежит в материалах курса:
+[`OOP/examples/GameFactories`](../examples/GameFactories/README.md) — решение
+`GameFactories.sln`, консольное приложение, доменные классы и проект тестов на xUnit.
+Как её забрать, написано там же в README. Скопируйте папку к себе, проверьте, что
+`dotnet run` и `dotnet test` отрабатывают, — и это ваш первый коммит, до единой
+собственной правки. Если хотите собрать проект сами, обойдётесь `dotnet new console`
+плюс `dotnet new xunit` и листингом ниже.
+
+Начинаем с файла `src/GameFactories/WaveSpawner.cs`:
 
 ```csharp
 public class WaveSpawner
 {
-    public List<Enemy> Spawn(string location, int count)
+    public IReadOnlyList<Enemy> Spawn(string location, int count)
     {
         var enemies = new List<Enemy>();
 
         for (var i = 0; i < count; i++)
         {
             Enemy enemy;
+
             if (location == "forest")
             {
-                if (i % 3 == 0) enemy = new Wolf();
-                else            enemy = new Bandit();
+                enemy = i % 3 == 0 ? new Wolf() : new Bandit();
                 enemy.Weapon = new RustySword();
-                enemy.Loot   = new Herb();
+                enemy.Loot = new Herb();
             }
             else if (location == "desert")
             {
-                if (i % 3 == 0) enemy = new SandWorm();
-                else            enemy = new Nomad();
+                enemy = i % 3 == 0 ? new SandWorm() : new Nomad();
                 enemy.Weapon = new CurvedDagger();
-                enemy.Loot   = new CactusJuice();
+                enemy.Loot = new CactusJuice();
             }
-            else throw new ArgumentException(nameof(location));
+            else
+            {
+                throw new ArgumentOutOfRangeException(nameof(location), location,
+                    "Неизвестная локация");
+            }
 
             enemy.Spawn();
             enemies.Add(enemy);
@@ -362,7 +373,8 @@ classDiagram
 
 ## Что сдаётся
 
-1. **Репозиторий** с историей коммитов по этапам: этап 1 — отдельный коммит, этап 2 —
+1. **Репозиторий** на основе заготовки `GameFactories`, с историей коммитов по этапам:
+   первый коммит — развёрнутая заготовка, дальше этап 1 — отдельный коммит, этап 2 —
    отдельный, и так далее. Один коммит «сделал лабу» — минус балл.
 2. **Код**, который собирается и запускается: консольное приложение, демонстрирующее
    запуск волны на двух-трёх локациях.

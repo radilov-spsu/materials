@@ -22,8 +22,10 @@ exclude_docs: |
   Parallel/
   OOP/examples/**/*.cs
   OOP/examples/**/*.csproj
+  OOP/examples/**/*.sln
   OOP/examples/**/.gitignore
   !OOP/examples/LegacyShop/README.md
+  !OOP/examples/GameFactories/README.md
 
 theme:
   name: material
@@ -128,6 +130,7 @@ nav:
       - "Лабораторные работы":
           - Как сдаются: OOP/labs.md
           - "Лабораторная 1 · Фабрики": OOP/labs/01-fabriki-prostaya-metod-abstraktnaya.md
+          - "Заготовка · GameFactories": OOP/examples/GameFactories/README.md
   - Технология программирования:
       - О курсе: TechProg/index.md
       - "Проект курса":
