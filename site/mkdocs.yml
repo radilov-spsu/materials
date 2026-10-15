@@ -104,7 +104,6 @@ nav:
       - Слил работу без проверки: howto/accidental-merge.md
   - Объектно-ориентированный анализ и проектирование:
       - О курсе: OOP/index.md
-      - Ведомость: OOP/progress.md
       - "Раздел 1. Основы и принципы объектно-ориентированного проектирования":
           - "Лекция 1 · Объектная модель": OOP/lectures/01-obektnaya-model.md
           - "Лекция 2 · Архитектура и рефакторинг": OOP/lectures/02-arkhitektura-i-refaktoring.md
