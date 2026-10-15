@@ -1,0 +1,6 @@
+[
+  { "key": "skeleton",       "name": "Скелет",             "health": 60,  "damage": 8,
+    "weapon": "Ржавый меч",  "armor": 5,  "loot": ["Кость"] },
+  { "key": "crypt-guardian", "name": "Страж склепа",       "health": 120, "damage": 14,
+    "weapon": "Тяжёлая секира", "armor": 30, "loot": ["Кость", "Ключ от склепа"] }
+]

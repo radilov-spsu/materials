@@ -4,6 +4,8 @@
 
 - [Лабораторная 1 · Фабрики: простая, метод, абстрактная](labs/01-fabriki-prostaya-metod-abstraktnaya.md)
 - [Лабораторная 2 · Строитель: один процесс — много представлений](labs/02-stroitel-protsess-i-predstavlenie.md)
+- [Лабораторная 3 · Прототип: создание копированием](labs/03-prototip-sozdanie-kopirovaniem.md)
+- [Лабораторная 4 · Одиночка: как его пишут и почему от него уходят](labs/04-odinochka-i-ukhod-ot-nego.md)
 
 Работа сдаётся в личном репозитории: ветка `OOP/lab-XX`, Pull Request в `main`,
 шаблон PR заполнить целиком. Задание приходит issue'ом в ваш репозиторий —
