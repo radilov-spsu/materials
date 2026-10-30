@@ -6,6 +6,8 @@
 - [Лабораторная 2 · Строитель: один процесс — много представлений](labs/02-stroitel-protsess-i-predstavlenie.md)
 - [Лабораторная 3 · Прототип: создание копированием](labs/03-prototip-sozdanie-kopirovaniem.md)
 - [Лабораторная 4 · Одиночка: как его пишут и почему от него уходят](labs/04-odinochka-i-ukhod-ot-nego.md)
+- [Лабораторная 5 · Адаптер: подружить несовместимое](labs/05-adapter-podruzhit-nesovmestimoe.md)
+- [Лабораторная 6 · Мост: две иерархии вместо одной](labs/06-most-dve-ierarkhii-vmesto-odnoy.md)
 
 Работа сдаётся в личном репозитории: ветка `OOP/lab-XX`, Pull Request в `main`,
 шаблон PR заполнить целиком. Задание приходит issue'ом в ваш репозиторий —

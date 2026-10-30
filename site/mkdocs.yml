@@ -132,6 +132,8 @@ nav:
           - "Лабораторная 2 · Строитель": OOP/labs/02-stroitel-protsess-i-predstavlenie.md
           - "Лабораторная 3 · Прототип": OOP/labs/03-prototip-sozdanie-kopirovaniem.md
           - "Лабораторная 4 · Одиночка": OOP/labs/04-odinochka-i-ukhod-ot-nego.md
+          - "Лабораторная 5 · Адаптер": OOP/labs/05-adapter-podruzhit-nesovmestimoe.md
+          - "Лабораторная 6 · Мост": OOP/labs/06-most-dve-ierarkhii-vmesto-odnoy.md
   - Технология программирования:
       - О курсе: TechProg/index.md
       - "Проект курса":
